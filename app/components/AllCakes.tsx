@@ -26,7 +26,7 @@ interface Cake {
   name: string;
   description: string;
   price: number;
-  image: string;
+  image: string[];
   category: string;
 }
 interface Category {
@@ -136,7 +136,7 @@ export default function AllCakes() {
             </CardHeader>
             <CardContent>
               <Image
-                src={cake.image}
+                src={cake.image[0]}
                 alt={cake.name}
                 width={300}
                 height={200}

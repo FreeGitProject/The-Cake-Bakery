@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
 interface NewsItem {
@@ -33,7 +34,13 @@ export default function News() {
           {news.map((item) => (
             <div key={item._id} className="card p-6 animate-fadeIn">
               {item.imageUrl && (
-                <img src={item.imageUrl} alt={item.title} className="w-full h-48 object-cover mb-4 rounded" />
+                <Image
+                src={item.imageUrl}
+                alt={item.title}
+                className="w-full h-48 object-cover mb-4 rounded"
+                width={500} // You can adjust the width as needed
+                height={200} // Adjust the height as needed
+              />
               )}
               <h3 className="text-xl font-semibold mb-2 text-[var(--primary)]">{item.title}</h3>
               <p className="text-gray-600 mb-4">{new Date(item.date).toLocaleDateString()}</p>

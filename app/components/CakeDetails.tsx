@@ -5,6 +5,8 @@ import ImageMagnifier from "@/components/common/ImageMagnifier";
 import { Button } from "@/components/ui/button";
 import { GrSquare } from "react-icons/gr";
 import Loader from "./Loader";
+import { FaPlayCircle } from "react-icons/fa"; // Example video icon from React Icons
+import Image from "next/image";
 
 interface Cake {
   id: string;
@@ -16,24 +18,78 @@ interface Cake {
 }
 
 // Helper function to convert YouTube URL to embed format
-const convertToEmbedUrl = (url: string) => {
+const convertToEmbedUrl = (videoUrl: string): string | null => {
   try {
-    if (url.includes("/shorts/")) {
-      return url.replace("/shorts/", "/embed/") + "?rel=0";
+    if (!videoUrl || typeof videoUrl !== "string") return null;
+
+    // Trim whitespace from the URL
+    videoUrl = videoUrl.trim();
+
+    // Check if the URL starts with "http"
+    if (videoUrl.toLowerCase().includes("http")) {
+      // Extract video ID for different patterns (YouTube and Vimeo)
+      const videoIdMatch = videoUrl.match(
+        /(?:\?v=|&v=|\/v\/|\/embed\/|youtu\.be\/|\/shorts\/|\/)([a-zA-Z0-9_-]{11})/
+      );
+
+      if (videoIdMatch && videoIdMatch[1]) {
+        const videoId = videoIdMatch[1];
+
+        // Handle YouTube cases
+        if (
+          videoUrl.toLowerCase().includes("youtube") ||
+          videoUrl.toLowerCase().includes("youtu.be")
+        ) {
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+      }
+
+      // Handle Vimeo cases
+      if (videoUrl.toLowerCase().includes("vimeo")) {
+        const vimeoIdMatch = videoUrl.match(/(?:vimeo\.com\/)([0-9]+)/);
+        if (vimeoIdMatch && vimeoIdMatch[1]) {
+          const vimeoId = vimeoIdMatch[1];
+          return `https://player.vimeo.com/video/${vimeoId}`;
+        }
+      }
+    } else {
+      // Assume input is a direct video ID or some invalid format
+      const alphaRegex = /[a-zA-Z]/;
+      if (alphaRegex.test(videoUrl)) {
+        return `https://www.youtube.com/embed/${videoUrl}`;
+      } else {
+        return `https://player.vimeo.com/video/${videoUrl}`;
+      }
     }
-    if (url.includes("https://youtu.be/")) {
-      return url.replace("/youtu.be/", "/youtube.com/embed/") + "?rel=0";
-    }
-    const videoIdMatch = url.match(
-      /(?:v=|\/|shorts\/|youtu\.be\/|embed\/)([a-zA-Z0-9_-]+)/,
-    );
-    if (videoIdMatch) {
-      return `https://www.youtube.com/embed/${videoIdMatch[1]}?rel=0`;
-    }
+
+    return null; // Fallback for unrecognized URLs
   } catch (error) {
-    console.error("Error processing YouTube URL:", error);
+    console.error("Error processing video URL:", error);
+    return null; // Return null in case of an error
   }
-  return null; // Return null if the URL is not valid
+};
+const getThumbnailUrl = (url: string): string | null => {
+  if (!url || typeof url !== "string") return null;
+
+  // Check if it's a YouTube video URL
+  const isYouTubeVideo =
+    url.includes("youtube.com") || url.includes("youtu.be");
+
+  if (isYouTubeVideo) {
+    // Extract video ID for different YouTube URL patterns
+    const videoIdMatch = url.match(
+      /(?:\?v=|&v=|\/v\/|\/embed\/|youtu\.be\/|\/shorts\/|\/)([a-zA-Z0-9_-]{11})/
+    );
+
+    if (videoIdMatch && videoIdMatch[1]) {
+      const videoId = videoIdMatch[1];
+      // Return the YouTube video thumbnail URL
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
+    }
+  }
+
+  // If it's not a video, assume it's an image URL
+  return url;
 };
 
 export default function CakeDetails({ id }: { id: string }) {
@@ -44,22 +100,22 @@ export default function CakeDetails({ id }: { id: string }) {
   useEffect(() => {
     const fetchCake = async () => {
       try {
-        // const response = await fetch(`/api/cakes/${id}`);
-        // const data = await response.json();
-        const data: Cake = {
-          id: "67711bea6acade1aa061455b",
-          name: "Black Velvet",
-          description: "A delicious black velvet cake.",
-          price: 57,
-          image: [
-            "https://res.cloudinary.com/dzabikj6s/image/upload/v1735227106/The-cake-shop/9288b9fa-1cf1-40cb-ae92-0b392238483d_ofgb37.jpg",
-            "https://res.cloudinary.com/dzabikj6s/image/upload/v1735228115/The-cake-shop/d1d2924e-2abf-440e-be3e-bf49099ff68f_itcncr.jpg",
-            "https://res.cloudinary.com/dzabikj6s/image/upload/v1735228696/The-cake-shop/78f2b9f6-4287-4a77-82fe-62edaa3f6fde_htwnjt.jpg",
-            "https://youtube.com/shorts/FtnOaJTOuqc?si=YaJWT3A0tWNn113N",
-            "https://youtu.be/CWdsqvg0wCw?si=AHUrMIAfCiDCDNL2",
-          ],
-          category: "Fruit Cakes",
-        };
+        const response = await fetch(`/api/cakes/${id}`);
+        const data = await response.json();
+        // const data: Cake = {
+        //   id: "67711bea6acade1aa061455b",
+        //   name: "Black Velvet",
+        //   description: "A delicious black velvet cake.",
+        //   price: 57,
+        //   image: [
+        //     "https://res.cloudinary.com/dzabikj6s/image/upload/v1735227106/The-cake-shop/9288b9fa-1cf1-40cb-ae92-0b392238483d_ofgb37.jpg",
+        //     "https://res.cloudinary.com/dzabikj6s/image/upload/v1735228115/The-cake-shop/d1d2924e-2abf-440e-be3e-bf49099ff68f_itcncr.jpg",
+        //     "https://res.cloudinary.com/dzabikj6s/image/upload/v1735228696/The-cake-shop/78f2b9f6-4287-4a77-82fe-62edaa3f6fde_htwnjt.jpg",
+        //     "https://youtube.com/shorts/FtnOaJTOuqc?si=YaJWT3A0tWNn113N",
+        //     "https://youtu.be/CWdsqvg0wCw?si=AHUrMIAfCiDCDNL2",
+        //   ],
+        //   category: "Fruit Cakes",
+        // };
         setCake(data);
       } catch (error) {
         console.error("Error fetching cake details:", error);
@@ -86,7 +142,6 @@ export default function CakeDetails({ id }: { id: string }) {
       </div>
     );
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="w-full py-5">
@@ -126,31 +181,32 @@ export default function CakeDetails({ id }: { id: string }) {
             {/* Thumbnail Selector */}
             <div className="flex gap-2 flex-wrap">
               {cake.image.map((i, index) => {
+                const thumbnailUrl = getThumbnailUrl(i);
                 const isYouTubeVideo =
                   i.includes("youtube.com") || i.includes("youtu.be");
-                const videoIdMatch = i.match(
-                  /(?:v=|\/|shorts\/|youtu\.be\/|embed\/)([a-zA-Z0-9_-]+)/,
-                );
-                const videoThumbnailUrl =
-                  isYouTubeVideo && videoIdMatch
-                    ? `https://img.youtube.com/vi/${videoIdMatch[1]}/0.jpg`
-                    : i; // If it's a video, get the thumbnail; otherwise, use the image URL
-
                 return (
                   <div
                     key={index}
-                    className={`${
+                    className={`relative ${
                       select === index ? "border" : ""
                     } w-[110px] h-[110px] p-[15px] border border-qgray-border cursor-pointer`}
                     onClick={() => setSelect(index)}
                   >
-                    <img
-                      src={videoThumbnailUrl}
+                    <Image
+                      src={thumbnailUrl || "/default-image.jpg"} // fallback to a default image if null or undefined
                       alt={`Cake ${index}`}
+                      width={110}
+                      height={110}
                       className={`w-full h-full object-contain ${
                         select === index ? "" : "opacity-50"
                       }`}
                     />
+                    {isYouTubeVideo && (
+                      <FaPlayCircle
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-75 text-3xl"
+                        aria-label="Play Video"
+                      />
+                    )}
                   </div>
                 );
               })}
