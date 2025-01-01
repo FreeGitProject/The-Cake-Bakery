@@ -1,11 +1,15 @@
-"use client"; // Mark this as a Client Component
-
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSession, signOut } from 'next-auth/react'
+import { Button } from "@/components/ui/button"
+
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const { data: session } = useSession()
+console.log("header session",session?.user)
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <nav className="container mx-auto px-6 py-3">
@@ -24,10 +28,30 @@ export default function Header() {
               <Link key={item} href={`#${item.toLowerCase()}`} className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 {item}
               </Link>
+              
             ))}
-            <Link  href="/cakes" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+              <Link  href="/cakes" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 All Cakes
               </Link>
+            {session ? (
+              <>
+                <span className="text-[#4A4A4A]">
+                  {session.user?.name?.[0].toUpperCase()}
+                </span>
+                <Button onClick={() => signOut()} variant="ghost">
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  Login
+                </Link>
+                <Link href="/register" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
           <div className="md:hidden">
             <button onClick={() => setIsOpen(!isOpen)} className="text-[#FF9494]">
@@ -46,10 +70,29 @@ export default function Header() {
         {isOpen && (
           <div className="mt-4 md:hidden space-y-2 animate-fadeIn">
             {['Home', 'News', 'About', 'Favorites', 'Location'].map((item) => (
-              <Link key={item} href={`#${item.toLowerCase()}`} className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+              <Link key={item} href={`/#${item.toLowerCase()}`} className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 {item}
               </Link>
             ))}
+            {session ? (
+              <>
+                <span className="block py-2 text-[#4A4A4A]">
+                  {session.user?.name?.[0].toUpperCase()}
+                </span>
+                <Button onClick={() => signOut()} variant="ghost" className="w-full text-left">
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  Login
+                </Link>
+                <Link href="/register" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         )}
       </nav>

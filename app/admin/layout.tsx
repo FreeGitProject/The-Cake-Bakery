@@ -8,9 +8,10 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession();
-  console.log('Provided credentials:', session);
-  if (!session) {
-    redirect('/login'); // Redirect to login if no session
+  console.log('Provided credentials admin:', session); // Log the session
+
+    if (!session || session.user.role !== 'admin') {
+    redirect('/login'); // Redirect to login if no session or user is not an admin
   }
 
   return (
