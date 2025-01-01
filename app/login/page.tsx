@@ -1,20 +1,22 @@
 import { Metadata } from 'next'
 import LoginForm from '../components/LoginForm'
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Admin Login | Cake-Bakery Shop',
-  description: 'Login to access the admin dashboard',
+  title: 'Login | Cake-Bakery Shop',
+  description: 'Login to your Cake-Bakery Shop account',
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await getServerSession();
+  if (session ) {
+    redirect('/'); // Redirect to login if no session or user is not an admin
+  }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Admin Login
-        </h2>
-        <LoginForm />
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
+      <LoginForm />
     </div>
   )
 }
