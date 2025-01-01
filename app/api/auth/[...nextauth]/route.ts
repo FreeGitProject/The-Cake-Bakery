@@ -46,18 +46,19 @@ const handler = NextAuth({
         token.role = user.role;
         token.id = user.id;
       }
+      //console.log('JWT Callback:', token, user);
       return token;
     },
     async session({ session, token }) {
       // Log the session and token for debugging
      // console.log('Session:', session, 'Token:', token);
-
+    // console.log('Session Callback:', session, token);
       // Add role and id to the session user object
       if (session?.user) {
         session.user.role = token.role;
         session.user.id = token.id;
       }
-      console.log('Session:', session, 'Token:', token); // Log for debugging
+     // console.log('Session:', session, 'Token:', token); // Log for debugging
       return session;
     },
   },

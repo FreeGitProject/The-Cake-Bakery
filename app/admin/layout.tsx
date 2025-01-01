@@ -1,15 +1,18 @@
+"use client";
 import AdminNavbar from '../../components/AdminNavbar';
-import { getServerSession } from 'next-auth';
+import { useSessionContext } from '../../context/SessionContext';
 import { redirect } from 'next/navigation';
 
-export default async function AdminLayout({
+export default  function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const { session, loading } = useSessionContext();
+  console.log('Provided credentials admin:', session); 
+  if (loading) return <p>Loading...</p>;
   console.log('Provided credentials admin:', session); // Log the session
-
+ 
     if (!session || session.user.role !== 'admin') {
     redirect('/login'); // Redirect to login if no session or user is not an admin
   }

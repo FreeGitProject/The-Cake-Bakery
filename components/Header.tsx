@@ -3,13 +3,29 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSession, signOut } from 'next-auth/react'
+import {  signOut } from 'next-auth/react'
 import { Button } from "@/components/ui/button"
+import { useSessionContext } from '@/context/SessionContext'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const { data: session } = useSession()
-console.log("header session",session?.user)
+  const { session } = useSessionContext();
+  console.log("header session",session?.user)
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false })
+    router.push('/login')
+  }
+  //if (loading) return <p>Loading...</p>;
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <nav className="container mx-auto px-6 py-3">
@@ -30,18 +46,30 @@ console.log("header session",session?.user)
               </Link>
               
             ))}
+                <Link  href="/admin" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+               admin
+              </Link>
               <Link  href="/cakes" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 All Cakes
               </Link>
-            {session ? (
-              <>
-                <span className="text-[#4A4A4A]">
-                  {session.user?.name?.[0].toUpperCase()}
-                </span>
-                <Button onClick={() => signOut()} variant="ghost">
-                  Sign Out
-                </Button>
-              </>
+              {session ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="p-0">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{session.user?.name?.[0].toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link href="/profile" className="w-full">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => signOut()}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Link href="/login" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
@@ -76,10 +104,10 @@ console.log("header session",session?.user)
             ))}
             {session ? (
               <>
-                <span className="block py-2 text-[#4A4A4A]">
-                  {session.user?.name?.[0].toUpperCase()}
-                </span>
-                <Button onClick={() => signOut()} variant="ghost" className="w-full text-left">
+                <Link href="/profile" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  Profile
+                </Link>
+                <Button onClick={handleSignOut} variant="ghost" className="w-full text-left">
                   Sign Out
                 </Button>
               </>
