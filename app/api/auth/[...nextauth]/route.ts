@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { JWT } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import clientPromise from '@/lib/mongodb';
@@ -41,29 +41,25 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Add role and id to the token if user exists
       if (user) {
-        token.role = user.role;
         token.id = user.id;
+        token.role = user.role;
       }
-      //console.log('JWT Callback:', token, user);
       return token;
     },
     async session({ session, token }) {
-      // Log the session and token for debugging
-     // console.log('Session:', session, 'Token:', token);
-    // console.log('Session Callback:', session, token);
-      // Add role and id to the session user object
+      // Explicitly type the token
+      const typedToken = token as unknown as JWT; // Type token as JWT (with id and role)
+      
       if (session?.user) {
-        session.user.role = token.role;
-        session.user.id = token.id;
+        session.user.id = typedToken.id;
+        session.user.role = typedToken.role;
       }
-     // console.log('Session:', session, 'Token:', token); // Log for debugging
       return session;
-    },
+    }
   },
   pages: {
-    signIn: '/login', // Redirect here on unauthenticated access
+    signIn: '/login', // Redirect to custom login page on unauthenticated access
   },
 });
 

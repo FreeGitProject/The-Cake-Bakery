@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState } from 'react'
@@ -32,7 +33,8 @@ export default function RegisterForm() {
         } else {
           setError(data.error)
         }
-      } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error:any) {
         setError('An error occurred. Please try again.')
       }
     } else {
@@ -48,7 +50,8 @@ export default function RegisterForm() {
         } else {
           setError(data.error)
         }
-      } catch (error) {
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error:any) {
         setError('An error occurred. Please try again.')
       }
     }

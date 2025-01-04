@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Assuming you have a tabs component
 import Link from 'next/link';
+import Loader from '@/app/components/Loader';
 
 interface UserProfile {
   username: string;
@@ -111,7 +112,7 @@ export default function ProfileComponent() {
   };
 
   if (!profile) {
-    return <div>Loading...</div>;
+    return <div><Loader/></div>;
   }
 
   return (

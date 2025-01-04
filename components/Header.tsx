@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation'
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const { session } = useSessionContext();
-  console.log("header session",session?.user)
+  //console.log("header session",session?.user)
   const router = useRouter()
 
   const handleSignOut = async () => {

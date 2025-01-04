@@ -13,12 +13,11 @@ export async function middleware(request: NextRequest) {
 
   // Fetch JWT token from cookies using NextAuth's utility
   const token = await getToken({ req: request, secret });
-//console.log("medd",token);
+//console.log("medd",token,"ispub",isPublicPath);
   // Redirect unauthenticated users from protected paths
   if (!isPublicPath && !token) {
     return NextResponse.redirect(new URL("/login", request.nextUrl));
   }
-
   // Check for role-based authorization if token exists
   if (token && token.role !== "admin" && !isPublicPath) {
     return NextResponse.redirect(new URL("/", request.nextUrl));
