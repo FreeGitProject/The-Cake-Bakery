@@ -46,9 +46,9 @@ export default function Header() {
               </Link>
               
             ))}
-                <Link  href="/admin" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                {/* <Link  href="/admin" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                admin
-              </Link>
+              </Link> */}
               <Link  href="/cakes" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 All Cakes
               </Link>

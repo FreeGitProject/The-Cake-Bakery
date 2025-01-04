@@ -12,9 +12,9 @@ import { redirect } from 'next/navigation';
 export default function ProfilePage() {
 
      const { session } = useSessionContext();
-      console.log('ProfilePage', session); 
+    //  console.log('ProfilePage', session); 
       //if (loading) return <p>Loading...</p>;
-      console.log('ProfilePage', session); // Log the session
+      //console.log('ProfilePage', session); // Log the session
      
         if (!session) {
         redirect('/login'); // Redirect to login if no session or user is not an admin
