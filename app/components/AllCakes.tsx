@@ -21,6 +21,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { GrSquare } from "react-icons/gr";
 import Loader from "./Loader";
+import { useCart } from '@/context/CartContext'
 interface Cake {
   _id: string;
   name: string;
@@ -44,7 +45,7 @@ export default function AllCakes() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true);
   const cakesPerPage = 9;
-
+  const { addToCart } = useCart()
   useEffect(() => {
     fetchCakes();
     fetchCategories();
@@ -100,6 +101,14 @@ export default function AllCakes() {
   if (loading) {
     return <div><Loader/></div>
   }
+  const handleAddToCart = (cake: Cake) => {
+    addToCart({
+      id: cake._id,
+      name: cake.name,
+      price: cake.price,
+      quantity: 1,
+    })
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">All Cakes</h1>
@@ -151,6 +160,7 @@ export default function AllCakes() {
               <Link href={`/cakes/${cake._id}`}>
                 <Button>View Details</Button>
               </Link>
+              <Button onClick={() => handleAddToCart(cake)}>Add to Cart</Button>
             </CardFooter>
           </Card>
         ))}
