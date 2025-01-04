@@ -1,35 +1,65 @@
-import NextAuth from 'next-auth';
+import NextAuth, { JWT } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import clientPromise from '@/lib/mongodb';
+import { User } from '@/models/user';
 
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'admin' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        const { username, password } = credentials || {};
-
-        // Validate credentials using environment variables
-        if (
-          username === process.env.ADMIN_USERNAME &&
-          password === process.env.ADMIN_PASSWORD
-        ) {
-          return { id: '1', name: 'Admin', email: username }; // Add additional user details if needed
+        if (!credentials?.email || !credentials?.password) {
+          return null;
         }
 
-        return null; // Return null if validation fails
-      },
-    }),
+        await clientPromise;
+        const user = await User.findOne({ email: credentials.email });
+
+        if (!user || !user.isVerified) {
+          return null;
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+
+        if (!isPasswordCorrect) {
+          return null;
+        }
+
+        return {
+          id: user._id.toString(),
+          name: user.username,
+          email: user.email,
+          role: user.role, // Ensure role is included here
+        };
+      }
+    })
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: 'jwt',
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Explicitly type the token
+      const typedToken = token as unknown as JWT; // Type token as JWT (with id and role)
+      
+      if (session?.user) {
+        session.user.id = typedToken.id;
+        session.user.role = typedToken.role;
+      }
+      return session;
+    }
   },
   pages: {
-    signIn: '/login', // Redirect here on unauthenticated access
+    signIn: '/login', // Redirect to custom login page on unauthenticated access
   },
 });
 
