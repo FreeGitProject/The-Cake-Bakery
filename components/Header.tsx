@@ -14,13 +14,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useRouter } from 'next/navigation'
+import { ShoppingCart } from 'lucide-react'
+import { useCart } from '@/context/CartContext'
+import CartOffCanvas from '../app/components/CartOffCanvas'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  
   const { session } = useSessionContext();
   //console.log("header session",session?.user)
   const router = useRouter()
-
+  const { cart } = useCart()
   const handleSignOut = async () => {
     await signOut({ redirect: false })
     router.push('/login')
@@ -52,6 +57,18 @@ export default function Header() {
               <Link  href="/cakes" className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                 All Cakes
               </Link>
+              <Button
+              variant="ghost"
+              className="relative p-2"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cart.length > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                  {cart.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
+            </Button>
               {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -102,6 +119,15 @@ export default function Header() {
                 {item}
               </Link>
             ))}
+                <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart className="h-6 w-6 mr-2" />
+              Cart ({cart.reduce((total, item) => total + item.quantity, 0)})
+            </Button>
+
             {session ? (
               <>
                 <Link href="/profile" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
@@ -124,6 +150,7 @@ export default function Header() {
           </div>
         )}
       </nav>
+      <CartOffCanvas isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
     </header>
   )
 }
