@@ -28,6 +28,7 @@
     "next": "14.2.16",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.9.16",
+    "razorpay": "^2.9.5",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.4.0",
