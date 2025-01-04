@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
-    console.log('OrderAPI', session);
+   // console.log('OrderAPI', session);
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

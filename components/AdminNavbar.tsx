@@ -18,6 +18,7 @@ const navItems = [
   { name: "Favorites", path: "/admin/favorites" },
   { name: "Cakes", path: "/admin/cakes" },
   { name: "Categories", path: "/admin/categories" },
+  { name: 'Orders', path: '/admin/orders' },
   { name: "Footer", path: "/admin/footer" },
 ];
 

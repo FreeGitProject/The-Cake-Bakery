@@ -22,6 +22,7 @@ const orderSchema = new mongoose.Schema({
     zipCode: String,
     country: String,
   },
+  updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
 export const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
