@@ -3,6 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Loader from "@/app/components/Loader";
 
 type SessionContextType = {
   session: any;
@@ -14,7 +15,11 @@ const SessionContext = createContext<SessionContextType>({
   loading: true,
 });
 
-export const SessionProvider = ({ children }: { children: React.ReactNode }) => {
+export const SessionProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { data: session, status } = useSession();
   const [storedSession, setStoredSession] = useState<any>(null);
 
@@ -24,11 +29,14 @@ export const SessionProvider = ({ children }: { children: React.ReactNode }) => 
     }
   }, [session]);
 
+  if (status === "loading") {
+    return <Loader />; // Show the loader while session is loading
+  }
   return (
     <SessionContext.Provider
       value={{
         session: storedSession,
-        loading: status === "loading",
+        loading: false,
       }}
     >
       {children}

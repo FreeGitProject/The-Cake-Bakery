@@ -20,9 +20,9 @@ export default function RootLayout({
 
   return (
     <NextAuthSessionProvider>
-      <SessionProvider>
-        <html lang="en" className="scroll-smooth">
-          <body className={inter.className}>
+      <html lang="en" className="scroll-smooth">
+        <body className={inter.className}>
+          <SessionProvider>
             <CartProvider>
               {!isAdminPage && <Header />} {/* Exclude Header on admin pages */}
               <main className="min-h-screen">{children}</main>
@@ -32,9 +32,9 @@ export default function RootLayout({
               src="https://checkout.razorpay.com/v1/checkout.js"
               strategy="lazyOnload"
             />
-          </body>
-        </html>
-      </SessionProvider>
+          </SessionProvider>
+        </body>
+      </html>
     </NextAuthSessionProvider>
   );
 }
