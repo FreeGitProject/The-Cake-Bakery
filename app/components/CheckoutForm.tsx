@@ -50,7 +50,7 @@ export default function CheckoutForm() {
     }
 
     const orderData = {
-      orderItems: cart.map((item: { id: any; name: any; quantity: any; price: any }) => ({
+      orderItems: cart.map(item => ({
         productId: item.id,
         name: item.name,
         quantity: item.quantity,
@@ -84,7 +84,7 @@ export default function CheckoutForm() {
         body: JSON.stringify({ amount: orderData.totalAmount }),
       });
       const data = await response.json();
-      
+    
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -102,7 +102,7 @@ export default function CheckoutForm() {
             clearCart();
             toast({
               title: "Order placed successfully!",
-              description: "Thank you for your purchase.",
+              description: "Thank you for your purchase. You will receive a confirmation email shortly.",
             });
             router.push('/my-orders');
           }
@@ -155,7 +155,6 @@ export default function CheckoutForm() {
   if (cart.length === 0) {
     return <p>Your cart is empty. Please add some items before checking out.</p>
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card>

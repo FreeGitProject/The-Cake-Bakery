@@ -5,12 +5,9 @@ import clientPromise from '@/lib/mongodb';
 import { User } from '@/models/user'; // Assuming you have a User model
 import { Order } from '@/models/order';
 import { v4 as uuidv4 } from 'uuid';
-//import { sendOrderConfirmationEmail } from './sendOrderConfirmationEmail';  // Assuming this function is defined elsewhere
+import { sendOrderConfirmationEmail } from '@/lib/email';
 
-async function sendOrderConfirmationEmail(newOrder: any) {
-  //Implementation to send email
-  console.log("Email sent for order:", newOrder.orderId);
-}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
@@ -43,7 +40,13 @@ export async function POST(request: Request) {
 
     await newOrder.save();
     if (paymentMethod === 'Cash on Delivery') {
-      await sendOrderConfirmationEmail(newOrder);
+      try {
+        await sendOrderConfirmationEmail(newOrder,'Cash on Delivery');
+      } catch (emailError) {
+        console.error('Error sending order confirmation email:', emailError);
+        // We don't want to fail the order creation if email sending fails
+        // But we might want to log this error or handle it in some way
+      }
     }
     
     return NextResponse.json({ message: 'Order placed successfully', order: newOrder });
