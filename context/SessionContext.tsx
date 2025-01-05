@@ -36,7 +36,7 @@ export const SessionProvider = ({
     <SessionContext.Provider
       value={{
         session: storedSession,
-        loading: false,
+        loading: true,
       }}
     >
       {children}
