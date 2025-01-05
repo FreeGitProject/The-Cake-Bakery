@@ -6,7 +6,7 @@ export default function Location() {
         <div className="flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412634994897!2d-73.98784368459253!3d40.74844797932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1619614879630!5m2!1sen!2sus"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1752.6056133790903!2d77.38762052489452!3d28.533370126037724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce8a68ffffff1%3A0xaf4867a2327d6c68!2sThe%20Cake%20Shop!5e0!3m2!1sen!2sin!4v1736051994561!5m2!1sen!2sin"
               width="100%"
               height="450"
               style={{ border: 0 }}

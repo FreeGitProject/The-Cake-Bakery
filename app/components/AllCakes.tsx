@@ -172,7 +172,7 @@ export default function AllCakes() {
             <Button
               key={i}
               onClick={() => paginate(i + 1)}
-              variant={currentPage === i + 1 ? "outline" :"default"  }
+              variant={currentPage === i + 1 ? "default":"outline"}
               className="mx-1"
             >
               {i + 1}
