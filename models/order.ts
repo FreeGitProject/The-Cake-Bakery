@@ -23,6 +23,8 @@ const orderSchema = new mongoose.Schema({
     country: String,
   },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  razorpayOrderId: { type: String },
+  razorpayPaymentId: { type: String },
 }, { timestamps: true });
 
 export const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);

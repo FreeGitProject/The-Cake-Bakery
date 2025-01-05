@@ -1,10 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import clientPromise from '@/lib/mongodb';
 import { User } from '@/models/user'; // Assuming you have a User model
 import { Order } from '@/models/order';
 import { v4 as uuidv4 } from 'uuid';
+//import { sendOrderConfirmationEmail } from './sendOrderConfirmationEmail';  // Assuming this function is defined elsewhere
 
+async function sendOrderConfirmationEmail(newOrder: any) {
+  //Implementation to send email
+  console.log("Email sent for order:", newOrder.orderId);
+}
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
@@ -21,7 +27,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { orderItems, totalAmount, paymentMethod, shippingAddress } = await request.json();
+    const { orderItems, totalAmount, paymentMethod, shippingAddress, razorpayOrderId, razorpayPaymentId } = await request.json();
 
     const newOrder = new Order({
       orderId: uuidv4(),
@@ -31,10 +37,15 @@ export async function POST(request: Request) {
       paymentMethod,
       shippingAddress,
       paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Completed',
+      razorpayOrderId,
+      razorpayPaymentId,
     });
 
     await newOrder.save();
-
+    if (paymentMethod === 'Cash on Delivery') {
+      await sendOrderConfirmationEmail(newOrder);
+    }
+    
     return NextResponse.json({ message: 'Order placed successfully', order: newOrder });
   } catch (error) {
     console.error('Error placing order:', error);
