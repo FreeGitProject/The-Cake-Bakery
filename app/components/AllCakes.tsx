@@ -87,6 +87,8 @@ export default function AllCakes() {
       );
     }
     if (categoryFilter) {
+      if(categoryFilter.toLowerCase()=="all")
+      setCategoryFilter("")
       filtered = filtered.filter((cake) => cake.category.toLowerCase() === categoryFilter.toLowerCase());
     }
     setFilteredCakes(filtered);
@@ -111,75 +113,117 @@ export default function AllCakes() {
   }
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">All Cakes</h1>
-      <div className="flex flex-col md:flex-row justify-between mb-6">
-        <Input
-          type="text"
-          placeholder="Search cakes..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-4 md:mb-0 md:mr-4 md:w-1/3"
-        />
+    {/* Header Section */}
+    <div className="text-center mb-12">
+      <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">Discover Our Cakes</h1>
+      <p className="text-gray-600 max-w-2xl mx-auto">
+        Explore our delicious collection of handcrafted cakes, made with love and the finest ingredients
+      </p>
+    </div>
+
+    {/* Search and Filter Section */}
+    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <Input
+            type="text"
+            placeholder="Search for your favorite cake..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300"
+          />
+        </div>
+        <div className="md:w-1/3">
           <Select onValueChange={(value) => setCategoryFilter(value)}>
-          <SelectTrigger className="w-full md:w-1/3">
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category._id} value={category.name}>{category.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+            <SelectTrigger className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300">
+              <SelectValue placeholder="Filter by category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Categories</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category._id} value={category.name}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentCakes.map((cake) => (
-          <Card key={cake._id}>
-            <CardHeader>
-              <CardTitle>
-                {cake.name}
-                <div className="text-green-600">
-                  <GrSquare />
-                  <span className="text-[10px]">EGGLESS</span>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+    </div>
+
+    {/* Cakes Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {currentCakes.map((cake) => (
+        <Card key={cake._id} className="group hover:shadow-xl transition-shadow duration-300">
+          <CardHeader className="relative pb-0">
+            <div className="relative h-64 w-full mb-4 overflow-hidden rounded-t-lg">
               <Image
                 src={cake.image[0]}
                 alt={cake.name}
-                width={300}
-                height={200}
-                className="w-full h-48 object-cover mb-4"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              <p className="text-sm text-gray-600 mb-2">
-                {cake.description.substring(0, 100)}...
-              </p>
-              <p className="font-bold">₹ {cake.price.toFixed(2)}</p>
-            </CardContent>
-            <CardFooter>
-              <Link href={`/cakes/${cake._id}`}>
-                <Button>View Details</Button>
-              </Link>
-              <Button onClick={() => handleAddToCart(cake)}>Add to Cart</Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-      <div className="mt-8 flex justify-center">
-        {Array.from(
-          { length: Math.ceil(filteredCakes.length / cakesPerPage) },
-          (_, i) => (
-            <Button
-              key={i}
-              onClick={() => paginate(i + 1)}
-              variant={currentPage === i + 1 ? "default":"outline"}
-              className="mx-1"
+            </div>
+            {/* Eggless Badge */}
+            <div className="absolute top-4 right-4 bg-green-100 text-green-600 px-3 py-1 rounded-full flex items-center gap-1">
+              <GrSquare className="w-3 h-3" />
+              <span className="text-xs font-medium">EGGLESS</span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <CardTitle className="text-xl font-bold text-[#4A4A4A] mb-2">
+              {cake.name}
+            </CardTitle>
+            <p className="text-gray-600 mb-4 line-clamp-2">
+              {cake.description}
+            </p>
+            <p className="text-2xl font-bold text-[#FF9494]">
+              ₹{cake.price.toFixed(2)}
+            </p>
+          </CardContent>
+          <CardFooter className="p-6 pt-0 flex gap-4">
+            <Link href={`/cakes/${cake._id}`} className="flex-1">
+              <Button 
+                variant="outline" 
+                className="w-full border-2 border-[#FF9494] text-[#FF9494] hover:bg-[#FF9494] hover:text-white transition-colors duration-300"
+              >
+                View Details
+              </Button>
+            </Link>
+            <Button 
+              className="flex-1 bg-[#FF9494] hover:bg-[#FFB4B4] transition-colors duration-300"
+              onClick={() => handleAddToCart(cake)}
             >
-              {i + 1}
+              Add to Cart
             </Button>
-          )
-        )}
-      </div>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
+
+    {/* Pagination */}
+    <div className="mt-12 flex justify-center gap-2">
+      {Array.from(
+        { length: Math.ceil(filteredCakes.length / cakesPerPage) },
+        (_, i) => (
+          <Button
+            key={i}
+            onClick={() => paginate(i + 1)}
+            variant={currentPage === i + 1 ? "default" : "outline"}
+            className={`
+              w-10 h-10 p-0 
+              ${currentPage === i + 1 
+                ? 'bg-[#FF9494] hover:bg-[#FFB4B4]' 
+                : 'text-[#4A4A4A] hover:text-[#FF9494] border-2'
+              }
+              transition-colors duration-300
+            `}
+          >
+            {i + 1}
+          </Button>
+        )
+      )}
+    </div>
+  </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client"
 import Loader from '@/app/components/Loader'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -36,44 +37,84 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-[#FF9494] text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-wrap justify-between">
-          <div className="w-full md:w-1/3 mb-6 md:mb-0">
-            <h3 className="text-2xl font-semibold mb-4">{footerData.companyName}</h3>
-            <p className="text-sm">{footerData.description}</p>
-          </div>
-          <div className="w-full md:w-1/3 mb-6 md:mb-0">
-            <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
+    <footer className="relative bg-[#FF9494] text-white pt-16 pb-8">
+    {/* Decorative Top Border */}
+    <div className="absolute top-0 left-0 right-0 h-4 bg-[#FF9494] shadow-lg">
+      <div className="absolute top-0 left-0 right-0 h-2 bg-[#FFB4B4]" style={{
+        clipPath: "polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%)"
+      }}/>
+    </div>
+
+    <div className="container mx-auto px-4">
+      {/* Logo */}
+      <div className="flex justify-center mb-8">
+        <div className="bg-white rounded-full p-2 shadow-lg transform hover:rotate-12 transition-transform duration-300">
+          <Image 
+            src="https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png" 
+            alt="The-Cake-Shop Logo" 
+            width={150} 
+            height={150} 
+            className="rounded-full"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        {/* Company Info */}
+        <div className="text-center md:text-left">
+          <h3 className="text-2xl font-semibold mb-4 hover:text-[#FFF5E4] transition-colors duration-300">
+            {footerData.companyName}
+          </h3>
+          <p className="text-sm leading-relaxed hover:text-[#FFF5E4] transition-colors duration-300">
+            {footerData.description}
+          </p>
+        </div>
+
+        {/* Quick Links */}
+        <div className="text-center md:text-left">
+          <h3 className="text-xl font-semibold mb-4">Sweet Links</h3>
+          <ul className="space-y-2">
             {['Home', 'News', 'About', 'Favorites', 'Location', 'Policies'].map((item) => (
-                <li key={item}>
-                  <Link href={item === 'Policies' ? '/policies' : `#${item.toLowerCase()}`} className="hover:text-[#FFF5E4] transition duration-300">
-                    {item}
-                  </Link>
-                </li>
-              ))}
-              <li>
-              <Link  href="/cakes" className="hover:text-[#FFF5E4] transition duration-300">
-                All Cakes
-              </Link>
+              <li key={item} className="transform hover:translate-x-2 transition-transform duration-300">
+                <Link 
+                  href={item === 'Policies' ? '/policies' : `#${item.toLowerCase()}`}
+                  className="hover:text-[#FFF5E4] transition-colors duration-300 flex items-center justify-center md:justify-start"
+                >
+                  <span className="mr-2">🍰</span> {item}
+                </Link>
               </li>
-            </ul>
-          </div>
-          <div className="w-full md:w-1/3">
-            <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
-            <p className="mb-2">Email: {footerData.email}</p>
-            <p className="mb-4">Phone: {footerData.phone}</p>
-            <div className="flex space-x-4">
+            ))}
+            <li className="transform hover:translate-x-2 transition-transform duration-300">
+              <Link 
+                href="/cakes"
+                className="hover:text-[#FFF5E4] transition-colors duration-300 flex items-center justify-center md:justify-start"
+              >
+                <span className="mr-2">🎂</span> All Cakes
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact Info */}
+        <div className="text-center md:text-left">
+          <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
+          <div className="space-y-4">
+            <p className="flex items-center justify-center md:justify-start">
+              <span className="mr-2">📧</span> {footerData.email}
+            </p>
+            <p className="flex items-center justify-center md:justify-start">
+              <span className="mr-2">📞</span> {footerData.phone}
+            </p>
+            <div className="flex justify-center md:justify-start space-x-6">
               {Object.entries(footerData.socialLinks).map(([platform, url]) => (
                 <a
                   key={platform}
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-[#FFF5E4] transition duration-300"
+                  className="transform hover:scale-110 hover:text-[#FFF5E4] transition-all duration-300"
                 >
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
                     {platform === 'facebook' && (
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     )}
@@ -90,7 +131,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
-    </footer>
+    </div>
+  </footer>
   )
 }
 
