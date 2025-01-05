@@ -46,9 +46,9 @@ export default function Footer() {
           <div className="w-full md:w-1/3 mb-6 md:mb-0">
             <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              {['Home', 'News', 'About', 'Favorites', 'Location'].map((item) => (
+            {['Home', 'News', 'About', 'Favorites', 'Location', 'Policies'].map((item) => (
                 <li key={item}>
-                  <Link href={`#${item.toLowerCase()}`} className="hover:text-[#FFF5E4] transition duration-300">
+                  <Link href={item === 'Policies' ? '/policies' : `#${item.toLowerCase()}`} className="hover:text-[#FFF5E4] transition duration-300">
                     {item}
                   </Link>
                 </li>
