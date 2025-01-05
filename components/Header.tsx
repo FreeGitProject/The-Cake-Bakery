@@ -82,6 +82,9 @@ export default function Header() {
                   <DropdownMenuItem>
                     <Link href="/profile" className="w-full">Profile</Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/my-orders" className="w-full">My Orders</Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => signOut()}>
                     Sign Out
                   </DropdownMenuItem>
@@ -132,6 +135,9 @@ export default function Header() {
               <>
                 <Link href="/profile" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
                   Profile
+                </Link>
+                <Link href="/my-orders" className="block py-2 text-[#4A4A4A] hover:text-[#FF9494] transition duration-300">
+                  My Orders
                 </Link>
                 <Button onClick={handleSignOut} variant="ghost" className="w-full text-left">
                   Sign Out
