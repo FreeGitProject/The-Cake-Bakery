@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
     const skip = (page - 1) * limit;
 
-    let query: any = {};
+    const query: any = {};
     if (status) query.orderStatus = status;
     if (userId) query.userId = userId;
 
