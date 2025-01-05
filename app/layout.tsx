@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";
 import { SessionProvider } from "../context/SessionContext";
 import { CartProvider } from "@/context/CartContext";
+import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] });
 import Script from "next/script";
 export default function RootLayout({
@@ -32,6 +33,7 @@ export default function RootLayout({
               src="https://checkout.razorpay.com/v1/checkout.js"
               strategy="lazyOnload"
             />
+              <Toaster />
           </SessionProvider>
         </body>
       </html>

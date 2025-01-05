@@ -19,6 +19,7 @@ const navItems = [
   { name: "Cakes", path: "/admin/cakes" },
   { name: "Categories", path: "/admin/categories" },
   { name: 'Orders', path: '/admin/orders' },
+  { name: 'Policies', path: '/admin/policies' },
   { name: "Footer", path: "/admin/footer" },
 ];
 
