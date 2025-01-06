@@ -1,59 +1,61 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 interface OrderItem {
-  name: string
-  quantity: number
-  price: number
+  name: string;
+  quantity: number;
+  price: number;
+  image: string;
 }
 
 interface Order {
-  _id: string
-  orderId: string
-  orderItems: OrderItem[]
-  totalAmount: number
-  paymentStatus: string
-  paymentMethod: string
-  orderStatus: string
-  createdAt: string
+  _id: string;
+  orderId: string;
+  orderItems: OrderItem[];
+  totalAmount: number;
+  paymentStatus: string;
+  paymentMethod: string;
+  orderStatus: string;
+  createdAt: string;
 }
 
 export default function MyOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const { data: session } = useSession()
+  const [orders, setOrders] = useState<Order[]>([]);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (session) {
-      fetchOrders()
+      fetchOrders();
     }
-  }, [session])
+  }, [session]);
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`/api/orders?userId=${session?.user.id}`)
+      const response = await fetch(`/api/orders?userId=${session?.user.id}`);
       if (response.ok) {
-        const data = await response.json()
-        setOrders(data)
+        const data = await response.json();
+        setOrders(data);
       } else {
-        throw new Error('Failed to fetch orders')
+        throw new Error("Failed to fetch orders");
       }
     } catch (error) {
-      console.error('Error fetching orders:', error)
+      console.error("Error fetching orders:", error);
     }
-  }
+  };
 
   if (!session) {
-    return <p>Please log in to view your orders.</p>
+    return <p>Please log in to view your orders.</p>;
   }
 
   return (
     <div className="space-y-6">
       {orders.length === 0 ? (
-        <p>You haven&apos;t placed any orders yet.</p>
+        <p>You haven't placed any orders yet.</p>
       ) : (
         orders.map((order) => (
           <Card key={order._id}>
@@ -63,22 +65,40 @@ export default function MyOrders() {
                 <span className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </span>
-                <Badge variant={order.orderStatus === 'Delivered' ? 'default' : 'secondary'}>
+                <Badge
+                  variant={
+                    order.orderStatus === "Delivered" ? "default" : "secondary"
+                  }
+                >
                   {order.orderStatus}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 {order.orderItems.map((item, index) => (
-                  <div key={index} className="flex justify-between">
-                    <span>{item.name} x {item.quantity}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <div key={index} className="flex items-center space-x-4">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={50}
+                      height={50}
+                      className="rounded-md object-cover"
+                    />
+                    <div className="flex-grow">
+                      <p className="font-semibold">{item.name}</p>
+                      <p className="text-sm text-gray-500">
+                        Quantity: {item.quantity} x ₹{item.price.toFixed(2)}
+                      </p>
+                    </div>
+                    <span className="font-semibold">
+                      ₹{(item.price * item.quantity).toFixed(2)}
+                    </span>
                   </div>
                 ))}
-                <div className="flex justify-between font-bold pt-2">
+                <div className="flex justify-between font-bold pt-4 border-t">
                   <span>Total</span>
-                  <span>${order.totalAmount.toFixed(2)}</span>
+                  <span> ₹{order.totalAmount.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-500">
                   <span>Payment Method</span>
@@ -94,6 +114,5 @@ export default function MyOrders() {
         ))
       )}
     </div>
-  )
+  );
 }
-

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       razorpayOrderId,
       razorpayPaymentId,
     });
-
+console.log("newOrder",newOrder);
     await newOrder.save();
     if (paymentMethod === 'Cash on Delivery') {
       try {
