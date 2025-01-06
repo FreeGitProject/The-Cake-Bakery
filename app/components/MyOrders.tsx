@@ -55,7 +55,7 @@ export default function MyOrders() {
   return (
     <div className="space-y-6">
       {orders.length === 0 ? (
-        <p>You haven't placed any orders yet.</p>
+        <p>You haven&apos;t placed any orders yet.</p>
       ) : (
         orders.map((order) => (
           <Card key={order._id}>
