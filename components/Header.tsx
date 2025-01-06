@@ -23,7 +23,7 @@ export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Favorites', path: '/favorites' },
+    // { name: 'Favorites', path: '/favorites' },
     { name: 'Cakes', path: '/cakes' },
     { name: 'News', path: '/news' },
   ];
