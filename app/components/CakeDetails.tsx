@@ -7,6 +7,7 @@ import { GrSquare } from "react-icons/gr";
 import Loader from "./Loader";
 import { FaPlayCircle } from "react-icons/fa"; // Example video icon from React Icons
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
 
 interface Cake {
   id: string;
@@ -97,6 +98,7 @@ export default function CakeDetails({ id }: { id: string }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [select, setSelect] = useState<number>(0);
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
+  const { addToCart } = useCart()
   useEffect(() => {
     const fetchCake = async () => {
       try {
@@ -126,6 +128,15 @@ export default function CakeDetails({ id }: { id: string }) {
 
     fetchCake();
   }, [id]);
+
+  const handleAddToCart = (cake: Cake) => {
+    addToCart({
+      id: id,
+      name: cake.name,
+      price: cake.price,
+      quantity: 1,
+    })
+  }
 
   if (loading) {
     return (
@@ -238,7 +249,7 @@ export default function CakeDetails({ id }: { id: string }) {
           <p className="text-sm text-gray-500 mb-4">
             Category: <span className="font-semibold">{cake.category}</span>
           </p>
-          <Button className="w-full mt-4 py-3 sm:py-4 text-sm sm:text-base">Add to Cart</Button>
+          <Button onClick={() => handleAddToCart(cake)} className="w-full mt-4 py-3 sm:py-4 text-sm sm:text-base">Add to Cart</Button>
         </div>
       </div>
     </div>

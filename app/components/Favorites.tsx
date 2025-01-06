@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { useCart } from '@/context/CartContext'
 
 interface Cake {
   _id: string
@@ -14,7 +15,7 @@ interface Cake {
 
 export default function Favorites() {
   const [favorites, setFavorites] = useState<Cake[]>([])
-
+ const { addToCart } = useCart()
   useEffect(() => {
     async function fetchFavorites() {
       try {
@@ -27,7 +28,14 @@ export default function Favorites() {
     }
     fetchFavorites()
   }, [])
-
+  const handleAddToCart = (cake: Cake) => {
+    addToCart({
+      id: cake._id,
+      name: cake.name,
+      price: cake.price,
+      quantity: 1,
+    })
+  }
   return (
     <section id="favorites" className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -83,7 +91,7 @@ export default function Favorites() {
                     </span>
                   </div>
                   <Button
-                   // onClick={() => handleAddToCart(cake)}
+                    onClick={() => handleAddToCart(cake)}
                     disabled={!cake.isAvailable}
                     className={`
                       px-6 py-2 rounded-full transition-all duration-300
