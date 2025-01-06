@@ -229,7 +229,7 @@ export default function CheckoutForm() {
               <div className="flex-grow">
                 <h3 className="font-semibold">{item.name}</h3>
                 <p className="text-sm text-gray-500">
-                  ${item.price.toFixed(2)}
+                ₹{item.price.toFixed(2)}
                 </p>
                 <div className="flex items-center space-x-2 mt-2">
                   <Button
@@ -256,13 +256,13 @@ export default function CheckoutForm() {
                 </div>
               </div>
               <p className="font-semibold">
-                ${(item.price * item.quantity).toFixed(2)}
+              ₹{(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           ))}
           <div className="flex justify-between items-center pt-4 border-t mt-4">
             <span className="font-bold">Total</span>
-            <span className="font-bold">${getCartTotal().toFixed(2)}</span>
+            <span className="font-bold">₹{getCartTotal().toFixed(2)}</span>
           </div>
         </CardContent>
       </Card>
