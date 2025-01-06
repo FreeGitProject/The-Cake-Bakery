@@ -1,4 +1,5 @@
 "use client";
+import { Toaster } from '@/components/ui/toaster';
 import AdminNavbar from '../../components/AdminNavbar';
 
 export default  function AdminLayout({
@@ -10,6 +11,7 @@ export default  function AdminLayout({
     <div className="min-h-screen bg-gray-100">
       <AdminNavbar />
       <main className="p-4">{children}</main>
+      <Toaster />
     </div>
   );
 }
