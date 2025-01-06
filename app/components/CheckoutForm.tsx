@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
-
+import { Minus, Plus } from 'lucide-react'
 declare global {
   interface Window {
     Razorpay: any;
@@ -19,7 +19,8 @@ declare global {
 }
 
 export default function CheckoutForm() {
-  const { cart, getCartTotal, clearCart } = useCart()
+  const { cart, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart()
+ 
   const { data: session } = useSession()
   const { toast } = useToast()
   const router = useRouter()
@@ -37,7 +38,13 @@ export default function CheckoutForm() {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
-
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity === 0) {
+      removeFromCart(id)
+    } else {
+      updateQuantity(id, newQuantity)
+    }
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
@@ -157,114 +164,138 @@ export default function CheckoutForm() {
   }
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Order Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {cart.map((item:any) => (
-            <div key={item.id} className="flex justify-between py-2">
-              <span>{item.name} x {item.quantity}</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle>Order Summary</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {cart.map((item) => (
+          <div key={item.id} className="flex items-center space-x-4 py-2">
+            <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+            <div className="flex-grow">
+              <h3 className="font-semibold">{item.name}</h3>
+              <p className="text-sm text-gray-500">
+                ${item.price.toFixed(2)}
+              </p>
+              <div className="flex items-center space-x-2 mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span>{item.quantity}</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          ))}
-          <div className="flex justify-between py-2 font-bold">
-            <span>Total</span>
-            <span>${getCartTotal().toFixed(2)}</span>
+            <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
           </div>
-        </CardContent>
-      </Card>
+        ))}
+        <div className="flex justify-between items-center pt-4 border-t mt-4">
+          <span className="font-bold">Total</span>
+          <span className="font-bold">${getCartTotal().toFixed(2)}</span>
+        </div>
+      </CardContent>
+    </Card>
+    <Card>
+      <CardHeader>
+        <CardTitle>Shipping Information</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="name">Full Name</Label>
+          <Input
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="address">Address</Label>
+          <Input
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            name="city"
+            value={formData.city}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="zipCode">Zip Code</Label>
+          <Input
+            id="zipCode"
+            name="zipCode"
+            value={formData.zipCode}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="country">Country</Label>
+          <Input
+            id="country"
+            name="country"
+            value={formData.country}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+      </CardContent>
+    </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Shipping Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
+    <Card>
+      <CardHeader>
+        <CardTitle>Payment Method</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <RadioGroup defaultValue="Cash on Delivery" onValueChange={setPaymentMethod}>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Cash on Delivery" id="cod" />
+            <Label htmlFor="cod">Cash on Delivery</Label>
           </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="Razorpay" id="razorpay" />
+            <Label htmlFor="razorpay">Pay Online (Razorpay)</Label>
           </div>
-          <div>
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="zipCode">Zip Code</Label>
-            <Input
-              id="zipCode"
-              name="zipCode"
-              value={formData.zipCode}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="country">Country</Label>
-            <Input
-              id="country"
-              name="country"
-              value={formData.country}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup defaultValue="Cash on Delivery" onValueChange={setPaymentMethod}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Cash on Delivery" id="cod" />
-              <Label htmlFor="cod">Cash on Delivery</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Razorpay" id="razorpay" />
-              <Label htmlFor="razorpay">Pay Online (Razorpay)</Label>
-            </div>
-          </RadioGroup>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full">Place Order</Button>
-        </CardFooter>
-      </Card>
-    </form>
+        </RadioGroup>
+      </CardContent>
+      <CardFooter>
+        <Button type="submit" className="w-full">Place Order</Button>
+      </CardFooter>
+    </Card>
+  </form>
   )
 }
 

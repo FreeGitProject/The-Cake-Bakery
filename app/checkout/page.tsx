@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async  function CheckoutPage() {
     const session = await getServerSession();
     if (!session ) {
-      redirect('/'); 
+      redirect('/login'); 
     }
   return (
     <div className="container mx-auto px-4 py-8">

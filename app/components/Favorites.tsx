@@ -34,6 +34,7 @@ export default function Favorites() {
       name: cake.name,
       price: cake.price,
       quantity: 1,
+      image: cake.image,
     })
   }
   return (

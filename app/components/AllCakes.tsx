@@ -109,6 +109,7 @@ export default function AllCakes() {
       name: cake.name,
       price: cake.price,
       quantity: 1,
+      image: cake.image[0],
     })
   }
   return (
