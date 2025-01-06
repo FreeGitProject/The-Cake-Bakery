@@ -58,7 +58,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-6">
             {/* Navigation Links */}
             <div className="flex space-x-6">
               {navItems.map((item) => (
@@ -142,7 +142,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
+            className="lg:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
           >
             <div className="w-6 h-6 relative transform transition-all duration-300">
               <span
@@ -166,16 +166,17 @@ export default function Header() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden transform transition-all duration-300 ${
+          className={`lg:hidden transform transition-all duration-300 ${
             isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           } overflow-hidden`}
         >
           <div className="py-4 space-y-2">
           {navItems.map((item) => (
                 <Link
+                onClick={()=>setIsOpen(false)}
                   key={item.name}
                   href={item.path}
-                  className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300 relative group"
+                  className="block py-2 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
                 >
                   {item.name}
                   <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#FF9494] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
