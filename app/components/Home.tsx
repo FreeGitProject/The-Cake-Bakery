@@ -172,7 +172,7 @@ const CakeShopHero = ({
             <button
               className="px-8 py-3 bg-white text-gray-900 rounded-full text-lg font-medium
                      transform hover:-translate-y-0.5 hover:shadow-lg
-                     transition-all duration-200"
+                     transition-all duration-200 mt-2"
             >
               {homeDataList[currentSlide].buttonText}
             </button>

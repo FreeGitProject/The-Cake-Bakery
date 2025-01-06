@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import Loader from '@/app/components/Loader';
-
+//import Loader from '@/app/components/Loader';
+import { useToast } from "@/hooks/use-toast";
 interface HomeData {
   _id?: string; // Use _id as the unique identifier
   heroTitle: string;
@@ -25,26 +25,21 @@ export default function AdminHome() {
     buttonText: '',
     buttonLink: '',
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast(); // Initialize toast hook
 
   useEffect(() => {
     async function fetchHomeList() {
+      setIsLoading(true);
       try {
         const res = await fetch('/api/home');
         if (!res.ok) throw new Error('Failed to fetch home data');
 
         const data = await res.json();
-        // Ensure data is an array
-        if (Array.isArray(data)) {
-          setHomeList(data);
-        } else {
-          console.error('API response is not an array:', data);
-          setHomeList([]);
-        }
-        setIsLoading(false);
+        setHomeList(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching home data:', error);
-        setHomeList([]);
+      } finally {
         setIsLoading(false);
       }
     }
@@ -59,51 +54,89 @@ export default function AdminHome() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+  
     try {
+      // Determine API endpoint based on whether _id exists
       const res = await fetch('/api/home', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentData),
+        body: JSON.stringify(currentData), // Send data including _id if present
       });
-      if (!res.ok) throw new Error('Failed to save home data');
-
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to save/update home data');
+      }
+  
       const updatedData = await res.json();
+  
+      // Update the UI based on response
       setHomeList((prevList) =>
-        prevList.some((item) => item._id === updatedData._id)
-          ? prevList.map((item) => (item._id === updatedData._id ? updatedData : item))
-          : [...prevList, updatedData]
+        currentData._id
+          ? prevList.map((item) => (item._id === updatedData._id ? updatedData : item)) // Update the existing entry
+          : [...prevList, updatedData] // Add new entry
       );
+  
+      // Reset the form
       setCurrentData({
         heroTitle: '',
         heroSubtitle: '',
         heroImage: '',
         buttonText: '',
         buttonLink: '',
+      }); 
+      toast({
+        title: currentData._id ? 'Home Section Updated' : 'Home Section Created',
+        description: `The home section has been successfully ${currentData._id ? 'updated' : 'created'}.`,
+       // variant: 'success',
       });
-      setIsLoading(false);
     } catch (error) {
-      console.error('Error saving home data:', error);
+      console.error('Error saving/updating home data:', error);
+      toast({
+        title: 'Operation Failed',
+        description: 'An error occurred while saving/updating home data.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsLoading(false);
     }
   };
-
+  
   const handleDelete = async (_id: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const res = await fetch(`/api/home?_id=${_id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete home data');
 
       setHomeList((prevList) => prevList.filter((item) => item._id !== _id));
-      setIsLoading(false);
+      toast({
+        title: 'Home Section Deleted',
+        description: 'The home section has been successfully deleted.',
+       // variant: 'success',
+      });
     } catch (error) {
       console.error('Error deleting home data:', error);
+      toast({
+        title: 'Deletion Failed',
+        description: 'An error occurred while deleting home data.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
-  if (isLoading) {
-    return <div><Loader /></div>;
-  }
+  const handleEdit = (home: HomeData) => {
+    setCurrentData(home);
+  };
+
+  // if (isLoading) {
+  //   return (
+  //     <div>
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -161,7 +194,7 @@ export default function AdminHome() {
           />
         </div>
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : 'Save Home Section'}
+          {currentData._id ? (isLoading ? 'Updating...' : 'Update Home Section') : (isLoading ? 'Saving...' : 'Save Home Section')}
         </Button>
       </form>
 
@@ -174,9 +207,14 @@ export default function AdminHome() {
               <p>{home.heroImage}</p>
               <p>{home.buttonText}</p>
               <p>{home.buttonLink}</p>
-              <Button variant="secondary" onClick={() => handleDelete(home._id!)}>
-                Delete
-              </Button>
+              <div className="flex gap-4 mt-4">
+                <Button variant="secondary" onClick={() => handleEdit(home)}>
+                  Edit
+                </Button>
+                <Button variant="secondary" onClick={() => handleDelete(home._id!)}>
+                  Delete
+                </Button>
+              </div>
             </div>
           ))
         ) : (
