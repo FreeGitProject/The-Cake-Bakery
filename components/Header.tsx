@@ -1,40 +1,40 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import {  signOut } from 'next-auth/react'
-import { Button } from "@/components/ui/button"
-import { useSessionContext } from '@/context/SessionContext'
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { useSessionContext } from "@/context/SessionContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useRouter } from 'next/navigation'
-import { ShoppingCart, User } from 'lucide-react'
-import { useCart } from '@/context/CartContext'
-import CartOffCanvas from '../app/components/CartOffCanvas'
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { ShoppingCart, User } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import CartOffCanvas from "../app/components/CartOffCanvas";
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const navItems = [
-    { name: 'Home', path: '/' },
+    { name: "Home", path: "/" },
     // { name: 'Favorites', path: '/favorites' },
-    { name: 'Cakes', path: '/cakes' },
-    { name: 'News', path: '/news' },
+    { name: "Cakes", path: "/cakes" },
+    { name: "News", path: "/news" },
   ];
   const { session } = useSessionContext();
   //console.log("header session",session?.user)
-  const router = useRouter()
-  const { cart } = useCart()
+  const router = useRouter();
+  const { cart } = useCart();
   const handleSignOut = async () => {
-    await signOut({ redirect: false })
-    router.push('/login')
-  }
+    await signOut({ redirect: false });
+    router.push("/login");
+  };
   //if (loading) return <p>Loading...</p>;
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -183,7 +183,10 @@ export default function Header() {
             <Button
               variant="ghost"
               className="w-full justify-start px-4 hover:bg-[#FFF5E4]"
-              onClick={() => setIsCartOpen(true)}
+              onClick={() => {
+                setIsCartOpen(true);
+                setIsOpen(false);
+              }}
             >
               <ShoppingCart className="h-6 w-6 mr-2" />
               Cart ({cart.reduce((total, item) => total + item.quantity, 0)})
@@ -214,12 +217,14 @@ export default function Header() {
             ) : (
               <div className="space-y-2 px-4">
                 <Link
+                  onClick={() => setIsOpen(false)}
                   href="/login"
                   className="block py-2 text-center text-[#4A4A4A] hover:text-[#FF9494] transition duration-300"
                 >
                   Login
                 </Link>
                 <Link
+                  onClick={() => setIsOpen(false)}
                   href="/register"
                   className="block py-2 text-center bg-[#FF9494] text-white rounded-md hover:bg-[#FFB4B4] transition duration-300"
                 >
@@ -234,4 +239,3 @@ export default function Header() {
     </header>
   );
 }
-
