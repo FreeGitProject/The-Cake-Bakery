@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import Link from 'next/link'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -58,7 +59,15 @@ export default function LoginForm() {
           required
         />
       </div>
-      <Button type="submit">Login</Button>
+      <div className="flex justify-between items-center">
+    <Button type="submit">Login</Button>
+    <Link
+      href="/register"
+      className="text-sm text-blue-600 hover:text-blue-800 transition duration-300"
+    >
+      Don&apos;t have an account? Register
+    </Link>
+  </div>
     </form>
   )
 }

@@ -1,17 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
-import { useCart } from '@/context/CartContext'
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useToast } from "@/hooks/use-toast"
-
+import { useEffect, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useCart } from "@/context/CartContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/hooks/use-toast";
+import { Minus, Plus } from "lucide-react";
 declare global {
   interface Window {
     Razorpay: any;
@@ -19,25 +25,74 @@ declare global {
 }
 
 export default function CheckoutForm() {
-  const { cart, getCartTotal, clearCart } = useCart()
-  const { data: session } = useSession()
-  const { toast } = useToast()
-  const router = useRouter()
+  const { cart, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
+
+  const { data: session } = useSession();
+  const { toast } = useToast();
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    address: '',
-    city: '',
-    zipCode: '',
-    country: '',
-  })
-  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery')
+    name: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
+  });
+  const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+
+  // Fetch user details
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!session?.user) return;
+
+      try {
+        const response = await fetch(`/api/user/${session.user.id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("data", data);
+          const user = data.user;
+          // Bind data to formData, ensure proper mapping
+          setFormData({
+            name: user.username || "",
+            email: user.email || "",
+            address: user.address.street || "",
+            city: user.address.city || "",
+            state: user.address.state || "",
+            zipCode: user.address.zipCode || "",
+            country: user.address.country || "",
+          });
+        } else {
+          throw new Error("Failed to fetch user details");
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user details. Please try again.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchUserDetails();
+  }, [session, toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity === 0) {
+      removeFromCart(id);
+    } else {
+      updateQuantity(id, newQuantity);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
@@ -50,18 +105,19 @@ export default function CheckoutForm() {
     }
 
     const orderData = {
-      orderItems: cart.map(item => ({
+      orderItems: cart.map((item) => ({
         productId: item.id,
         name: item.name,
         quantity: item.quantity,
         price: item.price,
+        image: item.image,
       })),
       totalAmount: getCartTotal(),
       paymentMethod,
       shippingAddress: formData,
     };
-
-    if (paymentMethod === 'Razorpay') {
+    //console.log("orderData",orderData)
+    if (paymentMethod === "Razorpay") {
       initializeRazorpayPayment(orderData);
     } else {
       const result = await placeOrder(orderData);
@@ -71,20 +127,20 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
-        router.push('/my-orders');
+        router.push("/my-orders");
       }
     }
-  }
+  };
 
   const initializeRazorpayPayment = async (orderData: any) => {
     try {
-      const response = await fetch('/api/create-razorpay-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/create-razorpay-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: orderData.totalAmount }),
       });
       const data = await response.json();
-    
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -102,9 +158,10 @@ export default function CheckoutForm() {
             clearCart();
             toast({
               title: "Order placed successfully!",
-              description: "Thank you for your purchase. You will receive a confirmation email shortly.",
+              description:
+                "Thank you for your purchase. You will receive a confirmation email shortly.",
             });
-            router.push('/my-orders');
+            router.push("/my-orders");
           }
         },
         prefill: {
@@ -119,7 +176,7 @@ export default function CheckoutForm() {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error('Error initializing Razorpay payment:', error);
+      console.error("Error initializing Razorpay payment:", error);
       toast({
         title: "Error",
         description: "Failed to initialize payment. Please try again.",
@@ -130,19 +187,19 @@ export default function CheckoutForm() {
 
   const placeOrder = async (orderData: any) => {
     try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderData),
       });
 
       if (response.ok) {
         return { success: true };
       } else {
-        throw new Error('Failed to place order');
+        throw new Error("Failed to place order");
       }
     } catch (error) {
-      console.error('Error placing order:', error);
+      console.error("Error placing order:", error);
       toast({
         title: "Error",
         description: "Failed to place order. Please try again.",
@@ -153,28 +210,62 @@ export default function CheckoutForm() {
   };
 
   if (cart.length === 0) {
-    return <p>Your cart is empty. Please add some items before checking out.</p>
+     redirect('/login'); 
   }
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>Order Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          {cart.map((item:any) => (
-            <div key={item.id} className="flex justify-between py-2">
-              <span>{item.name} x {item.quantity}</span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
+          {cart.map((item) => (
+            <div key={item.id} className="flex items-center space-x-4 py-2">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-12 h-12 object-cover rounded"
+              />
+              <div className="flex-grow">
+                <h3 className="font-semibold">{item.name}</h3>
+                <p className="text-sm text-gray-500">
+                ₹{item.price.toFixed(2)}
+                </p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantity - 1)
+                    }
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <span>{item.quantity}</span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() =>
+                      handleQuantityChange(item.id, item.quantity + 1)
+                    }
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <p className="font-semibold">
+              ₹{(item.price * item.quantity).toFixed(2)}
+              </p>
             </div>
           ))}
-          <div className="flex justify-between py-2 font-bold">
-            <span>Total</span>
-            <span>${getCartTotal().toFixed(2)}</span>
+          <div className="flex justify-between items-center pt-4 border-t mt-4">
+            <span className="font-bold">Total</span>
+            <span className="font-bold">₹{getCartTotal().toFixed(2)}</span>
           </div>
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Shipping Information</CardTitle>
@@ -222,6 +313,16 @@ export default function CheckoutForm() {
             />
           </div>
           <div>
+            <Label htmlFor="city">State</Label>
+            <Input
+              id="state"
+              name="state"
+              value={formData.state}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div>
             <Label htmlFor="zipCode">Zip Code</Label>
             <Input
               id="zipCode"
@@ -249,7 +350,10 @@ export default function CheckoutForm() {
           <CardTitle>Payment Method</CardTitle>
         </CardHeader>
         <CardContent>
-          <RadioGroup defaultValue="Cash on Delivery" onValueChange={setPaymentMethod}>
+          <RadioGroup
+            defaultValue="Cash on Delivery"
+            onValueChange={setPaymentMethod}
+          >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="Cash on Delivery" id="cod" />
               <Label htmlFor="cod">Cash on Delivery</Label>
@@ -261,10 +365,11 @@ export default function CheckoutForm() {
           </RadioGroup>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full">Place Order</Button>
+          <Button type="submit" className="w-full">
+            Place Order
+          </Button>
         </CardFooter>
       </Card>
     </form>
-  )
+  );
 }
-
