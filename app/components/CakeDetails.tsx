@@ -129,7 +129,12 @@ export default function CakeDetails({ id }: { id: string }) {
       image: cake.image[0],
     });
   };
-
+  const getTypeStyles = (type: string): string | null => {
+    if (type.toLowerCase() === 'eggless') {
+      return ' text-green-800';
+    }
+    return 'text-[#944a28]';
+  };
   if (loading) {
     return (
       <div>
@@ -249,19 +254,17 @@ export default function CakeDetails({ id }: { id: string }) {
       <div className="flex flex-col gap-4 p-4 lg:w-80">
         <div>
           <h1 className="text-2xl font-bold">{cake.name}</h1>
-          <div className="flex gap-2 mt-2">
-            <span className="px-2 py-1 text-sm bg-green-100 text-green-800 rounded-full">
-              <GrSquare className="mr-1" />
-              <span className="text-sm font-medium">
+          <div className={`flex items-center mb-4 ${getTypeStyles(cake.type)}`}>
+              <GrSquare className="mr-1 " />
+              {/* <span className="text-sm font-medium">
                 {cake.type.toUpperCase()}
-              </span>
-            </span>
-            <span className="px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
-              {cake.category}
-            </span>
+              </span> */}
+              <span className={`text-sm font-medium`}>
+              {cake.type.toUpperCase()}
+          </span>
           </div>
         </div>
-
+        <p className="text-sm text-muted-foreground mb-2">Category:  {cake.category}</p>
         <p className="text-gray-600">{cake.description}</p>
 
         <div className="space-y-4">

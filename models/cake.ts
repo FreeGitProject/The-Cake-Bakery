@@ -9,7 +9,7 @@ const priceSchema = new mongoose.Schema({
 const cakeSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  type: { type: String, enum: ['egg', 'eggless'], required: true }, // Egg or Eggless
+  type: { type: String, enum: ['CONTAINS EGG', 'eggless'], required: true }, // Egg or Eggless
   prices: { type: [priceSchema], required: true }, // Array of prices for different weights
   image: { type: [String], required: true }, // Array of image URLs
   category: { type: String, required: true },
