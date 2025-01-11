@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useState, MouseEvent } from 'react';
 
 interface ImageMagnifierProps {
