@@ -227,7 +227,7 @@ export default function CakeDetails({ id }: { id: string }) {
           />
         )}
       </div>
-      {/* because of this we can not use magnifier and  video paly  */}
+      {/* not use for now because of this we can not use magnifier and  video paly  */}
       {/* <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 hover:opacity-100 transition-opacity">
         <button 
           onClick={() => setSelect(prev => Math.max(0, prev - 1))}
