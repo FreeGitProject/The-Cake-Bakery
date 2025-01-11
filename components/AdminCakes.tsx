@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,7 +16,12 @@ interface Cake {
   _id: string;
   name: string;
   description: string;
-  price: number;
+  type: string; // egg or eggless
+  prices: {
+    weight: number;
+    costPrice: number;
+    sellPrice: number;
+  }[];
   image: string[];
   category: string;
 }
@@ -72,8 +78,21 @@ export default function AdminCakes() {
               <p className="text-sm text-gray-600 mb-2">
                 {cake.description.substring(0, 100)}...
               </p>
-              <p className="font-bold">${cake.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">Category: {cake.category}</p>
+              <p className="font-bold">
+                Type: <span className="capitalize">{cake.type}</span>
+              </p>
+              <p className="font-bold">Prices:</p>
+              <ul className="text-sm text-gray-600">
+                {cake.prices.map((price, index) => (
+                  <li key={index}>
+                    {price.weight}g - Cost: ${price.costPrice.toFixed(2)}, Sell: $
+                    {price.sellPrice.toFixed(2)}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm text-gray-500 mt-2">
+                Category: {cake.category}
+              </p>
             </CardContent>
             <CardFooter className="space-x-2">
               <Button onClick={() => router.push(`/admin/edit-cake/${cake._id}`)}>

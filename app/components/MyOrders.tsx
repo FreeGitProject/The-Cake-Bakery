@@ -9,6 +9,7 @@ import Image from "next/image";
 interface OrderItem {
   name: string;
   quantity: number;
+  weight: number;
   price: number;
   image: string;
 }
@@ -87,6 +88,9 @@ export default function MyOrders() {
                     />
                     <div className="flex-grow">
                       <p className="font-semibold">{item.name}</p>
+                      <p className="text-sm text-gray-500">
+                        Weight: {item.weight}Kg
+                      </p>
                       <p className="text-sm text-gray-500">
                         Quantity: {item.quantity} x ₹{item.price.toFixed(2)}
                       </p>

@@ -18,31 +18,36 @@ interface Category {
   name: string;
 }
 
+interface Price {
+  weight: number;
+  costPrice: number;
+  sellPrice: number;
+}
+
 interface Cake {
-  _id: string;
   name: string;
   description: string;
-  price: number;
+  type: string; // egg or eggless
+  prices: Price[];
   image: string[];
   category: string;
 }
 
 export default function EditCake({ id }: { id: string }) {
-  const [cake, setCake] = useState<Omit<Cake, "_id"> | null>(null);
+  const [cake, setCake] = useState<Cake | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
-  const cakeId = id;
 
   useEffect(() => {
-    if (cakeId) {
-      fetchCakeDetails(cakeId);
+    if (id) {
+      fetchCakeDetails(id);
       fetchCategories();
     }
-  }, [cakeId]);
+  }, [id]);
 
-  const fetchCakeDetails = async (id: string) => {
+  const fetchCakeDetails = async (cakeId: string) => {
     try {
-      const response = await fetch(`/api/cakes/${id}`);
+      const response = await fetch(`/api/cakes/${cakeId}`);
       const data = await response.json();
       setCake(data);
     } catch (error) {
@@ -63,80 +68,98 @@ export default function EditCake({ id }: { id: string }) {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    if (cake) {
-      const { name, value } = e.target;
-      setCake((prev) => {
-        if (!prev) return prev; // Return early if `prev` is null
-        return {
-          ...prev,
-          [name]: name === "price" ? parseFloat(value) : value,
-        };
-      });
-    }
+    if (!cake) return;
+    const { name, value } = e.target;
+    setCake((prev) => ({
+      ...prev!,
+      [name]: value,
+    }));
   };
-  
-  const handleCategoryChange = (value: string) => {
-    if (cake) {
-      setCake((prev) => {
-        if (!prev) return prev; // Return early if `prev` is null
-        return {
-          ...prev,
-          category: value,
-        };
-      });
-    }
+
+  const handlePriceChange = (
+    index: number,
+    field: keyof Price,
+    value: string
+  ) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      prices: prev!.prices.map((price, i) =>
+        i === index ? { ...price, [field]: parseFloat(value) } : price
+      ),
+    }));
   };
-  
+
+  const handleAddPrice = () => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      prices: [...prev!.prices, { weight: 0, costPrice: 0, sellPrice: 0 }],
+    }));
+  };
+
+  const handleRemovePrice = (index: number) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      prices: prev!.prices.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleImageChange = (index: number, value: string) => {
-    if (cake) {
-      setCake((prev) => {
-        if (!prev) return prev; // Return early if `prev` is null
-        return {
-          ...prev,
-          image: prev.image.map((img, i) => (i === index ? value : img)),
-        };
-      });
-    }
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      image: prev!.image.map((img, i) => (i === index ? value : img)),
+    }));
   };
-  
 
   const handleAddImage = () => {
-    if (cake) {
-      setCake((prev) => {
-        if (!prev) return prev; // Return early if `prev` is null
-        return {
-          ...prev,
-          image: [...prev.image, ""],
-        };
-      });
-    }
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      image: [...prev!.image, ""],
+    }));
   };
-  
 
   const handleRemoveImage = (index: number) => {
-    if (cake) {
-      const updatedImages = [...cake.image];
-      updatedImages.splice(index, 1);
-      setCake({ ...cake, image: updatedImages });
-    }
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      image: prev!.image.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleCategoryChange = (value: string) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      category: value,
+    }));
+  };
+
+  const handleTypeChange = (value: string) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      type: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (cake && cakeId) {
-      try {
-        const response = await fetch(`/api/cakes/${cakeId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cake),
-        });
-        if (response.ok) {
-          router.push("/admin/cakes");
-        }
-      } catch (error) {
-        console.error("Error updating cake:", error);
+    if (!cake) return;
+    try {
+      const response = await fetch(`/api/cakes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cake),
+      });
+      if (response.ok) {
+        router.push("/admin/cakes");
       }
+    } catch (error) {
+      console.error("Error updating cake:", error);
     }
   };
 
@@ -160,32 +183,69 @@ export default function EditCake({ id }: { id: string }) {
           placeholder="Cake Description"
           required
         />
-        <Input
-          name="price"
-          type="number"
-          value={cake.price}
-          onChange={handleInputChange}
-          placeholder="Price"
-          step="0.01"
-          required
-        />
-        {cake.image.map((image, index) => (
-          <div key={index} className="flex items-center space-x-2">
+        <Select onValueChange={handleTypeChange} value={cake.type}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="egg">Egg</SelectItem>
+            <SelectItem value="eggless">Eggless</SelectItem>
+          </SelectContent>
+        </Select>
+        {cake.prices.map((price, index) => (
+          <div key={index} className="flex space-x-2 items-center">
             <Input
-              value={image}
+              type="number"
+              value={price.weight}
+              onChange={(e) => handlePriceChange(index, "weight", e.target.value)}
+              placeholder="Weight (g)"
+              required
+            />
+            <Input
+              type="number"
+              value={price.costPrice}
+              onChange={(e) =>
+                handlePriceChange(index, "costPrice", e.target.value)
+              }
+              placeholder="Cost Price"
+              required
+            />
+            <Input
+              type="number"
+              value={price.sellPrice}
+              onChange={(e) =>
+                handlePriceChange(index, "sellPrice", e.target.value)
+              }
+              placeholder="Sell Price"
+              required
+            />
+            <Button
+              variant="destructive"
+              type="button"
+              onClick={() => handleRemovePrice(index)}
+            >
+              Remove
+            </Button>
+          </div>
+        ))}
+        <Button type="button" onClick={handleAddPrice}>
+          Add Price
+        </Button>
+        {cake.image.map((img, index) => (
+          <div key={index} className="flex space-x-2 items-center">
+            <Input
+              value={img}
               onChange={(e) => handleImageChange(index, e.target.value)}
               placeholder={`Image URL ${index + 1}`}
               required
             />
-            {index > 0 && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => handleRemoveImage(index)}
-              >
-                Remove
-              </Button>
-            )}
+            <Button
+              variant="destructive"
+              type="button"
+              onClick={() => handleRemoveImage(index)}
+            >
+              Remove
+            </Button>
           </div>
         ))}
         <Button type="button" onClick={handleAddImage}>

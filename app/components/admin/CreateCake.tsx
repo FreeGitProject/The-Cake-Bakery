@@ -22,7 +22,8 @@ export default function CreateCake() {
   const [newCake, setNewCake] = useState({
     name: "",
     description: "",
-    price: 0,
+    type: "egg",
+    prices: [{ weight: 0, costPrice: 0, sellPrice: 0 }],
     image: [""],
     category: "",
   });
@@ -49,12 +50,39 @@ export default function CreateCake() {
     const { name, value } = e.target;
     setNewCake((prev) => ({
       ...prev,
-      [name]: name === "price" ? parseFloat(value) : value,
+      [name]: value,
     }));
   };
 
-  const handleCategoryChange = (value: string) => {
-    setNewCake((prev) => ({ ...prev, category: value }));
+  const handleTypeChange = (value: string) => {
+    setNewCake((prev) => ({ ...prev, type: value }));
+  };
+
+  const handlePriceChange = (
+    index: number,
+    field: "weight" | "costPrice" | "sellPrice",
+    value: number
+  ) => {
+    setNewCake((prev) => ({
+      ...prev,
+      prices: prev.prices.map((price, i) =>
+        i === index ? { ...price, [field]: value } : price
+      ),
+    }));
+  };
+
+  const handleAddPrice = () => {
+    setNewCake((prev) => ({
+      ...prev,
+      prices: [...prev.prices, { weight: 0, costPrice: 0, sellPrice: 0 }],
+    }));
+  };
+
+  const handleRemovePrice = (index: number) => {
+    setNewCake((prev) => ({
+      ...prev,
+      prices: prev.prices.filter((_, i) => i !== index),
+    }));
   };
 
   const handleImageChange = (index: number, value: string) => {
@@ -75,6 +103,10 @@ export default function CreateCake() {
     const updatedImages = [...newCake.image];
     updatedImages.splice(index, 1);
     setNewCake({ ...newCake, image: updatedImages });
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setNewCake((prev) => ({ ...prev, category: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,15 +143,59 @@ export default function CreateCake() {
           placeholder="Cake Description"
           required
         />
-        <Input
-          name="price"
-          type="number"
-          value={newCake.price}
-          onChange={handleInputChange}
-          placeholder="Price"
-          step="0.01"
-          required
-        />
+        <Select onValueChange={handleTypeChange} value={newCake.type}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="egg">Egg</SelectItem>
+            <SelectItem value="eggless">Eggless</SelectItem>
+          </SelectContent>
+        </Select>
+        <div>
+          <h3 className="font-bold">Prices</h3>
+          {newCake.prices.map((price, index) => (
+            <div key={index} className="flex space-x-2 items-center">
+              <Input
+                type="number"
+                value={price.weight}
+                onChange={(e) =>
+                  handlePriceChange(index, "weight", parseFloat(e.target.value))
+                }
+                placeholder="Weight (e.g., 500)"
+                required
+              />
+              <Input
+                type="number"
+                value={price.costPrice}
+                onChange={(e) =>
+                  handlePriceChange(index, "costPrice", parseFloat(e.target.value))
+                }
+                placeholder="Cost Price"
+                required
+              />
+              <Input
+                type="number"
+                value={price.sellPrice}
+                onChange={(e) =>
+                  handlePriceChange(index, "sellPrice", parseFloat(e.target.value))
+                }
+                placeholder="Sell Price"
+                required
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => handleRemovePrice(index)}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
+          <Button type="button" onClick={handleAddPrice}>
+            Add Price
+          </Button>
+        </div>
         {newCake.image.map((image, index) => (
           <div key={index} className="flex items-center space-x-2">
             <Input

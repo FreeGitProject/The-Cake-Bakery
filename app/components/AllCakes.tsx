@@ -22,14 +22,23 @@ import Image from "next/image";
 import { GrSquare } from "react-icons/gr";
 import Loader from "./Loader";
 import { useCart } from "@/context/CartContext";
+
+interface Price {
+  weight: number; // Weight in grams or kilograms
+  costPrice: number; // Cost price
+  sellPrice: number; // Selling price
+}
+
 interface Cake {
   _id: string;
   name: string;
   description: string;
-  price: number;
+  type: "egg" | "eggless";
+  prices: Price[];
   image: string[];
   category: string;
 }
+
 interface Category {
   _id: string;
   name: string;
@@ -45,6 +54,7 @@ export default function AllCakes() {
   const [loading, setLoading] = useState(true);
   const cakesPerPage = 9;
   const { addToCart } = useCart();
+
   useEffect(() => {
     fetchCakes();
     fetchCategories();
@@ -62,9 +72,9 @@ export default function AllCakes() {
       if (data && data.length > 0) setLoading(false);
     } catch (error) {
       console.error("Error fetching cakes:", error);
-      //setLoading(false);
     }
   };
+
   const fetchCategories = async () => {
     try {
       const response = await fetch("/api/categories");
@@ -74,6 +84,7 @@ export default function AllCakes() {
       console.error("Error fetching categories:", error);
     }
   };
+
   const filterCakes = () => {
     let filtered = cakes;
     if (searchTerm) {
@@ -84,7 +95,7 @@ export default function AllCakes() {
       );
     }
     if (categoryFilter) {
-      if (categoryFilter.toLowerCase() == "all") setCategoryFilter("");
+      if (categoryFilter.toLowerCase() === "all") setCategoryFilter("");
       filtered = filtered.filter(
         (cake) => cake.category.toLowerCase() === categoryFilter.toLowerCase()
       );
@@ -98,6 +109,7 @@ export default function AllCakes() {
   const currentCakes = filteredCakes.slice(indexOfFirstCake, indexOfLastCake);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   if (loading) {
     return (
       <div>
@@ -105,15 +117,18 @@ export default function AllCakes() {
       </div>
     );
   }
-  const handleAddToCart = (cake: Cake) => {
+
+  const handleAddToCart = (cake: Cake, price: Price) => {
     addToCart({
       id: cake._id,
       name: cake.name,
-      price: cake.price,
+      price: price.sellPrice,
+      weight: price.weight,
       quantity: 1,
       image: cake.image[0],
     });
   };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
@@ -123,7 +138,7 @@ export default function AllCakes() {
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
           Explore our delicious collection of handcrafted cakes, made with love
-          and the finest ingredients
+          and the finest ingredients.
         </p>
       </div>
 
@@ -174,10 +189,12 @@ export default function AllCakes() {
                 />
               </div>
               {/* Eggless Badge */}
-              <div className="absolute top-4 right-4 bg-green-100 text-green-600 px-3 py-1 rounded-full flex items-center gap-1">
-                <GrSquare className="w-3 h-3" />
-                <span className="text-xs font-medium">EGGLESS</span>
-              </div>
+              {cake.type === "eggless" && (
+                <div className="absolute top-4 right-4 bg-green-100 text-green-600 px-3 py-1 rounded-full flex items-center gap-1">
+                  <GrSquare className="w-3 h-3" />
+                  <span className="text-xs font-medium">EGGLESS</span>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="p-6">
               <CardTitle className="text-xl font-bold text-[#4A4A4A] mb-2">
@@ -186,12 +203,27 @@ export default function AllCakes() {
               <p className="text-gray-600 mb-4 line-clamp-2">
                 {cake.description}
               </p>
-              <p className="text-2xl font-bold text-[#FF9494]">
-                ₹{cake.price.toFixed(2)}
-              </p>
+              <div className="mt-4">
+                {cake.prices.map((price, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center mb-2"
+                  >
+                    <span className="text-sm text-gray-600">
+                      {price.weight}Kg - ₹{price.sellPrice.toFixed(2)}
+                    </span>
+                    <Button
+                      className="text-sm bg-[#FF9494] hover:bg-[#FFB4B4] transition-colors duration-300"
+                      onClick={() => handleAddToCart(cake, price)}
+                    >
+                      Add to Cart
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </CardContent>
-            <CardFooter className="p-6 pt-0 flex gap-4">
-              <Link href={`/cakes/${cake._id}`} className="flex-1">
+            <CardFooter className="p-6 pt-0">
+              <Link href={`/cakes/${cake._id}`} className="w-full">
                 <Button
                   variant="outline"
                   className="w-full border-2 border-[#FF9494] text-[#FF9494] hover:bg-[#FF9494] hover:text-white transition-colors duration-300"
@@ -199,12 +231,6 @@ export default function AllCakes() {
                   View Details
                 </Button>
               </Link>
-              <Button
-                className="flex-1 bg-[#FF9494] hover:bg-[#FFB4B4] transition-colors duration-300"
-                onClick={() => handleAddToCart(cake)}
-              >
-                Add to Cart
-              </Button>
             </CardFooter>
           </Card>
         ))}
