@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -54,7 +55,7 @@ export default function CheckoutForm() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("data", data);
+        //  console.log("data", data);
           const user = data.user;
           // Bind data to formData, ensure proper mapping
           setFormData({
@@ -110,6 +111,7 @@ export default function CheckoutForm() {
         name: item.name,
         quantity: item.quantity,
         price: item.price,
+        weight: item.weight,
         image: item.image,
       })),
       totalAmount: getCartTotal(),
@@ -127,7 +129,7 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
-        router.push("/my-orders");
+        //router.push("/my-orders");
       }
     }
   };
@@ -228,6 +230,9 @@ export default function CheckoutForm() {
               />
               <div className="flex-grow">
                 <h3 className="font-semibold">{item.name}</h3>
+                <p className="text-sm text-gray-500">
+                Weight : {item.weight.toFixed(2)}Kg
+                </p>
                 <p className="text-sm text-gray-500">
                 ₹{item.price.toFixed(2)}
                 </p>
