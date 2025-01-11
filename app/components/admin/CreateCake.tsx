@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast"
 
 interface Category {
   _id: string;
@@ -19,10 +20,11 @@ interface Category {
 }
 
 export default function CreateCake() {
+  const { toast } = useToast()
   const [newCake, setNewCake] = useState({
     name: "",
     description: "",
-    type: "egg",
+    type: "eggless",
     prices: [{ weight: 0, costPrice: 0, sellPrice: 0 }],
     image: [""],
     category: "",
@@ -118,6 +120,11 @@ export default function CreateCake() {
         body: JSON.stringify(newCake),
       });
       if (response.ok) {
+        toast({
+          variant:"default",
+          description: "Created successfully."
+          
+        })
         router.push("/admin/cakes");
       }
     } catch (error) {
@@ -148,7 +155,7 @@ export default function CreateCake() {
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="egg">Egg</SelectItem>
+            <SelectItem value="Contains Egg">Contains Egg</SelectItem>
             <SelectItem value="eggless">Eggless</SelectItem>
           </SelectContent>
         </Select>

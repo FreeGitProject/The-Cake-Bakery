@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast"
 import {
   Select,
   SelectContent,
@@ -34,6 +35,7 @@ interface Cake {
 }
 
 export default function EditCake({ id }: { id: string }) {
+  const { toast } = useToast()
   const [cake, setCake] = useState<Cake | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
@@ -156,6 +158,11 @@ export default function EditCake({ id }: { id: string }) {
         body: JSON.stringify(cake),
       });
       if (response.ok) {
+        toast({
+          variant:"default",
+          description: "Updated successfully."
+          
+        })
         router.push("/admin/cakes");
       }
     } catch (error) {
@@ -188,8 +195,8 @@ export default function EditCake({ id }: { id: string }) {
             <SelectValue placeholder="Select Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="egg">Egg</SelectItem>
-            <SelectItem value="eggless">Eggless</SelectItem>
+          <SelectItem value="contains egg">Contains Egg</SelectItem>
+          <SelectItem value="eggless">Eggless</SelectItem>
           </SelectContent>
         </Select>
         {cake.prices.map((price, index) => (
