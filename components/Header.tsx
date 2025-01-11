@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { ShoppingCart, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
@@ -29,12 +29,53 @@ export default function Header() {
   ];
   const { session } = useSessionContext();
   //console.log("header session",session?.user)
-  const router = useRouter();
+  //const router = useRouter();
   const { cart } = useCart();
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/login");
+    setTimeout(() => {
+      window.location.reload();
+      //  router.push("/login");
+    }, 100);
   };
+  const LOGO_URL =
+    "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";
+
+  // Subcomponents for better organization
+  const Logo = () => (
+    <Link href="/" className="flex items-center group">
+      <div className="relative">
+        <Image
+          src={LOGO_URL}
+          alt="Cake-Bakery Shop Logo"
+          width={50}
+          height={50}
+          className="rounded-full transform group-hover:rotate-12 transition-transform duration-300"
+          priority
+        />
+      </div>
+      <span className="ml-3 text-3xl font-bold text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
+        The Cake Shop
+      </span>
+    </Link>
+  );
+
+  const CartButton = () => (
+    <Button
+      variant="ghost"
+      className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
+      onClick={() => setIsCartOpen(true)}
+      aria-label="Open cart"
+    >
+      <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+      {cart.length > 0 && (
+        <span className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-bounce">
+          {cart.reduce((total, item) => total + item.quantity, 0)}
+        </span>
+      )}
+    </Button>
+  );
+
   //if (loading) return <p>Loading...</p>;
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -42,20 +83,7 @@ export default function Header() {
         {/* Main Navigation Bar */}
         <div className="flex items-center justify-between">
           {/* Logo and Brand Name */}
-          <Link href="/" className="flex items-center group">
-            <div className="relative">
-              <Image
-                src="https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png"
-                alt="Cake-Bakery Shop Logo"
-                width={50}
-                height={50}
-                className="rounded-full transform group-hover:rotate-12 transition-transform duration-300"
-              />
-            </div>
-            <span className="ml-3 text-3xl font-bold text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
-              The Cake Shop
-            </span>
-          </Link>
+          <Logo />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-3">
@@ -72,20 +100,6 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-
-            {/* Cart Button */}
-            <Button
-              variant="ghost"
-              className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-bounce">
-                  {cart.reduce((total, item) => total + item.quantity, 0)}
-                </span>
-              )}
-            </Button>
 
             {/* User Menu */}
             {session ? (
@@ -138,28 +152,31 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
-          >
-            <div className="w-6 h-6 relative transform transition-all duration-300">
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 ${
-                  isOpen ? "rotate-45 translate-y-2.5" : ""
-                }`}
-              />
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-2 ${
-                  isOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-4 ${
-                  isOpen ? "-rotate-45 -translate-y-2.5" : ""
-                }`}
-              />
-            </div>
-          </button>
+          <div className="lg:hidden flex items-center space-x-4">
+            <CartButton />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
+            >
+              <div className="w-6 h-6 relative transform transition-all duration-300">
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 ${
+                    isOpen ? "rotate-45 translate-y-2.5" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-2 ${
+                    isOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-4 ${
+                    isOpen ? "-rotate-45 -translate-y-2.5" : ""
+                  }`}
+                />
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -180,34 +197,27 @@ export default function Header() {
                 <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#FF9494] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
               </Link>
             ))}
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-4 hover:bg-[#FFF5E4]"
-              onClick={() => {
-                setIsCartOpen(true);
-                setIsOpen(false);
-              }}
-            >
-              <ShoppingCart className="h-6 w-6 mr-2" />
-              Cart ({cart.reduce((total, item) => total + item.quantity, 0)})
-            </Button>
-
             {session ? (
               <>
                 <Link
+                  onClick={() => setIsOpen(false)}
                   href="/profile"
                   className="block py-2 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
                 >
                   Profile
                 </Link>
                 <Link
+                  onClick={() => setIsOpen(false)}
                   href="/my-orders"
                   className="block py-2 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
                 >
                   My Orders
                 </Link>
                 <Button
-                  onClick={handleSignOut}
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleSignOut();
+                  }}
                   variant="ghost"
                   className="w-full text-left px-4 hover:bg-[#FFF5E4]"
                 >
