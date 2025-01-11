@@ -65,7 +65,7 @@ export default function CartOffCanvas({ isOpen, setIsOpen }: CartOffCanvasProps)
         </ScrollArea>
         <div className="mt-4">
           <p className="font-semibold text-lg">Total: ₹{getCartTotal().toFixed(2)}</p>
-          <Button className="w-full mt-4" onClick={handleCheckout} disabled={cart.length === 0}>
+          <Button className="w-full" onClick={handleCheckout} disabled={cart.length === 0}>
             Checkout
           </Button>
         </div>
