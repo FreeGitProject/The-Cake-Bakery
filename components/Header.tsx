@@ -59,6 +59,23 @@ export default function Header() {
       </span>
     </Link>
   );
+
+  const CartButton = () => (
+    <Button
+      variant="ghost"
+      className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
+      onClick={() => setIsCartOpen(true)}
+      aria-label="Open cart"
+    >
+      <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+      {cart.length > 0 && (
+        <span className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-bounce">
+          {cart.reduce((total, item) => total + item.quantity, 0)}
+        </span>
+      )}
+    </Button>
+  );
+
   //if (loading) return <p>Loading...</p>;
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -67,18 +84,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo and Brand Name */}
           <Logo />
-          <Button
-            variant="ghost"
-            className="lg:hidden relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
-            onClick={() => setIsCartOpen(true)}
-          >
-            <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
-            {cart.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-bounce">
-                {cart.reduce((total, item) => total + item.quantity, 0)}
-              </span>
-            )}
-          </Button>
+
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Navigation Links */}
@@ -94,20 +100,6 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-
-            {/* Cart Button */}
-            <Button
-              variant="ghost"
-              className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
-              onClick={() => setIsCartOpen(true)}
-            >
-              <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs animate-bounce">
-                  {cart.reduce((total, item) => total + item.quantity, 0)}
-                </span>
-              )}
-            </Button>
 
             {/* User Menu */}
             {session ? (
@@ -160,28 +152,31 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
-          >
-            <div className="w-6 h-6 relative transform transition-all duration-300">
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 ${
-                  isOpen ? "rotate-45 translate-y-2.5" : ""
-                }`}
-              />
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-2 ${
-                  isOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-4 ${
-                  isOpen ? "-rotate-45 -translate-y-2.5" : ""
-                }`}
-              />
-            </div>
-          </button>
+          <div className="lg:hidden flex items-center space-x-4">
+            <CartButton />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
+            >
+              <div className="w-6 h-6 relative transform transition-all duration-300">
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 ${
+                    isOpen ? "rotate-45 translate-y-2.5" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-2 ${
+                    isOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute h-0.5 w-full bg-[#FF9494] transform transition-all duration-300 translate-y-4 ${
+                    isOpen ? "-rotate-45 -translate-y-2.5" : ""
+                  }`}
+                />
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
