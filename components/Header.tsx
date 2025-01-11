@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-//import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ShoppingCart, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
@@ -29,15 +29,17 @@ export default function Header() {
   ];
   const { session } = useSessionContext();
   //console.log("header session",session?.user)
-  //const router = useRouter();
+  const router = useRouter();
   const { cart } = useCart();
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    setTimeout(() => {
-      window.location.reload();
-      //  router.push("/login");
-    }, 100);
+    // setTimeout(() => {
+    //   window.location.reload();
+    //   //  router.push("/login");
+    // }, 100);
+       router.push("/login");
   };
+  
   const LOGO_URL =
     "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";
 
@@ -88,6 +90,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Navigation Links */}
+            
             <div className="flex space-x-6">
               {navItems.map((item) => (
                 <Link
@@ -100,7 +103,7 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-
+            <CartButton />
             {/* User Menu */}
             {session ? (
               <DropdownMenu>

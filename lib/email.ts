@@ -42,7 +42,10 @@ export async function sendOrderConfirmationEmail(order: any, paymentMethod: stri
         <h2>Order Details:</h2>
         <ul>
           ${order.orderItems.map((item: any) => `
-            <li>${item.name} x ${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</li>
+             <li>
+                ${item.name} x ${item.quantity} - $${(item.price * item.quantity).toFixed(2)} 
+                ${item.weight ? `(${item.weight}Kg each)` : ''}
+              </li>
           `).join('')}
         </ul>
         <p><strong>Total: $${order.totalAmount.toFixed(2)}</strong></p>
