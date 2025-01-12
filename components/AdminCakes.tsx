@@ -85,7 +85,7 @@ export default function AdminCakes() {
               <ul className="text-sm text-gray-600">
                 {cake.prices.map((price, index) => (
                   <li key={index}>
-                    {price.weight}g - Cost: ${price.costPrice.toFixed(2)}, Sell: $
+                    {price.weight}Kg - Cost: ₹{price.costPrice.toFixed(2)}, Sell: ₹
                     {price.sellPrice.toFixed(2)}
                   </li>
                 ))}
