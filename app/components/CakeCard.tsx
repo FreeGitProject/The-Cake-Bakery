@@ -95,7 +95,7 @@ export default function CakeCard({ cake }: CakeCardProps) {
 
   return (
     <Card
-      className="w-80 transition-all duration-300 hover:shadow-xl relative overflow-hidden group"
+      className="transition-all duration-300 hover:shadow-xl relative overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
