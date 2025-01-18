@@ -8,6 +8,7 @@ import { FaPlayCircle } from "react-icons/fa";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
 //import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Price {
@@ -172,7 +173,7 @@ export default function CakeDetails({ id }: { id: string }) {
                 select === index
                   ? "border-2 border-primary"
                   : "border border-qgray-border"
-              } w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] p-[5px] cursor-pointer transition-all duration-200 hover:border-primary`}
+              } w-[80px] h-[80px] sm:w-[90px] sm:h-[100px] p-[5px] cursor-pointer transition-all duration-200 hover:border-primary`}
               onClick={() => setSelect(index)}
             >
               <Image
@@ -305,8 +306,9 @@ export default function CakeDetails({ id }: { id: string }) {
         </div>
         <Button
           onClick={() => handleAddToCart(cake)}
-          className="w-full mt-4 py-3 sm:py-4 text-sm sm:text-base"
+          className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
         >
+            <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
       </div>
