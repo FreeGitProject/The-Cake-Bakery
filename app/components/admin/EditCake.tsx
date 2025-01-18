@@ -205,7 +205,7 @@ export default function EditCake({ id }: { id: string }) {
               type="number"
               value={price.weight}
               onChange={(e) => handlePriceChange(index, "weight", e.target.value)}
-              placeholder="Weight (g)"
+              placeholder="Weight (Kg)"
               required
             />
             <Input
