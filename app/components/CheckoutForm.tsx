@@ -328,7 +328,7 @@ export default function CheckoutForm() {
             />
           </div>
           <div>
-            <Label htmlFor="zipCode">Zip Code</Label>
+            <Label htmlFor="zipCode">Pin Code</Label>
             <Input
               id="zipCode"
               name="zipCode"
