@@ -61,11 +61,11 @@ export default function CheckoutForm() {
           setFormData({
             name: user.username || "",
             email: user.email || "",
-            address: user.address.street || "",
-            city: user.address.city || "",
-            state: user.address.state || "",
-            zipCode: user.address.zipCode || "",
-            country: user.address.country || "",
+            address: user.address?.street || "",
+            city: user.address?.city || "",
+            state: user.address?.state || "",
+            zipCode: user.address?.zipCode || "",
+            country: user.address?.country || "",
           });
         } else {
           throw new Error("Failed to fetch user details");
@@ -129,7 +129,7 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
-        //router.push("/my-orders");
+        router.push("/my-orders");
       }
     }
   };

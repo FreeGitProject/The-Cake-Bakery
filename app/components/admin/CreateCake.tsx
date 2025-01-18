@@ -169,7 +169,7 @@ export default function CreateCake() {
                 onChange={(e) =>
                   handlePriceChange(index, "weight", parseFloat(e.target.value))
                 }
-                placeholder="Weight (e.g., 500)"
+                placeholder="Weight (e.Kg., 500)"
                 required
               />
               <Input
