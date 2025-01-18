@@ -131,10 +131,10 @@ export default function CakeDetails({ id }: { id: string }) {
     });
   };
   const getTypeStyles = (type: string): string | null => {
-    if (type.toLowerCase() === 'eggless') {
-      return ' text-green-800';
+    if (type.toLowerCase() === "eggless") {
+      return " text-green-800";
     }
-    return 'text-[#944a28]';
+    return "text-[#944a28]";
   };
   if (loading) {
     return (
@@ -256,16 +256,18 @@ export default function CakeDetails({ id }: { id: string }) {
         <div>
           <h1 className="text-2xl font-bold">{cake.name}</h1>
           <div className={`flex items-center mb-4 ${getTypeStyles(cake.type)}`}>
-              <GrSquare className="mr-1 " />
-              {/* <span className="text-sm font-medium">
+            <GrSquare className="mr-1 " />
+            {/* <span className="text-sm font-medium">
                 {cake.type.toUpperCase()}
               </span> */}
-              <span className={`text-sm font-medium`}>
+            <span className={`text-sm font-medium`}>
               {cake.type.toUpperCase()}
-          </span>
+            </span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground mb-2">Category:  {cake.category}</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Category: {cake.category}
+        </p>
         <p className="text-gray-600">{cake.description}</p>
 
         <div className="space-y-4">
@@ -293,22 +295,28 @@ export default function CakeDetails({ id }: { id: string }) {
             <span className="text-2xl font-bold">
               ₹{selectedWeight.sellPrice}
             </span>
-            <span className="text-lg text-gray-500 line-through">
-              ₹{selectedWeight.costPrice}
-            </span>
-            <span className="text-green-600 text-sm">
-              {Math.round(
-                (1 - selectedWeight.sellPrice / selectedWeight.costPrice) * 100
-              )}
-              % OFF
-            </span>
+
+            {selectedWeight.costPrice != null  && selectedWeight.costPrice > 0 && (
+              <>
+                <span className="text-lg text-gray-500 line-through">
+                  ₹{selectedWeight.costPrice}
+                </span>
+                <span className="text-green-600 text-sm">
+                  {Math.round(
+                    (1 - selectedWeight.sellPrice / selectedWeight.costPrice) *
+                      100
+                  )}
+                  % OFF
+                </span>
+              </>
+            )}
           </div>
         </div>
         <Button
           onClick={() => handleAddToCart(cake)}
           className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
         >
-            <ShoppingCart className="mr-2 h-4 w-4" />
+          <ShoppingCart className="mr-2 h-4 w-4" />
           Add to Cart
         </Button>
       </div>
