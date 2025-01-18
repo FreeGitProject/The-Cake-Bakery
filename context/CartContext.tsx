@@ -54,7 +54,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             : cartItem
         )
       }
-      return [...prevCart, { ...item, quantity: 1 }]
+      const qty=item.quantity?item.quantity:1
+      return [...prevCart, { ...item, quantity: qty }]
     })
   }
 
