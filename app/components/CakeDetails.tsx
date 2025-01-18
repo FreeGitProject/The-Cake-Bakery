@@ -10,6 +10,10 @@ import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 //import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle, XCircle } from "lucide-react";
 
 interface Price {
   weight: number;
@@ -26,7 +30,10 @@ interface Cake {
   image: string[];
   category: string;
 }
-
+interface DeliveryStatus {
+  deliverable: boolean;
+  message: string;
+}
 const convertToEmbedUrl = (videoUrl: string): string | null => {
   try {
     if (!videoUrl || typeof videoUrl !== "string") return null;
@@ -117,6 +124,10 @@ export default function CakeDetails({ id }: { id: string }) {
 
     fetchCake();
   }, [id]);
+  const [pincode, setPincode] = useState("");
+  const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
+    null
+  );
 
   const handleAddToCart = (cake: Cake) => {
     if (!selectedWeight) return;
@@ -136,6 +147,27 @@ export default function CakeDetails({ id }: { id: string }) {
     }
     return "text-[#944a28]";
   };
+
+  const checkDeliveryAvailability = async () => {
+    try {
+      const response = await fetch("/api/check-delivery", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ location: pincode }),
+      });
+      const data = await response.json();
+      setDeliveryStatus(data);
+    } catch (error) {
+      console.error("Error checking delivery availability:", error);
+      setDeliveryStatus({
+        deliverable: false,
+        message: "Error checking delivery availability. Please try again.",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div>
@@ -296,22 +328,62 @@ export default function CakeDetails({ id }: { id: string }) {
               ₹{selectedWeight.sellPrice}
             </span>
 
-            {selectedWeight.costPrice != null  && selectedWeight.costPrice > 0 && (
-              <>
-                <span className="text-lg text-gray-500 line-through">
-                  ₹{selectedWeight.costPrice}
-                </span>
-                <span className="text-green-600 text-sm">
-                  {Math.round(
-                    (1 - selectedWeight.sellPrice / selectedWeight.costPrice) *
-                      100
-                  )}
-                  % OFF
-                </span>
-              </>
-            )}
+            {selectedWeight.costPrice != null &&
+              selectedWeight.costPrice > 0 && (
+                <>
+                  <span className="text-lg text-gray-500 line-through">
+                    ₹{selectedWeight.costPrice}
+                  </span>
+                  <span className="text-green-600 text-sm">
+                    {Math.round(
+                      (1 -
+                        selectedWeight.sellPrice / selectedWeight.costPrice) *
+                        100
+                    )}
+                    % OFF
+                  </span>
+                </>
+              )}
           </div>
         </div>
+        {/* Delivery Location Check */}
+        <div className="mt-2">
+          <h2 className="text-xl font-semibold mb-4">
+            Check Delivery Availability
+          </h2>
+          <div className="flex items-end gap-4">
+            <div className="flex-grow">
+              <Label htmlFor="pincode">Enter Pincode</Label>
+              <Input
+                id="pincode"
+                type="text"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value)}
+                placeholder="Enter your pincode"
+              />
+            </div>
+            <Button onClick={checkDeliveryAvailability}>Check</Button>
+          </div>
+          {deliveryStatus && (
+            <Alert
+              className="mt-4"
+              variant={deliveryStatus.deliverable ? "default" : "destructive"}
+            >
+              {deliveryStatus.deliverable ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <XCircle className="h-4 w-4" />
+              )}
+              <AlertTitle>
+                {deliveryStatus.deliverable
+                  ? "Delivery Available"
+                  : "Delivery Unavailable"}
+              </AlertTitle>
+              <AlertDescription>{deliveryStatus.message}</AlertDescription>
+            </Alert>
+          )}
+        </div>
+
         <Button
           onClick={() => handleAddToCart(cake)}
           className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
