@@ -105,9 +105,12 @@ export default function CakeDetails({ id }: { id: string }) {
   const [select, setSelect] = useState<number>(0);
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
   const [selectedWeight, setSelectedWeight] = useState<Price | null>(null);
-
   const { addToCart } = useCart();
-
+  const [pincode, setPincode] = useState("");
+  const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
+    null
+  );
+  
   useEffect(() => {
     const fetchCake = async () => {
       try {
@@ -124,10 +127,7 @@ export default function CakeDetails({ id }: { id: string }) {
 
     fetchCake();
   }, [id]);
-  const [pincode, setPincode] = useState("");
-  const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
-    null
-  );
+
 
   const handleAddToCart = (cake: Cake) => {
     if (!selectedWeight) return;
