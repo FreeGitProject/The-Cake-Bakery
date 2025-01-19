@@ -108,8 +108,8 @@ const CakeShopHero = ({
           ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
         >
           <img
-            src={slide.heroImage}
-            alt={slide.heroTitle}
+            src={slide?.heroImage}
+            alt={slide?.heroTitle}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
@@ -163,18 +163,18 @@ const CakeShopHero = ({
           className="text-center space-y-6 max-w-4xl mx-auto"
         >
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 animate-slide-down">
-            {homeDataList[currentSlide].heroTitle}
+            {homeDataList[currentSlide]?.heroTitle}
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up">
-            {homeDataList[currentSlide].heroSubtitle}
+            {homeDataList[currentSlide]?.heroSubtitle}
           </p>
-          <a href={homeDataList[currentSlide].buttonLink}>
+          <a href={homeDataList[currentSlide]?.buttonLink}>
             <button
               className="px-8 py-3 bg-white text-gray-900 rounded-full text-lg font-medium
                      transform hover:-translate-y-0.5 hover:shadow-lg
                      transition-all duration-200 mt-2"
             >
-              {homeDataList[currentSlide].buttonText}
+              {homeDataList[currentSlide]?.buttonText}
             </button>
           </a>
         </div>
