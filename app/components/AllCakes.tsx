@@ -18,7 +18,10 @@ interface Price {
   costPrice: number; // Cost price
   sellPrice: number; // Selling price
 }
-
+interface Reviews {
+  userId: string;
+  rating: number;
+}
 interface Cake {
   _id: string;
   name: string;
@@ -27,6 +30,8 @@ interface Cake {
   prices: Price[];
   image: string[];
   category: string;
+  reviews:Reviews[];
+  averageRating: number;
 }
 
 interface Category {

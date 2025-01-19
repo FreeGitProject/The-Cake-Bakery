@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, XCircle } from "lucide-react";
+import ReviewsAndRatings from "./ReviewsAndRatings";
+import RecentlyViewed from "./RecentlyViewed";
 
 interface Price {
   weight: number;
@@ -116,6 +118,7 @@ export default function CakeDetails({ id }: { id: string }) {
       try {
         const response = await fetch(`/api/cakes/${id}`);
         const data = await response.json();
+        console.log(data,"DetailPage");
         setCake(data);
         setSelectedWeight(data.prices[0]);
       } catch (error) {
@@ -194,7 +197,7 @@ export default function CakeDetails({ id }: { id: string }) {
           scrollbarWidth: "none",
         }}
       >
-        {cake.image.map((i, index) => {
+        {cake.image?.map((i, index) => {
           const thumbnailUrl = getThumbnailUrl(i);
           const isYouTubeVideo =
             i.includes("youtube.com") || i.includes("youtu.be");
@@ -231,13 +234,13 @@ export default function CakeDetails({ id }: { id: string }) {
   const MainImage = () => (
     <div className="relative flex-1 overflow-hidden">
       <div className="bg-white">
-        {cake.image[select].includes("youtube.com") ||
-        cake.image[select].includes("youtu.be") ? (
-          convertToEmbedUrl(cake.image[select]) ? (
+        {cake?.image[select]?.includes("youtube.com") ||
+        cake?.image[select]?.includes("youtu.be") ? (
+          convertToEmbedUrl(cake?.image[select]) ? (
             <iframe
               className="w-full h-[200px] sm:h-[300px] lg:h-[500px]"
-              src={convertToEmbedUrl(cake.image[select])!}
-              title={cake.name}
+              src={convertToEmbedUrl(cake?.image[select])!}
+              title={cake?.name}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -402,6 +405,10 @@ export default function CakeDetails({ id }: { id: string }) {
         <MainImage />
         <ProductInfo />
       </div>
+      <div className="mt-12">
+        <ReviewsAndRatings cakeId={id} />
+      </div>
+      <RecentlyViewed currentCakeId={id} />
     </div>
   );
 }
