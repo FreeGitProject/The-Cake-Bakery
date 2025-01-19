@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 
-const redis = new Redis(process.env.UPSTASH_REDIS_URL!)
+const redis = new Redis(process.env.UPSTASH_REDIS_URL!);
+
 // Log errors
 redis.on("error", (error) => {
   console.error(`[Redis Error]: ${error.message}`);
@@ -11,7 +12,7 @@ redis.on("connect", () => {
   console.log("Connected to Upstash Redis");
 });
 
-export async function getFromCache(key: string): Promise<any | null> {
+export async function getFromCache<T>(key: string): Promise<T | null> {
   try {
     const data = await redis.get(key);
     return data ? JSON.parse(data) : null;
@@ -21,7 +22,7 @@ export async function getFromCache(key: string): Promise<any | null> {
   }
 }
 
-export async function setToCache(key: string, value: any, ttl: number): Promise<void> {
+export async function setToCache<T>(key: string, value: T, ttl: number): Promise<void> {
   try {
     await redis.set(key, JSON.stringify(value), "EX", ttl);
   } catch (error) {
