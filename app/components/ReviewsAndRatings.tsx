@@ -114,7 +114,7 @@ export default function ReviewsAndRatings({ cakeId }: ReviewsAndRatingsProps) {
             />
           ))}
         </div>
-        <span className="text-lg font-semibold">{averageRating.toFixed(1)}</span>
+        <span className="text-lg font-semibold">{averageRating?.toFixed(1)}</span>
         <span className="text-gray-500">({reviews.length} reviews)</span>
       </div>
 

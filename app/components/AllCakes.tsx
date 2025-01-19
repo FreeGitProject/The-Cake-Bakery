@@ -27,6 +27,7 @@ interface Cake {
   prices: Price[];
   image: string[];
   category: string;
+  averageRating: number;
 }
 
 interface Category {

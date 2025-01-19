@@ -30,6 +30,7 @@ const cakeSchema = new mongoose.Schema(
     image: { type: [String], required: true }, // Array of image URLs
     category: { type: String, required: true },
     reviews: [reviewSchema],
+    averageRating: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
