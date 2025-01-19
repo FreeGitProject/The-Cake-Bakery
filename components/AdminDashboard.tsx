@@ -11,6 +11,7 @@ const sections = [
   { name: 'Favorites', path: '/admin/favorites' },
   { name: 'Footer', path: '/admin/footer' },
   { name: 'Delivery areas', path: '/admin/delivery-areas' },
+  { name: 'Settings', path: '/admin/settings' },
 ]
 
 export default function AdminDashboard() {

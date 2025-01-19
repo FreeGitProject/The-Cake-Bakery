@@ -21,6 +21,7 @@ const navItems = [
   { name: 'Orders', path: '/admin/orders' },
   { name: 'Policies', path: '/admin/policies' },
   { name: "Footer", path: "/admin/footer" },
+  { name: 'Settings', path: '/admin/settings' },
 ];
 
 export default function AdminNavbar() {
