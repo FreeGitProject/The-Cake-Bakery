@@ -47,7 +47,7 @@ export default function AllCakes() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const cakesPerPage = 9;
+  const [cakesPerPage, setCakesPerPage] = useState(8);
 
   useEffect(() => {
     fetchCakes();
@@ -57,7 +57,16 @@ export default function AllCakes() {
   useEffect(() => {
     filterCakes();
   }, [cakes, searchTerm, categoryFilter]);
-
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const response = await fetch('/api/admin/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        setCakesPerPage(settings.catalogPageSize);
+      }
+    };
+    fetchSettings();
+  }, []);
   const fetchCakes = async () => {
     try {
       const response = await fetch("/api/cakes");
