@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, XCircle } from "lucide-react";
+import ReviewsAndRatings from "./ReviewsAndRatings";
 
 interface Price {
   weight: number;
@@ -401,6 +402,9 @@ export default function CakeDetails({ id }: { id: string }) {
         <Thumbnails />
         <MainImage />
         <ProductInfo />
+      </div>
+      <div className="mt-12">
+        <ReviewsAndRatings cakeId={id} />
       </div>
     </div>
   );
