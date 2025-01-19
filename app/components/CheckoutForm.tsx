@@ -129,7 +129,7 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
-        router.push("/my-orders");
+        //router.push("/my-orders");
       }
     }
   };

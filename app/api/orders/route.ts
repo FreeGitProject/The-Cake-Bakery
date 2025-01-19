@@ -33,11 +33,12 @@ export async function POST(request: Request) {
       totalAmount,
       paymentMethod,
       shippingAddress,
-      paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Completed',
+      paymentStatus:'Pending',
+      //paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Completed',
       razorpayOrderId,
       razorpayPaymentId,
     });
-console.log("newOrder",newOrder);
+//console.log("newOrder",newOrder);
     await newOrder.save();
     if (paymentMethod === 'Cash on Delivery') {
       try {

@@ -28,7 +28,7 @@ export default function Header() {
     { name: "News", path: "/news" },
   ];
   const { session } = useSessionContext();
-  //console.log("header session",session?.user)
+  console.log("header session", session?.user);
   const router = useRouter();
   const { cart } = useCart();
   const handleSignOut = async () => {
@@ -37,9 +37,9 @@ export default function Header() {
     //   window.location.reload();
     //   //  router.push("/login");
     // }, 100);
-       router.push("/login");
+    router.push("/login");
   };
-  
+
   const LOGO_URL =
     "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";
 
@@ -90,7 +90,7 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-3">
             {/* Navigation Links */}
-            
+
             <div className="flex space-x-6">
               {navItems.map((item) => (
                 <Link
@@ -120,6 +120,13 @@ export default function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
+                {session.user?.role === "admin" && (
+                    <DropdownMenuItem className="hover:bg-[#FFF5E4]">
+                      <Link href="/admin" className="w-full">
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem className="hover:bg-[#FFF5E4]">
                     <Link href="/profile" className="w-full">
                       Profile
@@ -202,6 +209,14 @@ export default function Header() {
             ))}
             {session ? (
               <>
+                {session.user?.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className="px-4 py-2 hover:bg-base-200 block w-full"
+                  >
+                    Admin Dashboard
+                  </Link>
+                )}
                 <Link
                   onClick={() => setIsOpen(false)}
                   href="/profile"

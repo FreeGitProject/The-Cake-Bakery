@@ -2,7 +2,8 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { Home } from '@/models/home';
-
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from "@/lib/auth";
 // GET: Retrieve all Home entries
 export async function GET() {
   try {
@@ -18,6 +19,11 @@ export async function GET() {
 // POST: Create or update a Home entry
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await clientPromise;
     const data = await request.json();
     const { _id, ...rest } = data;

@@ -22,7 +22,7 @@ export const SessionProvider = ({
 }) => {
   const { data: session, status } = useSession();
   const [storedSession, setStoredSession] = useState<any>(null);
-
+//console.log(session,"sessionContext");
   useEffect(() => {
     if (session) {
       setStoredSession(session);
