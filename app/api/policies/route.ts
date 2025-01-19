@@ -3,12 +3,12 @@ import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { Policy } from "@/models/policy";
 import { User } from "@/models/user"; // Assuming you have a User model
-
+import { authOptions } from "@/lib/auth";
 // Helper function to check if the user is an admin
-async function isAdmin(userEmail: string) {
-  const user = await User.findOne({ email: userEmail });
-  return user?.role === "admin";
-}
+// async function isAdmin(userEmail: string) {
+//   const user = await User.findOne({ email: userEmail });
+//   return user?.role === "admin";
+// }
 export async function GET() {
   try {
     await clientPromise;
@@ -25,11 +25,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.log("Policies", session);
+    //console.log("Policies", session);
     await clientPromise;
     // Fetch user by email
     const user = await User.findOne({ email: session.user.email });
@@ -38,10 +38,13 @@ export async function POST(request: Request) {
     }
 
     // Check if the user is an admin
-    if (!(await isAdmin(session.user.email))) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // if (!(await isAdmin(session.user.email))) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    console.log("Policies", session);
+    //console.log("Policies", session);
 
     const { type, content } = await request.json();
     const policy = await Policy.findOneAndUpdate(

@@ -3,20 +3,21 @@ import { getServerSession } from 'next-auth/next';
 import clientPromise from '@/lib/mongodb';
 import { Order } from '@/models/order';
 import { User } from '@/models/user'; // Assuming you have a User model
-
+import { authOptions } from "@/lib/auth";
 // Helper function to check if the user is an admin
-async function isAdmin(userEmail: string) {
-  const user = await User.findOne({ email: userEmail });
-  return user?.role === 'admin';
-}
+// async function isAdmin(userEmail: string) {
+//   const user = await User.findOne({ email: userEmail });
+//   return user?.role === 'admin';
+// }
 
 export async function PUT(
   request: Request,
   { params }: { params: { orderId: string } }
 ) {
   try {
-    const session = await getServerSession();
-    if (!session) {
+   
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -29,10 +30,12 @@ export async function PUT(
     }
 
     // Check if the user is an admin
-    if (!(await isAdmin(session.user.email))) {
+    // if (!(await isAdmin(session.user.email))) {
+    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // }
+  if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     const { orderId } = params;
     const { orderStatus } = await request.json();
 
