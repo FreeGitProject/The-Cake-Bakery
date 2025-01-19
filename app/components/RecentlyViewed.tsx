@@ -1,75 +1,101 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface Cake {
-  _id: string
-  name: string
-  image: string[]
-  averageRating: number
+  _id: string;
+  name: string;
+  image: string[];
+  averageRating: number;
 }
 
-export default function RecentlyViewed({ currentCakeId }: { currentCakeId: string }) {
-  const [recentlyViewed, setRecentlyViewed] = useState<Cake[]>([])
-  const [apiError, setApiError] = useState<string>('')
-
+export default function RecentlyViewed({
+  currentCakeId,
+}: {
+  currentCakeId: string;
+}) {
+  const [recentlyViewed, setRecentlyViewed] = useState<Cake[]>([]);
+  const [apiError, setApiError] = useState<string>("");
+  const [recentViewsLimit, setRecentViewsLimit] = useState(5);
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const response = await fetch("/api/admin/settings");
+      if (response.ok) {
+        const settings = await response.json();
+        setRecentViewsLimit(settings.recentViewsCount);
+      }
+    };
+    fetchSettings();
+  }, []);
   useEffect(() => {
     const fetchRecentlyViewed = async () => {
       try {
-        const storedIds = JSON.parse(localStorage.getItem('recentlyViewedCakes') || '[]')
-        const uniqueIds = Array.from(new Set([currentCakeId, ...storedIds])).slice(0, 5)
-        
-        localStorage.setItem('recentlyViewedCakes', JSON.stringify(uniqueIds))
+        const storedIds = JSON.parse(
+          localStorage.getItem("recentlyViewedCakes") || "[]"
+        );
+        const uniqueIds = Array.from(
+          new Set([currentCakeId, ...storedIds])
+        ).slice(0, recentViewsLimit);
+
+        localStorage.setItem("recentlyViewedCakes", JSON.stringify(uniqueIds));
 
         const cakes = await Promise.all(
           uniqueIds
-            .filter(id => id !== currentCakeId)
+            .filter((id) => id !== currentCakeId)
             .map(async (id) => {
-              const response = await fetch(`/api/cakes/${id}`)
+              const response = await fetch(`/api/cakes/${id}`);
               if (!response.ok) {
-                throw new Error(`Failed to fetch cake ${id}`)
+                throw new Error(`Failed to fetch cake ${id}`);
               }
-              return response.json()
+              return response.json();
             })
-        )
+        );
 
-        setRecentlyViewed(cakes)
+        setRecentlyViewed(cakes);
       } catch (error) {
-        setApiError('Failed to load recently viewed cakes')
-        console.error('Error fetching recently viewed cakes:', error)
+        setApiError("Failed to load recently viewed cakes");
+        console.error("Error fetching recently viewed cakes:", error);
       }
-    }
+    };
 
-    fetchRecentlyViewed()
-  }, [currentCakeId])
+    fetchRecentlyViewed();
+  }, [currentCakeId, recentViewsLimit]);
 
   if (recentlyViewed.length === 0) {
-    return null
+    return null;
   }
 
   return (
     <section className="w-full px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl md:text-2xl font-bold mb-6 px-2">Recently Viewed</h2>
-        
+        <h2 className="text-xl md:text-2xl font-bold mb-6 px-2">
+          Recently Viewed
+        </h2>
+
         {apiError ? (
           <p className="text-red-500 text-center">{apiError}</p>
         ) : (
-          <Carousel 
+          <Carousel
             className="w-full"
             opts={{
               align: "start",
-              loop: recentlyViewed.length > 3
+              loop: recentlyViewed.length > 3,
             }}
           >
             <CarouselContent className="-ml-2 md:-ml-4">
               {recentlyViewed?.map((cake) => (
-                <CarouselItem 
-                  key={cake._id} 
+                <CarouselItem
+                  key={cake._id}
                   className="pl-2 md:pl-4 basis-full xs:basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                 >
                   <Link href={`/cakes/${cake._id}`} className="block h-full">
@@ -108,5 +134,5 @@ export default function RecentlyViewed({ currentCakeId }: { currentCakeId: strin
         )}
       </div>
     </section>
-  )
+  );
 }
