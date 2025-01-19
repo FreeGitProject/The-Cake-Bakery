@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Assuming you have a tabs component
-import Link from 'next/link';
 import Loader from '@/app/components/Loader';
 
 interface UserProfile {
@@ -118,17 +117,6 @@ export default function ProfileComponent() {
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-               {/* Conditionally render Admin page link if the user is an admin */}
-               {session?.user?.role === 'admin' && (
-            <div className="mt-4">
-              <Link
-                href="/admin"
-                className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300"
-              >
-                Go Admin Page
-              </Link>
-            </div>
-          )}
         <CardTitle>Profile Information</CardTitle>
       </CardHeader>
       <CardContent>
