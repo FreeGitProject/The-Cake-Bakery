@@ -34,7 +34,10 @@ interface Price {
   weight: number;
   sellPrice: number;
 }
-
+interface Reviews {
+  userId: string;
+  rating: number;
+}
 interface Cake {
   _id: string;
   name: string;
@@ -42,6 +45,8 @@ interface Cake {
   type: "contains egg" | "eggless";
   prices: Price[];
   image: string[];
+  reviews:Reviews[];
+  averageRating: number;
 }
 
 interface CakeCardProps {
@@ -147,10 +152,23 @@ export default function CakeCard({ cake }: CakeCardProps) {
             </CardTitle>
           </Link>
         </div>
-        <div className="flex items-center space-x-1">
+        {/* <div className="flex items-center space-x-1">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm font-medium">4.5</span>
-        </div>
+        </div> */}
+        <div className="flex items-center space-x-1">
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-4 h-4 ${star <= Math.round(cake.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-sm text-gray-600">
+                  {cake.averageRating.toFixed(1)} ({cake.reviews?.length || 0} reviews)
+                </span>
+              </div>
         <CardDescription className="text-sm text-muted-foreground line-clamp-2">
           {cake.description}
         </CardDescription>
