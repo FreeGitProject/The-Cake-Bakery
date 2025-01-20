@@ -28,7 +28,7 @@ export default function Header() {
     { name: "News", path: "/news" },
   ];
   const { session } = useSessionContext();
-  console.log("header session", session?.user);
+  //console.log("header session", session?.user);
   const router = useRouter();
   const { cart } = useCart();
   const handleSignOut = async () => {

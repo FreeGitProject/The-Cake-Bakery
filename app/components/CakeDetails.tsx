@@ -108,10 +108,7 @@ export default function CakeDetails({ id }: { id: string }) {
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
   const [selectedWeight, setSelectedWeight] = useState<Price | null>(null);
   const { addToCart } = useCart();
-  const [pincode, setPincode] = useState("");
-  const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
-    null
-  );
+
   
   useEffect(() => {
     const fetchCake = async () => {
@@ -151,25 +148,7 @@ export default function CakeDetails({ id }: { id: string }) {
     return "text-[#944a28]";
   };
 
-  const checkDeliveryAvailability = async () => {
-    try {
-      const response = await fetch("/api/check-delivery", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ location: pincode }),
-      });
-      const data = await response.json();
-      setDeliveryStatus(data);
-    } catch (error) {
-      console.error("Error checking delivery availability:", error);
-      setDeliveryStatus({
-        deliverable: false,
-        message: "Error checking delivery availability. Please try again.",
-      });
-    }
-  };
+  
 
   if (loading) {
     return (
@@ -284,6 +263,29 @@ export default function CakeDetails({ id }: { id: string }) {
   );
 
   const ProductInfo = () => {
+    const [pincode, setPincode] = useState("");
+    const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
+      null
+    );
+    const checkDeliveryAvailability = async () => {
+      try {
+        const response = await fetch("/api/check-delivery", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ location: pincode }),
+        });
+        const data = await response.json();
+        setDeliveryStatus(data);
+      } catch (error) {
+        console.error("Error checking delivery availability:", error);
+        setDeliveryStatus({
+          deliverable: false,
+          message: "Error checking delivery availability. Please try again.",
+        });
+      }
+    };
     if (!selectedWeight) return null;
 
     return (
