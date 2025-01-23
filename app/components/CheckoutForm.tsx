@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import { Input } from "@/components/ui/input";
@@ -129,7 +129,7 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
-        //router.push("/my-orders");
+        router.push("/my-orders");
       }
     }
   };
@@ -211,9 +211,9 @@ export default function CheckoutForm() {
     }
   };
 
-  if (cart.length === 0) {
-     redirect('/login'); 
-  }
+  // if (cart.length === 0) {
+  //    redirect('/login'); 
+  // }
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Card className="mb-6">
