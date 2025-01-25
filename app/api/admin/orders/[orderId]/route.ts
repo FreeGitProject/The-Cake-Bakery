@@ -37,21 +37,26 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const { orderId } = params;
-    const { orderStatus } = await request.json();
+    const { orderStatus, paymentStatus } = await request.json()
+    const updateData: { orderStatus?: string; paymentStatus?: string } = {}
 
-    if (!['Placed', 'Shipped', 'Delivered', 'Cancelled'].includes(orderStatus)) {
-      return NextResponse.json({ error: 'Invalid order status' }, { status: 400 });
+     if (orderStatus && ["Placed", "Shipped", "Delivered", "Cancelled"].includes(orderStatus)) {
+      updateData.orderStatus = orderStatus
+    }
+
+    if (paymentStatus && ["Pending", "Completed", "Failed"].includes(paymentStatus)) {
+      updateData.paymentStatus = paymentStatus
     }
 
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
       {
-        orderStatus,
-        updatedBy: user._id, // Use user._id fetched from the database
+        ...updateData,
+        updatedBy: session.user.id,
         updatedAt: new Date(),
       },
-      { new: true }
-    );
+      { new: true },
+    )
 
     if (!updatedOrder) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
