@@ -30,6 +30,7 @@ import { useCart } from "@/context/CartContext";
 import { GrSquare } from "react-icons/gr";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 //import { toast } from "@/hooks/use-toast";
 
 interface Price {
@@ -47,7 +48,7 @@ interface Cake {
   type: "contains egg" | "eggless";
   prices: Price[];
   image: string[];
-  reviews:Reviews[];
+  reviews: Reviews[];
   averageRating: number;
 }
 
@@ -58,33 +59,37 @@ interface CakeCardProps {
   onRemoveFromWishlist: (cakeId: string) => void;
 }
 
-export default function CakeCard({ cake,  isWishlisted,
+export default function CakeCard({
+  cake,
+  isWishlisted,
   onAddToWishlist,
-  onRemoveFromWishlist, }: CakeCardProps) {
-    const handleWishlistToggle = () => {
-      if (isWishlisted) {
-        onRemoveFromWishlist(cake._id);
-        // toast({
-        //   title: "Removed from wishlist",
-        //   description: "The item has been removed from your wishlist.",
-        // });
-      } else {
-        onAddToWishlist(cake._id);
-        // toast({
-        //   title: "Added to wishlist",
-        //   description: "The item has been added to your wishlist.",
-        // });
-      }
-    };
+  onRemoveFromWishlist,
+}: CakeCardProps) {
+  const handleWishlistToggle = () => {
+    if (isWishlisted) {
+      onRemoveFromWishlist(cake._id);
+      // toast({
+      //   title: "Removed from wishlist",
+      //   description: "The item has been removed from your wishlist.",
+      // });
+    } else {
+      onAddToWishlist(cake._id);
+      // toast({
+      //   title: "Added to wishlist",
+      //   description: "The item has been added to your wishlist.",
+      // });
+    }
+  };
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
- // const [isLiked, setIsLiked] = useState(false);
+  // const [isLiked, setIsLiked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedWeight, setSelectedWeight] = useState(
     cake.prices[0].weight.toString()
   );
-    const { data: session } = useSession();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const handleAddToCart = () => {
     const price = cake.prices.find(
@@ -101,7 +106,20 @@ export default function CakeCard({ cake,  isWishlisted,
         image: cake.image[0],
       });
   };
-
+  const handleBuyNow = (cake: Cake) => {
+    const lowestPrice = cake.prices.reduce((min, price) =>
+      price.sellPrice < min.sellPrice ? price : min
+    );
+    addToCart({
+      id: cake._id,
+      name: cake.name,
+      price: lowestPrice.sellPrice,
+      quantity: 1,
+      image: cake.image[0],
+      weight: lowestPrice.weight,
+    });
+    router.push("/checkout");
+  };
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
     if (newQuantity >= 1 && newQuantity <= 10) {
@@ -148,21 +166,19 @@ export default function CakeCard({ cake,  isWishlisted,
 
       {/* Favorite Button */}
       {session && (
-  <Button
-  variant="ghost"
-  size="icon"
-  className={`absolute top-3 right-3 z-10 transition-all duration-300 ${
-    isWishlisted
-      ? "text-red-500 hover:text-red-600"
-      : "text-gray-400 hover:text-red-500"
-  }`}
-  onClick={handleWishlistToggle}
->
-  <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
-</Button>
-      )
-      }
-     
+        <Button
+          variant="ghost"
+          size="icon"
+          className={`absolute top-3 right-3 z-10 transition-all duration-300 ${
+            isWishlisted
+              ? "text-red-500 hover:text-red-600"
+              : "text-gray-400 hover:text-red-500"
+          }`}
+          onClick={handleWishlistToggle}
+        >
+          <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+        </Button>
+      )}
 
       <CardHeader className="space-y-1 pt-12">
         <div className="flex justify-between items-start">
@@ -184,18 +200,23 @@ export default function CakeCard({ cake,  isWishlisted,
           <span className="text-sm font-medium">4.5</span>
         </div> */}
         <div className="flex items-center space-x-1">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-4 h-4 ${star <= Math.round(cake.averageRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                </div>
-                <span className="ml-2 text-sm text-gray-600">
-                  {cake.averageRating.toFixed(1)} ({cake.reviews?.length || 0} reviews)
-                </span>
-              </div>
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`w-4 h-4 ${
+                  star <= Math.round(cake.averageRating)
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="ml-2 text-sm text-gray-600">
+            {cake.averageRating.toFixed(1)} ({cake.reviews?.length || 0}{" "}
+            reviews)
+          </span>
+        </div>
         <CardDescription className="text-sm text-muted-foreground line-clamp-2">
           {cake.description}
         </CardDescription>
@@ -255,14 +276,21 @@ export default function CakeCard({ cake,  isWishlisted,
           </div>
         </div>
 
-        <Button
-          onClick={handleAddToCart}
-          className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
-        >
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          Add to Cart
-        </Button>
-
+        <div className="flex space-x-2">
+          <Button
+            className="w-full from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
+            onClick={() => handleBuyNow(cake)}
+          >
+            Buy Now
+          </Button>
+          <Button
+            onClick={handleAddToCart}
+            className="w-full from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Add to Cart
+          </Button>
+        </div>
         {/* Order Timeline */}
         <div className="flex justify-between w-full text-xs text-muted-foreground">
           <div className="flex flex-col items-center">
