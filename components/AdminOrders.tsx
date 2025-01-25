@@ -49,6 +49,7 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [statusFilter, setStatusFilter] = useState("All")
   const [searchTerm, setSearchTerm] = useState("")
   const { data: session } = useSession();
@@ -90,6 +91,7 @@ export default function AdminOrders() {
         const data = await response.json()
         setOrders(data.orders)
         setTotalPages(data.totalPages)
+        setTotalRecords(data.totalOrders);
       } else {
         throw new Error("Failed to fetch orders")
       }
@@ -153,10 +155,62 @@ export default function AdminOrders() {
       });
     }
   };
+
   if (session?.user?.role !== "admin") {
     return <p>You do not have permission to view this page.</p>;
   }
+  const renderPagination = () => {
+    const pages = [];
+    const ellipsis = "...";
 
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
+        pages.push(
+          <Button
+            key={i}
+            variant={currentPage === i ? "default" : "outline"}
+            onClick={() => setCurrentPage(i)}
+          >
+            {i}
+          </Button>
+        );
+      } else if (
+        (i === currentPage - 2 && i > 1) ||
+        (i === currentPage + 2 && i < totalPages)
+      ) {
+        pages.push(
+          <span key={`ellipsis-${i}`} className="px-2">
+            {ellipsis}
+          </span>
+        );
+      }
+    }
+
+    return (
+      <div className="flex items-center space-x-2">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          {"<"}
+        </Button>
+        {pages}
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          {">"}
+        </Button>
+        <span className="ml-4 text-sm text-muted-foreground bg">
+          Total Records: {totalRecords}
+        </span>
+      </div>
+    );
+  };
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -281,21 +335,8 @@ export default function AdminOrders() {
           </CardContent>
         </Card>
       ))}
-      <div className="flex justify-center space-x-2">
-        <Button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
+       <div className="flex justify-center space-x-2 mt-4">
+        {renderPagination()}
       </div>
     </div>
   );
