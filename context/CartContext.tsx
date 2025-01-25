@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface CartItem {
@@ -32,7 +33,7 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-
+  const router = useRouter();
   // Load cart from cookies or localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -62,7 +63,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const removeFromCart = (id: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    setCart((prevCart) => {
+      const updatedCart = prevCart.filter((item) => item.id !== id);
+      if (updatedCart.length === 0) {
+        // Redirect to home if cart is empty
+        router.push('/');  // Redirect to home page
+      }
+      return updatedCart;
+    });
   };
 
   const updateQuantity = (id: string, quantity: number) => {
