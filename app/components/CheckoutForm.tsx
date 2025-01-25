@@ -147,7 +147,7 @@ export default function CheckoutForm() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: "INR",
-        name: "Cake-Bakery Shop",
+        name: "The Cake Shop",
         description: "Payment for your order",
         order_id: data.id,
         handler: async function (response: any) {

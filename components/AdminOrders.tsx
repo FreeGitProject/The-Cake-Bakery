@@ -297,7 +297,7 @@ export default function AdminOrders() {
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>₹{item.price.toFixed(2)}</TableCell>
                     <TableCell>
-                      ${(item.quantity * item.price).toFixed(2)}
+                    ₹{(item.quantity * item.price).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}
