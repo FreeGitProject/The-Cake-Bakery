@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/select";
 import Loader from "./Loader";
 import CakeCard from "./CakeCard";
+import { useToast } from "@/hooks/use-toast";
+import { useSession } from "next-auth/react";
+
 
 interface Price {
   weight: number; // Weight in grams or kilograms
@@ -38,7 +41,10 @@ interface Category {
   _id: string;
   name: string;
 }
-
+interface WishlistItem {
+  _id: string;
+  cakeId: string;
+}
 export default function AllCakes() {
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [filteredCakes, setFilteredCakes] = useState<Cake[]>([]);
@@ -46,13 +52,18 @@ export default function AllCakes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cakesPerPage, setCakesPerPage] = useState(8);
-
+  const { data: session } = useSession();
+  const { toast } = useToast();
   useEffect(() => {
     fetchCakes();
     fetchCategories();
-  }, []);
+    if (session) {
+      fetchWishlist()
+    }
+  }, [session]);
 
   useEffect(() => {
     filterCakes();
@@ -67,6 +78,26 @@ export default function AllCakes() {
     };
     fetchSettings();
   }, []);
+  const fetchWishlist = async () => {
+    try {
+      const [wishlistResponse] = await Promise.all([
+     //   fetch("/api/cakes"),
+       // fetch("/api/categories"),
+        fetch("/api/wishlist"),
+      ]);
+
+    //  const cakesData = await cakesResponse.json();
+     // const categoriesData = await categoriesResponse.json();
+      const wishlistData = await wishlistResponse.json();
+
+    //  setCakes(cakesData);
+     // setCategories(categoriesData);
+      setWishlist(wishlistData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   const fetchCakes = async () => {
     try {
       const response = await fetch("/api/cakes");
@@ -107,6 +138,65 @@ export default function AllCakes() {
     setCurrentPage(1);
   };
 
+  const handleAddToWishlist = async (cakeId: string) => {
+   // console.log(cakeId,"ca")
+    try {
+      const cake = cakes.find((c) => c._id === cakeId)
+    //  console.log(cake)
+      if (cake)
+      {
+        const response =await fetch("/api/wishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cakeId: cake._id,
+            name: cake.name,
+            image: cake.image[0],
+            price: cake.prices[0].sellPrice,
+            weight:cake.prices[0].weight,
+          }),
+        })
+        const wishlistItems = await response.json()
+       // console.log(response,wishlistItems)
+       if (response.ok) {
+        setWishlist([...wishlist,wishlistItems]);
+        toast({
+          title: "Added to wishlist",
+          description: "The item has been added to your wishlist.",
+        });
+      }else {
+          console.error("Failed to add to wishlist");
+        }
+      }
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+    }
+  };
+
+  const handleRemoveFromWishlist = async (cakeId: string) => {
+    //console.log(cakeId,"ca remove ")
+    const wishlistId = wishlist.find((item) => item.cakeId === cakeId)?._id;
+    //console.log(wishlistId)
+    try {
+      const response = await fetch(`/api/wishlist/${wishlistId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setWishlist(wishlist.filter((item) => item._id !== wishlistId));
+        toast({
+          title: "Removed from wishlist",
+          description: "The item has been removed from your wishlist.",
+        });
+      }else {
+        console.error("Failed to remove from wishlist");
+      }
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+    }
+  };
   const indexOfLastCake = currentPage * cakesPerPage;
   const indexOfFirstCake = indexOfLastCake - cakesPerPage;
   const currentCakes = filteredCakes.slice(indexOfFirstCake, indexOfLastCake);
@@ -167,8 +257,14 @@ export default function AllCakes() {
       {/* Cakes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {currentCakes.map((cake) => (
-          <CakeCard key={cake._id} cake={cake} />
-        ))}
+           <CakeCard
+           key={cake._id}
+           cake={cake}
+           isWishlisted={wishlist?.some((item) => item.cakeId === cake._id)}
+           onAddToWishlist={handleAddToWishlist}
+           onRemoveFromWishlist={handleRemoveFromWishlist}
+         />
+       ))}
       </div>
 
       {/* Pagination */}

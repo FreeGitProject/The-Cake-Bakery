@@ -29,6 +29,8 @@ import {
 import { useCart } from "@/context/CartContext";
 import { GrSquare } from "react-icons/gr";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+//import { toast } from "@/hooks/use-toast";
 
 interface Price {
   weight: number;
@@ -51,17 +53,38 @@ interface Cake {
 
 interface CakeCardProps {
   cake: Cake;
+  isWishlisted: boolean;
+  onAddToWishlist: (cakeId: string) => void;
+  onRemoveFromWishlist: (cakeId: string) => void;
 }
 
-export default function CakeCard({ cake }: CakeCardProps) {
+export default function CakeCard({ cake,  isWishlisted,
+  onAddToWishlist,
+  onRemoveFromWishlist, }: CakeCardProps) {
+    const handleWishlistToggle = () => {
+      if (isWishlisted) {
+        onRemoveFromWishlist(cake._id);
+        // toast({
+        //   title: "Removed from wishlist",
+        //   description: "The item has been removed from your wishlist.",
+        // });
+      } else {
+        onAddToWishlist(cake._id);
+        // toast({
+        //   title: "Added to wishlist",
+        //   description: "The item has been added to your wishlist.",
+        // });
+      }
+    };
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+ // const [isLiked, setIsLiked] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedWeight, setSelectedWeight] = useState(
     cake.prices[0].weight.toString()
   );
+    const { data: session } = useSession();
 
   const handleAddToCart = () => {
     const price = cake.prices.find(
@@ -124,18 +147,22 @@ export default function CakeCard({ cake }: CakeCardProps) {
       </Button>
 
       {/* Favorite Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={`absolute top-3 right-3 z-10 transition-all duration-300 ${
-          isLiked
-            ? "text-red-500 hover:text-red-600"
-            : "text-gray-400 hover:text-red-500"
-        }`}
-        onClick={() => setIsLiked(!isLiked)}
-      >
-        <Heart className={`h-5 w-5 ${isLiked ? "fill-current" : ""}`} />
-      </Button>
+      {session && (
+  <Button
+  variant="ghost"
+  size="icon"
+  className={`absolute top-3 right-3 z-10 transition-all duration-300 ${
+    isWishlisted
+      ? "text-red-500 hover:text-red-600"
+      : "text-gray-400 hover:text-red-500"
+  }`}
+  onClick={handleWishlistToggle}
+>
+  <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+</Button>
+      )
+      }
+     
 
       <CardHeader className="space-y-1 pt-12">
         <div className="flex justify-between items-start">

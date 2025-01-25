@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, User } from "lucide-react";
+import { ShoppingCart, User, Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
 
@@ -77,6 +77,17 @@ export default function Header() {
       )}
     </Button>
   );
+  const WishlistButton = () => (
+    <Link href="/wishlist">
+      <Button
+        variant="ghost"
+        className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
+        aria-label="Open cart"
+      >
+        <Heart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+      </Button>
+    </Link>
+  );
 
   //if (loading) return <p>Loading...</p>;
   return (
@@ -104,6 +115,14 @@ export default function Header() {
               ))}
             </div>
             <CartButton />
+            {session && (
+              // <Link href="/wishlist">
+              //   <Button variant="ghost" className="relative p-2">
+              //     <Heart className="h-6 w-6 hover:text-[#FF9494]" />
+              //   </Button>
+              // </Link>
+              <WishlistButton />
+            )}
             {/* User Menu */}
             {session ? (
               <DropdownMenu>
@@ -120,7 +139,7 @@ export default function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                {session.user?.role === "admin" && (
+                  {session.user?.role === "admin" && (
                     <DropdownMenuItem className="hover:bg-[#FFF5E4]">
                       <Link href="/admin" className="w-full">
                         Admin Dashboard
@@ -217,6 +236,13 @@ export default function Header() {
                     Admin Dashboard
                   </Link>
                 )}
+                <Link
+                  onClick={() => setIsOpen(false)}
+                  href="/wishlist"
+                  className="block py-2 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                >
+                  Wishlist
+                </Link>
                 <Link
                   onClick={() => setIsOpen(false)}
                   href="/profile"

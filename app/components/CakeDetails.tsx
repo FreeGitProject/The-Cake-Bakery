@@ -8,7 +8,7 @@ import { FaPlayCircle } from "react-icons/fa";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 //import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, XCircle } from "lucide-react";
 import ReviewsAndRatings from "./ReviewsAndRatings";
 import RecentlyViewed from "./RecentlyViewed";
+import { toast } from "@/hooks/use-toast";
+import { useSession } from "next-auth/react"
 
 interface Price {
   weight: number;
@@ -35,6 +37,14 @@ interface Cake {
 interface DeliveryStatus {
   deliverable: boolean;
   message: string;
+}
+interface WishlistItem {
+  _id: string
+  cakeId: string
+  name: string
+  image: string
+  price: number
+  weight: number
 }
 const convertToEmbedUrl = (videoUrl: string): string | null => {
   try {
@@ -108,25 +118,90 @@ export default function CakeDetails({ id }: { id: string }) {
   const thumbnailsContainerRef = useRef<HTMLDivElement>(null);
   const [selectedWeight, setSelectedWeight] = useState<Price | null>(null);
   const { addToCart } = useCart();
+  const { data: session } = useSession()
+  const [isInWishlist, setIsInWishlist] = useState(false)
+ // console.log(id,"id")
+  const fetchCake = async () => {
+    try {
+      const response = await fetch(`/api/cakes/${id}`);
+      const data = await response.json();
+    // console.log(data,"DetailPage");
+      setCake(data);
+      setSelectedWeight(data.prices[0]);
+    } catch (error) {
+      console.error("Error fetching cake details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const checkWishlistStatus = async () => {
+    try {
+      const response = await fetch("/api/wishlist")
+      const wishlistItems = await response.json()
+      setIsInWishlist(wishlistItems.some((item: WishlistItem) => item.cakeId === id))
+    } catch (error) {
+      console.error("Error checking wishlist status:", error)
+    }
+  }
+  const handleWishlistToggle = async () => {
+    if (!session) {
+      toast({
+        title: "Please log in",
+        description: "You need to be logged in to add items to your wishlist.",
+        variant: "destructive",
+      })
+      return
+    }
 
-  
-  useEffect(() => {
-    const fetchCake = async () => {
-      try {
-        const response = await fetch(`/api/cakes/${id}`);
-        const data = await response.json();
-        console.log(data,"DetailPage");
-        setCake(data);
-        setSelectedWeight(data.prices[0]);
-      } catch (error) {
-        console.error("Error fetching cake details:", error);
-      } finally {
-        setLoading(false);
+    try {
+      if (isInWishlist) {
+        // Find the wishlist item ID
+        const response = await fetch("/api/wishlist")
+        const wishlistItems = await response.json()
+        const wishlistItem = wishlistItems.find((item: WishlistItem) => item.cakeId === id)
+
+        if (wishlistItem) {
+          await fetch(`/api/wishlist/${wishlistItem._id}`, {
+            method: "DELETE",
+          })
+        }
+      } else {
+        await fetch("/api/wishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cakeId: id,
+            name: cake?.name,
+            image: cake?.image[0],
+            price: selectedWeight?.sellPrice,
+            weight:selectedWeight?.weight,
+          }),
+        })
       }
-    };
-
-    fetchCake();
-  }, [id]);
+      setIsInWishlist(!isInWishlist)
+      toast({
+        title: isInWishlist ? "Removed from wishlist" : "Added to wishlist",
+        description: isInWishlist
+          ? "The item has been removed from your wishlist."
+          : "The item has been added to your wishlist.",
+      })
+    } catch (error) {
+      console.error("Error toggling wishlist item:", error)
+      toast({
+        title: "Error",
+        description: "There was an error updating your wishlist. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+  useEffect(() => {
+    fetchCake()
+    if (session) {
+      checkWishlistStatus()
+    }
+  }, [session]) 
 
 
   const handleAddToCart = (cake: Cake) => {
@@ -291,7 +366,20 @@ export default function CakeDetails({ id }: { id: string }) {
     return (
       <div className="flex flex-col gap-4 p-4 lg:w-80">
         <div>
-          <h1 className="text-2xl font-bold">{cake.name}</h1>
+        <div className="flex justify-between items-start">
+            <h1 className="text-3xl font-bold mb-4">{cake.name}</h1>
+            {session && (
+ <Button
+ variant="ghost"
+ size="icon"
+ onClick={handleWishlistToggle}
+ className={`${isInWishlist ? "text-red-500" : "text-gray-500"}`}
+>
+ <Heart className={`h-6 w-6 ${isInWishlist ? "fill-current" : ""}`} />
+</Button>
+            )}
+           
+          </div>
           <div className={`flex items-center mb-4 ${getTypeStyles(cake.type)}`}>
             <GrSquare className="mr-1 " />
             {/* <span className="text-sm font-medium">
