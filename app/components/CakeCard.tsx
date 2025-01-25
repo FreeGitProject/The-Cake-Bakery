@@ -276,7 +276,7 @@ export default function CakeCard({
           </div>
         </div>
 
-        <div className="flex space-x-2">
+        <div className="flex gap-2 w-full">
           <Button
             className="w-full from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
             onClick={() => handleBuyNow(cake)}
