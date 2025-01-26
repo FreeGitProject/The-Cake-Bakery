@@ -9,9 +9,13 @@ const sections = [
   { name: 'News', path: '/admin/news' },
   { name: 'About', path: '/admin/about' },
   { name: 'Favorites', path: '/admin/favorites' },
+  { name: "Cakes", path: "/admin/cakes" },
+  { name: "Categories", path: "/admin/categories" },
+  { name: 'Orders', path: '/admin/orders' },
   { name: 'Footer', path: '/admin/footer' },
   { name: 'Delivery areas', path: '/admin/delivery-areas' },
   { name: 'Settings', path: '/admin/settings' },
+  { name: "Users", path: "/admin/users" },
 ]
 
 export default function AdminDashboard() {
