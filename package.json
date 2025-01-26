@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
     "ioredis": "^5.4.2",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.469.0",
     "mongoose": "^8.9.2",
     "next": "14.2.16",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18",
