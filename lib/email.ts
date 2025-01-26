@@ -85,7 +85,9 @@ export async function sendOrderConfirmationEmail(
         ? `<div style="background-color: #ff9999; color: white; padding: 10px; border-radius: 5px; text-align: center;">
         💰 Cash on Delivery: Pay when your treats arrive!
       </div>`
-        : ""
+        : `<div style="background-color: #ff9999; color: white; padding: 10px; border-radius: 5px; text-align: center;">
+            💳 Payment Method: Online Payment Completed
+          </div>`
     }
     
     <p style="color: #666;">We're preparing your order with love and care. Tracking details coming soon!</p>
