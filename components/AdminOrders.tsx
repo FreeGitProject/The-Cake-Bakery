@@ -1,63 +1,102 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 //import { useToast } from "@/components/ui/use-toast"
-import { useToast } from "@/hooks/use-toast"
-
+import { useToast } from "@/hooks/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Image from "next/image";
+interface OrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
 interface Order {
-  _id: string
-  orderId: string
+  _id: string;
+  orderId: string;
   userId: {
-    _id: string
-    username: string
-    email: string
-  }
-  totalAmount: number
-  orderStatus: string
-  paymentStatus: string
-  createdAt: string
+    _id: string;
+    username: string;
+    email: string;
+  };
+  orderItems: OrderItem[];
+  totalAmount: number;
+  orderStatus: string;
+  paymentStatus: string;
+  createdAt: string;
 }
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [statusFilter, setStatusFilter] = useState('')
-  const [userIdFilter, setUserIdFilter] = useState('')
-  const { data: session } = useSession()
-  const { toast } = useToast()
-//console.log("AdminOrders",session)
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [statusFilter, setStatusFilter] = useState("All")
+  const [searchTerm, setSearchTerm] = useState("")
+  const { data: session } = useSession();
+  const { toast } = useToast();
+  //console.log("AdminOrders",session)
   useEffect(() => {
-    if (session?.user?.role === 'admin') {
-      fetchOrders()
+    if (session?.user?.role === "admin") {
+      fetchOrders();
     }
-  }, [session, currentPage, statusFilter, userIdFilter])
+  }, [session, currentPage, statusFilter]);
 
+  // const fetchOrders = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `/api/admin/orders?page=${currentPage}&status=${
+  //         statusFilter == "All" ? "" : statusFilter
+  //       }&userId=${userIdFilter}`
+  //     );
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setOrders(data.orders);
+  //       setTotalPages(data.totalPages);
+  //     } else {
+  //       throw new Error("Failed to fetch orders");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching orders:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to fetch orders. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
   const fetchOrders = async () => {
     try {
-      const response = await fetch(
-        `/api/admin/orders?page=${currentPage}&status=${statusFilter=='All'?'':statusFilter}&userId=${userIdFilter}`
-      )
+      const response = await fetch(`/api/admin/orders?page=${currentPage}&status=${statusFilter}&search=${searchTerm}`)
       if (response.ok) {
         const data = await response.json()
         setOrders(data.orders)
         setTotalPages(data.totalPages)
+        setTotalRecords(data.totalOrders);
       } else {
-        throw new Error('Failed to fetch orders')
+        throw new Error("Failed to fetch orders")
       }
     } catch (error) {
-      console.error('Error fetching orders:', error)
+      console.error("Error fetching orders:", error)
       toast({
         title: "Error",
         description: "Failed to fetch orders. Please try again.",
@@ -69,33 +108,109 @@ export default function AdminOrders() {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       const response = await fetch(`/api/admin/orders/${orderId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderStatus: newStatus }),
-      })
+      });
       if (response.ok) {
-        fetchOrders()
+        fetchOrders();
         toast({
           title: "Success",
           description: "Order status updated successfully.",
-        })
+        });
       } else {
-        throw new Error('Failed to update order status')
+        throw new Error("Failed to update order status");
       }
     } catch (error) {
-      console.error('Error updating order status:', error)
+      console.error("Error updating order status:", error);
       toast({
         title: "Error",
         description: "Failed to update order status. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
+  const updatePaymentStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentStatus: newStatus }),
+      });
+      if (response.ok) {
+        fetchOrders();
+        toast({
+          title: "Success",
+          description: "Payment status updated successfully.",
+        });
+      } else {
+        throw new Error("Failed to update payment status");
+      }
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update payment status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
-  if (session?.user?.role !== 'admin') {
-    return <p>You do not have permission to view this page.</p>
+  if (session?.user?.role !== "admin") {
+    return <p>You do not have permission to view this page.</p>;
   }
+  const renderPagination = () => {
+    const pages = [];
+    const ellipsis = "...";
 
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
+        pages.push(
+          <Button
+            key={i}
+            variant={currentPage === i ? "default" : "outline"}
+            onClick={() => setCurrentPage(i)}
+          >
+            {i}
+          </Button>
+        );
+      } else if (
+        (i === currentPage - 2 && i > 1) ||
+        (i === currentPage + 2 && i < totalPages)
+      ) {
+        pages.push(
+          <span key={`ellipsis-${i}`} className="px-2">
+            {ellipsis}
+          </span>
+        );
+      }
+    }
+
+    return (
+      <div className="flex items-center space-x-2">
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          {"<"}
+        </Button>
+        {pages}
+        <Button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          {">"}
+        </Button>
+        <span className="ml-4 text-sm text-muted-foreground bg">
+          Total Records: {totalRecords}
+        </span>
+      </div>
+    );
+  };
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -114,9 +229,14 @@ export default function AdminOrders() {
             </SelectContent>
           </Select>
           <Input
-            placeholder="Filter by User ID"
-            value={userIdFilter}
-            onChange={(e) => setUserIdFilter(e.target.value)}
+            placeholder="Search by username or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                fetchOrders()
+              }
+            }}
           />
         </div>
       </div>
@@ -128,17 +248,62 @@ export default function AdminOrders() {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p><strong>User:</strong> {order.userId.username}</p>
-                <p><strong>Email:</strong> {order.userId.email}</p>
-                <p><strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
+                <p>
+                  <strong>User:</strong> {order.userId?.username}
+                </p>
+                <p>
+                  <strong>Email:</strong> {order.userId?.email}
+                </p>
+                <p>
+                  <strong>Total Amount:</strong> ₹{order.totalAmount.toFixed(2)}
+                </p>
               </div>
               <div>
-                <p><strong>Order Status:</strong> {order.orderStatus}</p>
-                <p><strong>Payment Status:</strong> {order.paymentStatus}</p>
-                <p><strong>Created At:</strong> {new Date(order.createdAt).toLocaleString()}</p>
+                <p>
+                  <strong>Order Status:</strong> {order.orderStatus}
+                </p>
+                <p>
+                  <strong>Payment Status:</strong> {order.paymentStatus}
+                </p>
+                <p>
+                  <strong>Created At:</strong>{" "}
+                  {new Date(order.createdAt).toLocaleString()}
+                </p>
               </div>
             </div>
-            <div className="mt-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                <TableHead>Image</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Quantity</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {order.orderItems.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.name}
+                        width={50}
+                        height={50}
+                        className="rounded-md object-cover"
+                      />
+                    </TableCell>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.quantity}</TableCell>
+                    <TableCell>₹{item.price.toFixed(2)}</TableCell>
+                    <TableCell>
+                    ₹{(item.quantity * item.price).toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="mt-4 flex justify-between">
               <Select
                 onValueChange={(value) => updateOrderStatus(order._id, value)}
                 defaultValue={order.orderStatus}
@@ -153,25 +318,26 @@ export default function AdminOrders() {
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+              <Select
+                onValueChange={(value) => updatePaymentStatus(order._id, value)}
+                defaultValue={order.paymentStatus}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Update Payment Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
       ))}
-      <div className="flex justify-center space-x-2">
-        <Button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
+       <div className="flex justify-center space-x-2 mt-4">
+        {renderPagination()}
       </div>
     </div>
-  )
+  );
 }
-
