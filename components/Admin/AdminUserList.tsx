@@ -14,6 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { useToast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 interface User {
   _id: string
@@ -27,18 +29,22 @@ export default function AdminUserList() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [newRole, setNewRole] = useState<"user" | "admin">("user")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchTerm, setSearchTerm] = useState("")
   const { toast } = useToast()
 
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [currentPage, searchTerm])
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/admin/users")
+      const response = await fetch(`/api/admin/users?page=${currentPage}&limit=10&search=${searchTerm}`)
       if (response.ok) {
         const data = await response.json()
-        setUsers(data)
+        setUsers(data.users)
+        setTotalPages(data.totalPages)
       } else {
         throw new Error("Failed to fetch users")
       }
@@ -84,13 +90,29 @@ export default function AdminUserList() {
     }
   }
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    setCurrentPage(1)
+    fetchUsers()
+  }
+
   if (isLoading) {
     return <div>Loading...</div>
   }
 
   return (
     <div>
-      {/* <h2 className="text-2xl font-bold mb-4">User Management</h2> */}
+      <form onSubmit={handleSearch} className="mb-4">
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Search by username or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button type="submit">Search</Button>
+        </div>
+      </form>
       <Table>
         <TableHeader>
           <TableRow>
@@ -123,7 +145,7 @@ export default function AdminUserList() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Update User Role</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to change {user.username}&apos;s role from {user.role} to{" "}
+                        Are you sure you want to change {user.username}'s role from {user.role} to{" "}
                         {user.role === "admin" ? "user" : "admin"}?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -138,6 +160,26 @@ export default function AdminUserList() {
           ))}
         </TableBody>
       </Table>
+      <div className="mt-4 flex justify-between items-center">
+        <div>
+          Page {currentPage} of {totalPages}
+        </div>
+        <div>
+          <Button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="mr-2"
+          >
+            Previous
+          </Button>
+          <Button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
