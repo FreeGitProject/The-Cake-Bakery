@@ -90,6 +90,22 @@ export default function CakeCard({
   );
   const { data: session } = useSession();
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+  // Add useEffect to check screen size
+  React.useEffect(() => {
+    const checkMobileView = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint is 768px
+    };
+
+    // Check initial screen size
+    checkMobileView();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', checkMobileView);
+
+    // Cleanup event listener
+    return () => window.removeEventListener('resize', checkMobileView);
+  }, []);
 
   const handleAddToCart = () => {
     const price = cake.prices.find(
@@ -154,15 +170,17 @@ export default function CakeCard({
         {cake.type.toUpperCase()}
       </Badge>
 
-      {/* Quick View Button */}
-      <Button
-        variant="secondary"
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
-        onClick={() => setShowModal(true)}
-      >
-        <Eye className="mr-2 h-4 w-4" />
-        Quick View
-      </Button>
+     {/* Quick View Button - Conditionally rendered based on isMobile */}
+      {!isMobile && (
+        <Button
+          variant="secondary"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          onClick={() => setShowModal(true)}
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          Quick View
+        </Button>
+      )}
 
       {/* Favorite Button */}
       {session && (
@@ -225,7 +243,7 @@ export default function CakeCard({
       <CardContent className="relative pt-4">
         <div
           className={`h-48 w-full rounded-lg overflow-hidden transform transition-all duration-300 ${
-            isHovered ? "scale-105 blur-sm" : "scale-100"
+            isHovered ? "scale-105 lg:blur-sm md:blur-sm" : "scale-100"
           }`}
         >
           <img
