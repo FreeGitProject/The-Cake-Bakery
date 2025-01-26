@@ -105,6 +105,35 @@ export default function CheckoutForm() {
       return;
     }
 
+ // Check delivery availability
+ const pincode = formData.zipCode;
+ try {
+   const response = await fetch("api/check-delivery", {
+     method: "POST",
+     headers: { "Content-Type": "application/json" },
+     body: JSON.stringify({ location: pincode }),
+   });
+
+   const data = await response.json();
+
+   if (!response.ok || !data.deliverable) {
+     toast({
+       title: "Delivery Unavailable",
+       description: data.message || "We cannot deliver to your location.",
+       variant: "destructive",
+     });
+     return;
+   }
+ } catch (error) {
+   console.error("Error checking delivery availability:", error);
+   toast({
+     title: "Error",
+     description: "Failed to check delivery availability. Please try again.",
+     variant: "destructive",
+   });
+   return;
+ }
+
     const orderData = {
       orderItems: cart.map((item) => ({
         productId: item.id,

@@ -28,7 +28,13 @@ export default function CartOffCanvas({
     setIsOpen(false);
     router.push("/checkout");
   };
-
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity === 0) {
+      removeFromCart(id);
+    } else {
+      updateQuantity(id, newQuantity);
+    }
+  };
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent>
@@ -60,7 +66,7 @@ export default function CartOffCanvas({
                         variant="outline"
                         size="icon"
                         onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
+                          handleQuantityChange(item.id, item.quantity - 1)
                         }
                       >
                         <Minus className="h-4 w-4" />

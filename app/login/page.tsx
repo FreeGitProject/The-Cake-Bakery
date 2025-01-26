@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import LoginForm from '../components/LoginForm'
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth'; // Import your auth options if needed
 
 export const metadata: Metadata = {
   title: 'Login | Cake-Bakery Shop',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function LoginPage() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (session ) {
     redirect('/'); // Redirect to login if no session or user is not an admin
   }

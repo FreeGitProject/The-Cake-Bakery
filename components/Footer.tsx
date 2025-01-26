@@ -1,9 +1,18 @@
 "use client"
+import { motion } from 'framer-motion'
 import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
+import NewsletterSubscribe from "@/components/NewsletterSubscribe"
+import { 
+  Facebook, 
+  Instagram, 
+  Twitter, 
+  Mail, 
+  Phone, 
+  ChevronRight 
+} from 'lucide-react'
 interface FooterData {
   companyName: string
   description: string
@@ -37,7 +46,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative bg-[#FF9494] text-white pt-16 pb-8">
+    <footer className="relative bg-gradient-to-br from-[#FF9494] to-[#FFB4B4] text-white pt-16 pb-8">
     {/* Decorative Top Border */}
     <div className="absolute top-0 left-0 right-0 h-4 bg-[#FF9494] shadow-lg">
       <div className="absolute top-0 left-0 right-0 h-2 bg-[#FFB4B4]" style={{
@@ -45,92 +54,136 @@ export default function Footer() {
       }}/>
     </div>
 
-    <div className="container mx-auto px-4">
-      {/* Logo */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-white rounded-full p-2 shadow-lg transform hover:rotate-12 transition-transform duration-300">
+    <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-12">
+      {/* Brand Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center md:items-start"
+      >
+        <motion.div 
+          whileHover={{ scale: 1.1, rotate: 6 }}
+          className="mb-6 rounded-full overflow-hidden border-4 border-white shadow-xl"
+        >
           <Image 
             src="https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png" 
-            alt="The-Cake-Shop Logo" 
+            alt="Cake Atelier Logo" 
             width={150} 
             height={150} 
-            className="rounded-full"
+            className="object-cover"
           />
-        </div>
-      </div>
+        </motion.div>
+        <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
+          {footerData.companyName}
+        </h2>
+        <p className="text-sm text-center md:text-left opacity-80">
+          {footerData.description}
+        </p>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-        {/* Company Info */}
-        <div className="text-center md:text-left">
-          <h3 className="text-2xl font-semibold mb-4 hover:text-[#FFF5E4] transition-colors duration-300">
-            {footerData.companyName}
-          </h3>
-          <p className="text-sm leading-relaxed hover:text-[#FFF5E4] transition-colors duration-300">
-            {footerData.description}
-          </p>
-        </div>
+      {/* Rest of the component remains the same as previous submission */}
+      {/* Quick Links, Contact Info, Newsletter sections */}
+      
+      {/* Quick Links */}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="space-y-4"
+      >
+        <h3 className="text-xl font-semibold mb-6 border-b pb-2">Explore</h3>
+        {[
+          { name: 'Home', href: '/' },
+          { name: 'Our Cakes', href: '/cakes' },
+          { name: 'About Us', href: '/about' },
+          { name: 'Events', href: '/events' },
+          { name: 'Contact', href: '/contact' },
+          { name: 'Policies', href: '/policies' }
+        ].map((link) => (
+          <motion.div 
+            key={link.name}
+            whileHover={{ translateX: 10 }}
+            className="flex items-center"
+          >
+            <ChevronRight className="mr-2 text-white/70" size={16} />
+            <Link 
+              href={link.href} 
+              className="hover:text-white/80 transition-colors"
+            >
+              {link.name}
+            </Link>
+          </motion.div>
+        ))}
+      </motion.div>
 
-        {/* Quick Links */}
-        <div className="text-center md:text-left">
-          <h3 className="text-xl font-semibold mb-4">Sweet Links</h3>
-          <ul className="space-y-2">
-            {['Home', 'News', 'About', 'Favorites', 'Location', 'Policies'].map((item) => (
-              <li key={item} className="transform hover:translate-x-2 transition-transform duration-300">
-                <Link 
-                  href={item === 'Policies' ? '/policies' : `#${item.toLowerCase()}`}
-                  className="hover:text-[#FFF5E4] transition-colors duration-300 flex items-center justify-center md:justify-start"
-                >
-                  <span className="mr-2">🍰</span> {item}
-                </Link>
-              </li>
-            ))}
-            <li className="transform hover:translate-x-2 transition-transform duration-300">
-              <Link 
-                href="/cakes"
-                className="hover:text-[#FFF5E4] transition-colors duration-300 flex items-center justify-center md:justify-start"
-              >
-                <span className="mr-2">🎂</span> All Cakes
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Contact Info */}
-        <div className="text-center md:text-left">
-          <h3 className="text-xl font-semibold mb-4">Get in Touch</h3>
-          <div className="space-y-4">
-            <p className="flex items-center justify-center md:justify-start">
-              <span className="mr-2">📧</span> {footerData.email}
-            </p>
-            <p className="flex items-center justify-center md:justify-start">
-              <span className="mr-2">📞</span> {footerData.phone}
-            </p>
-            <div className="flex justify-center md:justify-start space-x-6">
-              {Object.entries(footerData.socialLinks).map(([platform, url]) => (
-                <a
-                  key={platform}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transform hover:scale-110 hover:text-[#FFF5E4] transition-all duration-300"
-                >
-                  <svg className="h-8 w-8" fill="currentColor" viewBox="0 0 24 24">
-                    {platform === 'facebook' && (
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    )}
-                    {platform === 'twitter' && (
-                      <path d="M23.953 4.57a10 10 0 01-2.88.79 5.03 5.03 0 002.21-2.78 10.05 10.05 0 01-3.19 1.22 5.02 5.02 0 00-8.55 4.58A14.25 14.25 0 011.67 3.15a5.02 5.02 0 001.56 6.7 5 5 0 01-2.27-.62v.06a5.02 5.02 0 004.03 4.92 5.04 5.04 0 01-2.27.09 5.02 5.02 0 004.68 3.48 10.06 10.06 0 01-6.22 2.15A10.15 10.15 0 010 19.54a14.21 14.21 0 007.7 2.26c9.24 0 14.3-7.65 14.3-14.3v-.65a10.2 10.2 0 002.5-2.6"/>
-                    )}
-                    {platform === 'instagram' && (
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                    )}
-                  </svg>
-                </a>
-              ))}
-            </div>
+      {/* Contact Info */}
+      <motion.div 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="space-y-6"
+      >
+        <h3 className="text-xl font-semibold mb-6 border-b pb-2">Connect</h3>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <Mail className="text-white/70" />
+            <a 
+              href={`mailto:${footerData.email}`} 
+              className="hover:text-white/80 transition-colors"
+            >
+              {footerData.email}
+            </a>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Phone className="text-white/70" />
+            <a 
+              href={`tel:${footerData.phone}`} 
+              className="hover:text-white/80 transition-colors"
+            >
+              {footerData.phone}
+            </a>
           </div>
         </div>
+
+        {/* Social Links */}
+        <div className="flex space-x-6 mt-6">
+          {[
+            { icon: Facebook, href: footerData.socialLinks.facebook },
+            { icon: Instagram, href: footerData.socialLinks.instagram },
+            { icon: Twitter, href: footerData.socialLinks.twitter }
+          ].map(({ icon: Icon, href }) => (
+            <motion.a
+              key={href}
+              href={href}
+              target="_blank"
+              whileHover={{ scale: 1.2 }}
+              className="text-white/70 hover:text-white transition-colors"
+            >
+              <Icon size={24} />
+            </motion.a>
+          ))}
+        </div>
+      </motion.div>
+
+       {/* Newsletter */}
+       <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+          className="bg-white/10 rounded-xl p-6 backdrop-blur-sm"
+        >
+          <h3 className="text-xl font-semibold mb-4">Stay Inspired</h3>
+          <p className="text-sm mb-4 opacity-80">
+            Subscribe to our newsletter for exclusive recipes, offers, and culinary insights.
+          </p>
+          <NewsletterSubscribe />
+        </motion.div>
       </div>
+
+    {/* Copyright */}
+    <div className="text-center text-white/70 mt-12 pt-6 border-t border-white/20">
+      © {new Date().getFullYear()} {footerData.companyName}. All Rights Reserved.
     </div>
   </footer>
   )

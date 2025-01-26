@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
     zipCode: String,
     country: String,
   },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date },
 }, { timestamps: true });
 
 export const User = mongoose.models.User || mongoose.model('User', userSchema);

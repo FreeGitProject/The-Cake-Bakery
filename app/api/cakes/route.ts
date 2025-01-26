@@ -5,7 +5,7 @@ import { Cake } from '@/models/cake';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/lib/auth";
 import { AdminSettings } from '@/models/adminSettings';
-import { getFromCache, setToCache } from '@/lib/redis';
+import { deleteFromCache, getFromCache, setToCache } from '@/lib/redis';
 import { revalidateTag } from 'next/cache';
 
 export async function GET() {
@@ -66,6 +66,9 @@ async function fetchCakes() {
         },
       },
     },
+    {
+      $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+    },
   ]);
 }
 
@@ -80,9 +83,27 @@ export async function POST(request: Request) {
     await clientPromise;
     const data = await request.json();
     const cake = await Cake.create(data);
+
+    // Fetch admin settings
+    const settings = await AdminSettings.findOne({});
+
+    // If enabled, send email to subscribers
+    if (settings?.enableSubscribeSendMailWhenCreateCake) {
+      await fetch(`${process.env.DOMAIN_URL}/api/newsletter/send-cake-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cake),
+      });
+    }
+
+    // Delete the cache for cakes to ensure fresh data
+    const cacheKey = 'cakes';
+    await deleteFromCache(cacheKey);
+
     return NextResponse.json(cake);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create cake' }, { status: 500 });
   }
 }
+
 
