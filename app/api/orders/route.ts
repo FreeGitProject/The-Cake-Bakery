@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();
-    // if (paymentMethod === 'Cash on Delivery') {
+     if (paymentMethod === 'Cash on Delivery') {
     try {
       await sendOrderConfirmationEmail(newOrder, newOrder.paymentMethod); //'Cash on Delivery');
     } catch (emailError) {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       // We don't want to fail the order creation if email sending fails
       // But we might want to log this error or handle it in some way
     }
-    // }
+     }
 
     return NextResponse.json({
       message: "Order placed successfully",

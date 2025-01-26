@@ -119,7 +119,7 @@ export default function CheckoutForm() {
       shippingAddress: formData,
     };
     //console.log("orderData",orderData)
-    if (paymentMethod === "Razorpay") {
+    if (paymentMethod === "Online Payment") {
       initializeRazorpayPayment(orderData);
     } else {
       const result = await placeOrder(orderData);
@@ -139,24 +139,47 @@ export default function CheckoutForm() {
       const response = await fetch("/api/create-razorpay-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: orderData.totalAmount }),
+        body: JSON.stringify(orderData),
       });
       const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create order');
+      }
+      const { razorpayOrder } = data;
+     // const { razorpayOrder, order } = data;
+
+     // console.log('Backend Order:', order);
+      //console.log('Razorpay Order:', razorpayOrder);
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: data.amount,
+        amount: razorpayOrder.amount,
         currency: "INR",
-        name: "Cake-Bakery Shop",
+        name: "The Cake Shop",
         description: "Payment for your order",
-        order_id: data.id,
+        order_id: razorpayOrder.id,
         handler: async function (response: any) {
-          const result = await placeOrder({
-            ...orderData,
-            razorpayOrderId: data.id,
-            razorpayPaymentId: response.razorpay_payment_id,
-          });
-          if (result.success) {
+          //remove old way to create a order 
+          // const result = await placeOrder({
+          //   ...orderData,
+          //   razorpayOrderId: data.id,
+          //   razorpayPaymentId: response.razorpay_payment_id,
+          // });
+            // Call backend API to verify payment and update order
+            const verifyResponse = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+            const verifyData = await verifyResponse.json();
+            if (!verifyResponse.ok) {
+              throw new Error(verifyData.error || 'Payment verification failed');
+            }
+        else  {
             clearCart();
             toast({
               title: "Order placed successfully!",
@@ -364,7 +387,7 @@ export default function CheckoutForm() {
               <Label htmlFor="cod">Cash on Delivery</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="Razorpay" id="razorpay" />
+              <RadioGroupItem value="Online Payment" id="razorpay" />
               <Label htmlFor="razorpay">Pay Online (Razorpay)</Label>
             </div>
           </RadioGroup>
