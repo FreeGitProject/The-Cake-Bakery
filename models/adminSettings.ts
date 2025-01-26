@@ -5,6 +5,7 @@ const adminSettingsSchema = new mongoose.Schema({
   cachingEnabled: { type: Boolean, default: false },
   cachingStrategy: { type: String, enum: ['isr', 'redis'], default: 'isr' },
   recentViewsCount: { type: Number, default: 5 },
+  enableSubscribeSendMailWhenCreateCake: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export const AdminSettings = mongoose.models.AdminSettings || mongoose.model('AdminSettings', adminSettingsSchema);

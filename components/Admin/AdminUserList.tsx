@@ -148,7 +148,7 @@ export default function AdminUserList() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Update User Role</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to change {user.username}'s role from {user.role} to{" "}
+                            Are you sure you want to change {user.username}&apos;s role from {user.role} to{" "}
                             {user.role === "admin" ? "user" : "admin"}?
                           </AlertDialogDescription>
                         </AlertDialogHeader>

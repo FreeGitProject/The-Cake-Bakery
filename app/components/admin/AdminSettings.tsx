@@ -8,13 +8,13 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-//import { useToast } from "@/components/ui/use-toast"
 import { useToast } from "@/hooks/use-toast"
 interface AdminSettingsData {
   catalogPageSize: number;
   cachingEnabled: boolean;
   cachingStrategy: 'isr' | 'redis';
   recentViewsCount: number;
+  enableSubscribeSendMailWhenCreateCake: boolean
 }
 
 export default function AdminSettings() {
@@ -23,6 +23,7 @@ export default function AdminSettings() {
     cachingEnabled: false,
     cachingStrategy: 'isr',
     recentViewsCount: 5,
+    enableSubscribeSendMailWhenCreateCake: false,
   });
   const { data: session } = useSession();
   const { toast } = useToast();
@@ -166,7 +167,18 @@ export default function AdminSettings() {
           </div>
         </CardContent>
       </Card>
-
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="enableSubscribeSendMailWhenCreateCake"
+          checked={settings.enableSubscribeSendMailWhenCreateCake}
+          onCheckedChange={(checked) =>
+            setSettings((prev) => ({ ...prev, enableSubscribeSendMailWhenCreateCake: checked }))
+          }
+        />
+        <Label htmlFor="enableSubscribeSendMailWhenCreateCake">
+          Send email to subscribers when a new cake is created
+        </Label>
+      </div>
       <Button type="submit">Save Settings</Button>
     </form>
   );

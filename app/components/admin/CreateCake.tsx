@@ -21,6 +21,7 @@ interface Category {
 
 export default function CreateCake() {
   const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
   const [newCake, setNewCake] = useState({
     name: "",
     description: "",
@@ -113,6 +114,7 @@ export default function CreateCake() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
     try {
       const response = await fetch("/api/cakes", {
         method: "POST",
@@ -129,6 +131,8 @@ export default function CreateCake() {
       }
     } catch (error) {
       console.error("Error adding cake:", error);
+    }finally {
+      setIsLoading(false)
     }
   };
 
@@ -237,7 +241,9 @@ export default function CreateCake() {
             ))}
           </SelectContent>
         </Select>
-        <Button type="submit">Add Cake</Button>
+        <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Adding..." : "Add Cake"}
+      </Button>
       </form>
     </div>
   );
