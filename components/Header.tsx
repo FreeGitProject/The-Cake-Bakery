@@ -56,7 +56,7 @@ export default function Header() {
           priority
         />
       </div>
-      <span className="ml-3 text-3xl font-bold text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
+      <span className="ml-3 sm:text-3xl text-base font-bold text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
         The Cake Shop
       </span>
     </Link>
