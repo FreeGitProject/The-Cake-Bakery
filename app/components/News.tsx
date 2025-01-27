@@ -2,7 +2,7 @@
 "use client"
 //import Image from 'next/image'
 import { useState, useEffect } from 'react'
-
+import { motion } from 'framer-motion'
 interface NewsItem {
   _id: string
   title: string
@@ -31,13 +31,31 @@ export default function News() {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
+        <motion.h2 
+          initial={{ opacity: 0, y: -50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+         
+        >
           <h2 className="text-4xl font-bold text-[#4A4A4A] mb-4 relative inline-block">Latest Updates
+        
           <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#FF9494] rounded-full"></div>
           </h2>
+          </motion.h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {news.map((item) => (
+          {news.map((item, index) => (
+               <motion.div 
+               key={item._id}
+               initial={{ opacity: 0, y: 50 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               transition={{ 
+                 duration: 0.6, 
+                 delay: index * 0.2 
+               }}
+             
+             >
             <div 
               key={item._id} 
               className="group cursor-pointer"
@@ -82,6 +100,7 @@ export default function News() {
                 </svg>
               </div> */}
             </div>
+            </motion.div>
           ))}
         </div>
       </div>
