@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -215,6 +216,11 @@ export default function AllCakes() {
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <div className="text-center mb-12">
+        <motion.h2
+                initial={{ opacity: 0, y: -50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.6 }}
+              >
         <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">
           Discover Our Cakes
         </h1>
@@ -222,6 +228,7 @@ export default function AllCakes() {
           Explore our delicious collection of handcrafted cakes, made with love
           and the finest ingredients.
         </p>
+        </motion.h2>
       </div>
 
       {/* Search and Filter Section */}
@@ -255,8 +262,14 @@ export default function AllCakes() {
       </div>
 
       {/* Cakes Grid */}
+     
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {currentCakes.map((cake) => (
+        {currentCakes.map((cake, index) => (
+           <motion.h2
+           initial={{ opacity: 0, y: -50 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           transition={{ duration: 1.6 }}
+         >
            <CakeCard
            key={cake._id}
            cake={cake}
@@ -264,6 +277,7 @@ export default function AllCakes() {
            onAddToWishlist={handleAddToWishlist}
            onRemoveFromWishlist={handleRemoveFromWishlist}
          />
+          </motion.h2>
        ))}
       </div>
 
