@@ -42,9 +42,9 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <motion.h2
-              initial={{ opacity: 0, y: -50 }}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6}}
               className="text-4xl font-bold text-white mb-4"
             >
               {aboutData.title || "Our Story"}
@@ -57,9 +57,9 @@ export default function About() {
             <div className="md:w-1/2 relative group">
               <div className="absolute -inset-4 bg-[#FFB4B4] rounded-2xl opacity-50 group-hover:opacity-70 transition duration-300 blur-lg" />
               <motion.h2
-                initial={{ opacity: 0, y: -50 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.6 }}
+                transition={{ duration: 0.6}}
               >
                 <div className="relative">
                   <img
@@ -74,9 +74,9 @@ export default function About() {
 
             <div className="md:w-1/2 space-y-6">
               <motion.h2
-                initial={{ opacity: 0, y: -50 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.6 }}
+                transition={{ duration: 0.6}}
               >
                 {aboutData.description.map((paragraph, index) => (
                   <p

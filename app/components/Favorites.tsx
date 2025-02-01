@@ -44,9 +44,9 @@ export default function Favorites() {
         {/* Section Header */}
         <div className="text-center mb-12">
         <motion.h2 
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6}}
          
         >
           <h2 className="text-4xl font-bold text-[#4A4A4A] mb-4 relative inline-block">

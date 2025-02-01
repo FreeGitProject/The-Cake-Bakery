@@ -89,7 +89,7 @@ export default function Footer() {
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.6}}
         className="space-y-4"
       >
         <h3 className="text-xl font-semibold mb-6 border-b pb-2">Explore</h3>
@@ -121,7 +121,7 @@ export default function Footer() {
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        transition={{ duration: 0.6}}
         className="space-y-6"
       >
         <h3 className="text-xl font-semibold mb-6 border-b pb-2">Connect</h3>
@@ -170,7 +170,7 @@ export default function Footer() {
        <motion.div 
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6}}
           className="bg-white/10 rounded-xl p-6 backdrop-blur-sm"
         >
           <h3 className="text-xl font-semibold mb-4">Stay Inspired</h3>
