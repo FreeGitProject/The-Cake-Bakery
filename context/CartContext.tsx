@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface CartItem {
   id: string;
   name: string;
+  caketype: string;
   price: number;
   weight: number;
   quantity: number;

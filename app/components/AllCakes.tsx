@@ -29,6 +29,7 @@ interface Cake {
   _id: string;
   name: string;
   description: string;
+  caketype: "cake" | "pastries";
   type: "contains egg" | "eggless";
   prices: Price[];
   image: string[];
@@ -45,7 +46,10 @@ interface WishlistItem {
   _id: string;
   cakeId: string;
 }
-export default function AllCakes() {
+interface CakeTypeProps {
+  caketype: "cake" | "pastries";
+}
+export default function AllCakes({ caketype }: CakeTypeProps) {
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [filteredCakes, setFilteredCakes] = useState<Cake[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -100,7 +104,7 @@ export default function AllCakes() {
   };
   const fetchCakes = async () => {
     try {
-      const response = await fetch("/api/cakes");
+      const response = await fetch(`/api/cakes?caketype=${caketype}`);
       const data = await response.json();
       setCakes(data);
       if (data && data.length > 0) setLoading(false);

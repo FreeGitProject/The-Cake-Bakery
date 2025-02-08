@@ -25,7 +25,7 @@ export default function Header() {
     { name: "Home", path: "/" },
     // { name: 'Favorites', path: '/favorites' },
     { name: "Cakes", path: "/cakes" },
-    { name: "News", path: "/news" },
+    { name: "Pastries", path: "/pastries" },
   ];
   const { session } = useSessionContext();
   //console.log("header session", session?.user);

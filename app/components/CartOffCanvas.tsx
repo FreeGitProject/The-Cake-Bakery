@@ -56,7 +56,7 @@ export default function CartOffCanvas({
                   <div className="flex-grow">
                     <h3 className="font-semibold">{item.name}</h3>
                     <p className="text-sm text-gray-500">
-                      Weight : {item.weight.toFixed(2)}Kg
+                    {item.caketype === "cake" ? "Weight" : "Pieces"}  : {item.caketype === "cake"  ? item.weight.toFixed(1) : item.weight} {item.caketype === "cake" ? "Kg" : "pieces"}
                     </p>
                     <p className="text-sm text-gray-500">
                       ₹{item.price.toFixed(2)}

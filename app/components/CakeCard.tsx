@@ -45,6 +45,7 @@ interface Cake {
   _id: string;
   name: string;
   description: string;
+  caketype: "cake" | "pastries";
   type: "contains egg" | "eggless";
   prices: Price[];
   image: string[];
@@ -111,11 +112,12 @@ export default function CakeCard({
     const price = cake.prices.find(
       (p) => p.weight.toString() === selectedWeight
     );
-    console.log(quantity);
+   // console.log(quantity);
     if (price)
       addToCart({
         id: cake._id,
         name: cake.name,
+        caketype: cake.caketype,
         price: price.sellPrice,
         weight: price.weight,
         quantity: quantity,
@@ -129,6 +131,7 @@ export default function CakeCard({
     addToCart({
       id: cake._id,
       name: cake.name,
+      caketype: cake.caketype,
       price: lowestPrice.sellPrice,
       quantity: 1,
       image: cake.image[0],
@@ -267,7 +270,7 @@ export default function CakeCard({
             <SelectContent>
               {cake.prices.map((price) => (
                 <SelectItem key={price.weight} value={price.weight.toString()}>
-                  {price.weight}Kg
+                  {price.weight} {cake.caketype === "cake" ? "Kg" : "pieces"}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -8,10 +8,21 @@ import { AdminSettings } from '@/models/adminSettings';
 import { deleteFromCache, getFromCache, setToCache } from '@/lib/redis';
 import { revalidateTag } from 'next/cache';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Connect to MongoDB
     await clientPromise;
+    
+    // Parse query parameters
+    const url = new URL(request.url);
+    const caketype = url.searchParams.get("caketype"); // 'cake' or 'pastries'
+
+    if (!caketype) {
+    return NextResponse.json(
+      { error: "Missing 'caketype' query parameter." },
+      { status: 400 }
+    );
+    }
 
     // Fetch admin settings
     const adminSettings = await AdminSettings.findOne().exec();
@@ -19,11 +30,11 @@ export async function GET() {
     const cachingStrategy = adminSettings?.cachingStrategy ?? 'isr';
 
     // Cache key for Redis
-    const cacheKey = 'cakes';
+    const cacheKey = `cakes_${caketype}`;
 
     // ISR Strategy: Use Next.js revalidation mechanism
     if (cachingEnabled && cachingStrategy === 'isr') {
-      const data = await fetchCakes(); // Fetch data
+      const data = await fetchCakes(caketype); // Fetch data
       revalidateTag(cacheKey); // Tag for ISR caching
       return NextResponse.json(data);
     }
@@ -36,13 +47,13 @@ export async function GET() {
       }
 
       // Cache miss: Fetch from DB and store in Redis
-      const data = await fetchCakes();
+      const data = await fetchCakes(caketype);
       await setToCache(cacheKey, data, 3600); // Cache for 1 hour
       return NextResponse.json(data);
     }
 
     // Default behavior: Fetch directly from DB if caching is disabled
-    const data = await fetchCakes();
+    const data = await fetchCakes(caketype);
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
@@ -53,8 +64,11 @@ export async function GET() {
 }
 
 // Helper function to fetch cakes from MongoDB
-async function fetchCakes() {
+async function fetchCakes(caketype: string) {
   return Cake.aggregate([
+    {
+      $match: { caketype }, // Filter by caketype (either 'cake' or 'pastries')
+    },
     {
       $addFields: {
         averageRating: {

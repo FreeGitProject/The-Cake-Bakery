@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 }
 
 export default function CakesPage() {
-  return <AllCakes />
+  return <AllCakes caketype="cake"/>
 }
 

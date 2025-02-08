@@ -13,6 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface Category {
   _id: string;
@@ -28,10 +30,12 @@ interface Price {
 interface Cake {
   name: string;
   description: string;
+  caketype: string; // cake or pastries
   type: string; // egg or eggless
   prices: Price[];
   image: string[];
   category: string;
+  isAvailable: boolean
 }
 
 export default function EditCake({ id }: { id: string }) {
@@ -139,7 +143,13 @@ export default function EditCake({ id }: { id: string }) {
       category: value,
     }));
   };
-
+  const handleCakeTypeChange = (value: string) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      caketype: value,
+    }));
+  };
   const handleTypeChange = (value: string) => {
     if (!cake) return;
     setCake((prev) => ({
@@ -169,7 +179,10 @@ export default function EditCake({ id }: { id: string }) {
       console.error("Error updating cake:", error);
     }
   };
-
+  const handleSwitchChange = (checked: boolean) => {
+    if (!cake) return;
+    setCake((ck) => ({ ...ck!, isAvailable: checked }))
+  }
   if (!cake) return <p>Loading cake details...</p>;
 
   return (
@@ -190,6 +203,15 @@ export default function EditCake({ id }: { id: string }) {
           placeholder="Cake Description"
           required
         />
+            <Select onValueChange={handleCakeTypeChange} value={cake.caketype}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cake">Cake</SelectItem>
+            <SelectItem value="pastries">Pastry</SelectItem>
+          </SelectContent>
+        </Select>
         <Select onValueChange={handleTypeChange} value={cake.type}>
           <SelectTrigger>
             <SelectValue placeholder="Select Type" />
@@ -270,6 +292,14 @@ export default function EditCake({ id }: { id: string }) {
             ))}
           </SelectContent>
         </Select>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isAvailable"
+            checked={cake.isAvailable}
+            onCheckedChange={handleSwitchChange}
+          />
+          <Label htmlFor="isAvailable">Available</Label>
+        </div>
         <Button type="submit">Update Cake</Button>
       </form>
     </div>
