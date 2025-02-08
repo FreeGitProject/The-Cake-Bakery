@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface Cake {
   _id: string;
@@ -28,15 +29,16 @@ interface Cake {
 
 export default function AdminCakes() {
   const [cakes, setCakes] = useState<Cake[]>([]);
+  const [cakeType, setCakeType] = useState<string>("cake");
   const router = useRouter();
 
   useEffect(() => {
     fetchCakes();
-  }, []);
+  }, [cakeType]);
 
   const fetchCakes = async () => {
     try {
-      const response = await fetch("/api/cakes");
+      const response = await fetch(`/api/cakes?caketype=${cakeType}`);
       const data = await response.json();
       setCakes(data);
     } catch (error) {
@@ -56,6 +58,10 @@ export default function AdminCakes() {
       console.error("Error deleting cake:", error);
     }
   };
+  const handleCakeTypeChange = (value: string) => {
+    setCakeType(value);
+  };
+
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,6 +69,17 @@ export default function AdminCakes() {
       <Button onClick={() => router.push("/admin/create-cake")} className="mb-6">
         Add New Cake
       </Button>
+      <div className="mb-6">
+        <Select onValueChange={handleCakeTypeChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cake">Cake</SelectItem>
+            <SelectItem value="pastries">Pastry</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cakes.map((cake) => (
           <Card key={cake._id}>

@@ -25,6 +25,7 @@ export default function CreateCake() {
   const [newCake, setNewCake] = useState({
     name: "",
     description: "",
+    caketype:"cake",//caketype means cake or pastries
     type: "eggless",
     prices: [{ weight: 0, costPrice: 0, sellPrice: 0 }],
     image: [""],
@@ -59,6 +60,9 @@ export default function CreateCake() {
 
   const handleTypeChange = (value: string) => {
     setNewCake((prev) => ({ ...prev, type: value }));
+  };
+  const handleCakeTypeChange = (value: string) => {
+    setNewCake((prev) => ({ ...prev, caketype: value }));
   };
 
   const handlePriceChange = (
@@ -144,16 +148,25 @@ export default function CreateCake() {
           name="name"
           value={newCake.name}
           onChange={handleInputChange}
-          placeholder="Cake Name"
+          placeholder="Name"
           required
         />
         <Textarea
           name="description"
           value={newCake.description}
           onChange={handleInputChange}
-          placeholder="Cake Description"
+          placeholder="Description"
           required
         />
+            <Select onValueChange={handleCakeTypeChange} value={newCake.caketype}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cake">Cake</SelectItem>
+            <SelectItem value="pastries">Pastry</SelectItem>
+          </SelectContent>
+        </Select>
         <Select onValueChange={handleTypeChange} value={newCake.type}>
           <SelectTrigger>
             <SelectValue placeholder="Select type" />

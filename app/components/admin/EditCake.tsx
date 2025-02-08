@@ -28,6 +28,7 @@ interface Price {
 interface Cake {
   name: string;
   description: string;
+  caketype: string; // cake or pastries
   type: string; // egg or eggless
   prices: Price[];
   image: string[];
@@ -139,7 +140,13 @@ export default function EditCake({ id }: { id: string }) {
       category: value,
     }));
   };
-
+  const handleCakeTypeChange = (value: string) => {
+    if (!cake) return;
+    setCake((prev) => ({
+      ...prev!,
+      caketype: value,
+    }));
+  };
   const handleTypeChange = (value: string) => {
     if (!cake) return;
     setCake((prev) => ({
@@ -190,6 +197,15 @@ export default function EditCake({ id }: { id: string }) {
           placeholder="Cake Description"
           required
         />
+            <Select onValueChange={handleCakeTypeChange} value={cake.caketype}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cake">Cake</SelectItem>
+            <SelectItem value="pastries">Pastry</SelectItem>
+          </SelectContent>
+        </Select>
         <Select onValueChange={handleTypeChange} value={cake.type}>
           <SelectTrigger>
             <SelectValue placeholder="Select Type" />

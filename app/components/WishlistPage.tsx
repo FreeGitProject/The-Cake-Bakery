@@ -15,6 +15,7 @@ interface WishlistItem {
   _id: string
   cakeId: string
   name: string
+  caketype: string
   image: string
   price: number
   weight: number
@@ -79,6 +80,7 @@ export default function WishlistPage() {
     addToCart({
       id: item.cakeId,
       name: item.name,
+      caketype: item.caketype,
       price: item.price,
       quantity: 1,
       image: item.image,

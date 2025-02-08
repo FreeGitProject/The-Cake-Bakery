@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext'
 interface Cake {
   _id: string
   name: string
+  caketype: string
   description: string
   image: string
   price: number
@@ -32,6 +33,7 @@ export default function Favorites() {
     addToCart({
       id: cake._id,
       name: cake.name,
+      caketype: cake.caketype,
       price: cake.price,
       weight: 2,
       quantity: 1,

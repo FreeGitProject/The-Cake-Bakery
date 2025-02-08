@@ -25,6 +25,7 @@ const cakeSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
+    caketype: { type: String, enum: ["cake", "pastries"], required: true }, // cake or pastries
     type: { type: String, enum: ["contains egg", "eggless"], required: true }, // Egg or Eggless
     prices: { type: [priceSchema], required: true }, // Array of prices for different weights
     image: { type: [String], required: true }, // Array of image URLs

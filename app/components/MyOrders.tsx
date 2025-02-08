@@ -8,6 +8,7 @@ import Image from "next/image";
 
 interface OrderItem {
   name: string;
+  caketype: string;
   quantity: number;
   weight: number;
   price: number;
@@ -89,7 +90,7 @@ export default function MyOrders() {
                     <div className="flex-grow">
                       <p className="font-semibold">{item.name}</p>
                       <p className="text-sm text-gray-500">
-                        Weight: {item.weight}Kg
+                      {item.caketype === "cake" ? "Weight" : "Pieces"}  : {item.weight}{item.caketype === "cake" ? "Kg" : ""}
                       </p>
                       <p className="text-sm text-gray-500">
                         Quantity: {item.quantity} x ₹{item.price.toFixed(2)}
