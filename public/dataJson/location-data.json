@@ -1,0 +1,66 @@
+{
+    "companyName": "The Cake Shop",
+    "locations": [
+      {
+        "id": 1,
+        "name": "Noida Branch",
+        "address": {
+          "line1": "Shop No. A-79, S.K Market",
+          "line2": "Shramik Kunj, Sector 110",
+          "city": "Noida",
+          "state": "Uttar Pradesh",
+          "pincode": "201304"
+        },
+        "coordinates": {
+          "lat": 28.533370126037724,
+          "lng": 77.38762052489452,
+          "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1752.6056133790903!2d77.38762052489452!3d28.533370126037724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce8a68ffffff1%3A0xaf4867a2327d6c68!2sThe%20Cake%20Shop!5e0!3m2!1sen!2sin!4v1736051994561!5m2!1sen!2sin"
+        },
+        "hours": {
+          "weekdays": {
+            "days": "Monday - Friday",
+            "open": "7:00 AM",
+            "close": "8:00 PM"
+          },
+          "saturday": {
+            "days": "Saturday",
+            "open": "8:00 AM",
+            "close": "9:00 PM"
+          },
+          "sunday": {
+            "days": "Sunday",
+            "open": "9:00 AM",
+            "close": "7:00 PM"
+          }
+        },
+        "contact": {
+          "phone": "+91 98765 43210",
+          "email": "noida@thecakeshop.com"
+        },
+        "features": [
+          "Birthday Cakes",
+          "Custom Orders",
+          "Wedding Cakes",
+          "Cafe Seating",
+          "Free WiFi",
+          "Parking Available"
+        ],
+        "specialHours": {
+          "festivals": "Extended hours during festivals",
+          "holidays": "Open on all major holidays"
+        }
+      }
+    ],
+    "socialMedia": {
+      "instagram": "@thecakeshop_noida",
+      "facebook": "TheCakeShopNoida",
+      "twitter": "@CakeShopNoida"
+    },
+    "delivery": {
+      "radius": "10km",
+      "minimumOrder": 500,
+      "partners": ["Swiggy", "Zomato", "UberEats"]
+    }
+  }
+
+  

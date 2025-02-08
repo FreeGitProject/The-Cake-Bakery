@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +15,6 @@ import Loader from "./Loader";
 import CakeCard from "./CakeCard";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
-
 
 interface Price {
   weight: number; // Weight in grams or kilograms
@@ -33,7 +33,7 @@ interface Cake {
   prices: Price[];
   image: string[];
   category: string;
-  reviews:Reviews[];
+  reviews: Reviews[];
   averageRating: number;
 }
 
@@ -61,7 +61,7 @@ export default function AllCakes() {
     fetchCakes();
     fetchCategories();
     if (session) {
-      fetchWishlist()
+      fetchWishlist();
     }
   }, [session]);
 
@@ -70,7 +70,7 @@ export default function AllCakes() {
   }, [cakes, searchTerm, categoryFilter]);
   useEffect(() => {
     const fetchSettings = async () => {
-      const response = await fetch('/api/admin/settings');
+      const response = await fetch("/api/admin/settings");
       if (response.ok) {
         const settings = await response.json();
         setCakesPerPage(settings.catalogPageSize);
@@ -81,17 +81,17 @@ export default function AllCakes() {
   const fetchWishlist = async () => {
     try {
       const [wishlistResponse] = await Promise.all([
-     //   fetch("/api/cakes"),
-       // fetch("/api/categories"),
+        //   fetch("/api/cakes"),
+        // fetch("/api/categories"),
         fetch("/api/wishlist"),
       ]);
 
-    //  const cakesData = await cakesResponse.json();
-     // const categoriesData = await categoriesResponse.json();
+      //  const cakesData = await cakesResponse.json();
+      // const categoriesData = await categoriesResponse.json();
       const wishlistData = await wishlistResponse.json();
 
-    //  setCakes(cakesData);
-     // setCategories(categoriesData);
+      //  setCakes(cakesData);
+      // setCategories(categoriesData);
       setWishlist(wishlistData);
       setLoading(false);
     } catch (error) {
@@ -139,13 +139,12 @@ export default function AllCakes() {
   };
 
   const handleAddToWishlist = async (cakeId: string) => {
-   // console.log(cakeId,"ca")
+    // console.log(cakeId,"ca")
     try {
-      const cake = cakes.find((c) => c._id === cakeId)
-    //  console.log(cake)
-      if (cake)
-      {
-        const response =await fetch("/api/wishlist", {
+      const cake = cakes.find((c) => c._id === cakeId);
+      //  console.log(cake)
+      if (cake) {
+        const response = await fetch("/api/wishlist", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -155,18 +154,18 @@ export default function AllCakes() {
             name: cake.name,
             image: cake.image[0],
             price: cake.prices[0].sellPrice,
-            weight:cake.prices[0].weight,
+            weight: cake.prices[0].weight,
           }),
-        })
-        const wishlistItems = await response.json()
-       // console.log(response,wishlistItems)
-       if (response.ok) {
-        setWishlist([...wishlist,wishlistItems]);
-        toast({
-          title: "Added to wishlist",
-          description: "The item has been added to your wishlist.",
         });
-      }else {
+        const wishlistItems = await response.json();
+        // console.log(response,wishlistItems)
+        if (response.ok) {
+          setWishlist([...wishlist, wishlistItems]);
+          toast({
+            title: "Added to wishlist",
+            description: "The item has been added to your wishlist.",
+          });
+        } else {
           console.error("Failed to add to wishlist");
         }
       }
@@ -190,7 +189,7 @@ export default function AllCakes() {
           title: "Removed from wishlist",
           description: "The item has been removed from your wishlist.",
         });
-      }else {
+      } else {
         console.error("Failed to remove from wishlist");
       }
     } catch (error) {
@@ -215,56 +214,81 @@ export default function AllCakes() {
     <div className="container mx-auto px-4 py-8">
       {/* Header Section */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">
-          Discover Our Cakes
-        </h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore our delicious collection of handcrafted cakes, made with love
-          and the finest ingredients.
-        </p>
+        <motion.h2
+          initial={{ opacity: 0, y: -50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">
+            Discover Our Cakes
+          </h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Explore our delicious collection of handcrafted cakes, made with
+            love and the finest ingredients.
+          </p>
+        </motion.h2>
       </div>
 
       {/* Search and Filter Section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <Input
-              type="text"
-              placeholder="Search for your favorite cake..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300"
-            />
+            <motion.h2
+              initial={{ opacity: 0, y: -50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Input
+                type="text"
+                placeholder="Search for your favorite cake..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300"
+              />
+            </motion.h2>
           </div>
           <div className="md:w-1/3">
-            <Select onValueChange={(value) => setCategoryFilter(value)}>
-              <SelectTrigger className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category._id} value={category.name}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <motion.h2
+              initial={{ opacity: 0, y: -50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <Select onValueChange={(value) => setCategoryFilter(value)}>
+                <SelectTrigger className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300">
+                  <SelectValue placeholder="Filter by category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category._id} value={category.name}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </motion.h2>
           </div>
         </div>
       </div>
 
       {/* Cakes Grid */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {currentCakes.map((cake) => (
-           <CakeCard
-           key={cake._id}
-           cake={cake}
-           isWishlisted={wishlist?.some((item) => item.cakeId === cake._id)}
-           onAddToWishlist={handleAddToWishlist}
-           onRemoveFromWishlist={handleRemoveFromWishlist}
-         />
-       ))}
+          <motion.div
+            key={cake._id} // Move the key here
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <CakeCard
+              cake={cake}
+              isWishlisted={wishlist?.some((item) => item.cakeId === cake._id)}
+              onAddToWishlist={handleAddToWishlist}
+              onRemoveFromWishlist={handleRemoveFromWishlist}
+            />
+          </motion.div>
+        ))}
       </div>
 
       {/* Pagination */}

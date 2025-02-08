@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
-
+import { motion } from 'framer-motion'
 interface Cake {
   _id: string
   name: string
@@ -43,18 +43,36 @@ export default function Favorites() {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
+        <motion.h2 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6}}
+         
+        >
           <h2 className="text-4xl font-bold text-[#4A4A4A] mb-4 relative inline-block">
             Our Favorites
             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#FF9494] rounded-full"></div>
           </h2>
+         
           <p className="text-gray-600 max-w-2xl mx-auto mt-4">
             Discover our most beloved and popular cake selections that have won hearts
           </p>
+          </motion.h2>
         </div>
 
         {/* Favorites Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {favorites.map((cake) => (
+          {favorites.map((cake,index) => (
+              <motion.div 
+              key={cake._id}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: index * 0.2 
+              }}
+             
+            >
             <div 
               key={cake._id} 
               className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden animate-fadeIn"
@@ -116,6 +134,7 @@ export default function Favorites() {
                 </div>
               </div> */}
             </div>
+            </motion.div>
           ))}
         </div>
       </div>
