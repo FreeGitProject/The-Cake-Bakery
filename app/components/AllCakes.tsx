@@ -217,9 +217,9 @@ export default function AllCakes() {
       {/* Header Section */}
       <div className="text-center mb-12">
         <motion.h2
-                initial={{ opacity: 0, y: -50 }}
+                initial={{ opacity: 0, y:-50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.6 }}
+                transition={{ duration: 0.6}}
               >
         <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">
           Discover Our Cakes
@@ -235,6 +235,11 @@ export default function AllCakes() {
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
+          <motion.h2
+           initial={{ opacity: 0, y:-50 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.6}}
+         >
             <Input
               type="text"
               placeholder="Search for your favorite cake..."
@@ -242,8 +247,14 @@ export default function AllCakes() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300"
             />
+             </motion.h2>
           </div>
           <div className="md:w-1/3">
+          <motion.h2
+           initial={{ opacity: 0, y:-50 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           transition={{ duration: 0.6 }}
+         >
             <Select onValueChange={(value) => setCategoryFilter(value)}>
               <SelectTrigger className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300">
                 <SelectValue placeholder="Filter by category" />
@@ -257,6 +268,7 @@ export default function AllCakes() {
                 ))}
               </SelectContent>
             </Select>
+            </motion.h2>
           </div>
         </div>
       </div>
@@ -266,9 +278,9 @@ export default function AllCakes() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {currentCakes.map((cake, index) => (
            <motion.h2
-           initial={{ opacity: 0, y: -50 }}
+           initial={{ opacity: 0, y: 50 }}
            whileInView={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1.6 }}
+           transition={{ duration: 0.6}}
          >
            <CakeCard
            key={cake._id}
