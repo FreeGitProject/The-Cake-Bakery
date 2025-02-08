@@ -31,6 +31,8 @@ interface Cake {
   name: string;
   description: string;
   type: string; // "egg" or "eggless"
+  //caketype: "cake" | "pastries";
+  caketype: string; // "egg" or "eggless"
   prices: Price[]; // Array of prices for different weights
   image: string[];
   category: string;
@@ -216,6 +218,7 @@ export default function CakeDetails({ id }: { id: string }) {
     addToCart({
       id: id,
       name: cake.name,
+      caketype: cake.caketype, 
       price: selectedWeight.sellPrice,
       weight: selectedWeight.weight,
       quantity: 1,
@@ -234,6 +237,7 @@ export default function CakeDetails({ id }: { id: string }) {
       addToCart({
         id: cake.id,
         name: cake.name,
+        caketype: cake.caketype,
         price: selectedWeight.sellPrice,
         quantity: 1,
         image: cake.image[0],
@@ -428,7 +432,7 @@ export default function CakeDetails({ id }: { id: string }) {
                     : "border-gray-200 hover:border-blue-200"
                 }`}
               >
-                {price.weight}Kg
+                {price.weight} {cake.caketype === "cake" ? "Kg" : "pieces"}
               </button>
             ))}
           </div>

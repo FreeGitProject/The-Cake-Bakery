@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const orderItemSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cake', required: true },
   name: { type: String, required: true },
+  caketype: { type: String,required: true }, // cake or pastries
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   weight: { type: Number, required: true },

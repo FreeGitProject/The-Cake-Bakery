@@ -62,7 +62,7 @@ export async function sendOrderConfirmationEmail(
             <div style="flex-grow: 1;">
               <strong>${item.name}
                 <small style="color: #7f8c8d;">${
-                  item.weight ? `(${item.weight}Kg)` : ""
+                  item.weight ? `(${item.weight}${item.caketype === "cake" ? "Kg" : "pieces"})` : ""
                 }</small>
               </strong>
               <div style="color: #666;">

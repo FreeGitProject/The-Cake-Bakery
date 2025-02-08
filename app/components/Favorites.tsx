@@ -3,13 +3,35 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
+import Link from 'next/link'
 
+// interface Cake {
+//   _id: string
+//   name: string
+//   caketype: string
+//   description: string
+//   image: string[]
+//   price: number
+//   isAvailable: boolean
+// }
+interface Price {
+  weight: number;
+  sellPrice: number;
+}
+interface Reviews {
+  userId: string;
+  rating: number;
+}
 interface Cake {
-  _id: string
-  name: string
-  description: string
-  image: string
-  price: number
+  _id: string;
+  name: string;
+  description: string;
+  caketype: "cake" | "pastries";
+  type: "contains egg" | "eggless";
+  prices: Price[];
+  image: string[];
+  reviews: Reviews[];
+  averageRating: number;
   isAvailable: boolean
 }
 
@@ -32,10 +54,11 @@ export default function Favorites() {
     addToCart({
       id: cake._id,
       name: cake.name,
-      price: cake.price,
-      weight: 2,
+      caketype: cake.caketype,
+      price: cake.prices[0].sellPrice,
+      weight: cake.prices[0].weight,
       quantity: 1,
-      image: cake.image,
+      image: cake.image[0],
     })
   }
   return (
@@ -62,7 +85,7 @@ export default function Favorites() {
               {/* Image Container */}
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src={cake.image}
+                  src={cake.image[0]}
                   alt={cake.name}
                   fill
                   className="object-cover transform group-hover:scale-105 transition-transform duration-500"
@@ -78,9 +101,11 @@ export default function Favorites() {
 
               {/* Content Container */}
               <div className="p-6">
+              <Link href={`/cakes/${cake._id}`} className="w-full">
                 <h3 className="text-xl font-semibold mb-2 text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
                   {cake.name}
                 </h3>
+                </Link>
                 <p className="text-gray-600 mb-4 line-clamp-2">
                   {cake.description}
                 </p>
@@ -89,7 +114,7 @@ export default function Favorites() {
                 <div className="flex justify-between items-center mt-4">
                   <div className="flex items-center">
                     <span className="text-2xl font-bold text-[#FF9494]">
-                    ₹{cake.price.toFixed(2)}
+                    ₹{cake.prices[0].sellPrice.toFixed(2)}
                     </span>
                   </div>
                   <Button
