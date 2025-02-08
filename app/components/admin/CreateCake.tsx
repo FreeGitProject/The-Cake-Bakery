@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast"
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+
 
 interface Category {
   _id: string;
@@ -30,8 +33,10 @@ export default function CreateCake() {
     prices: [{ weight: 0, costPrice: 0, sellPrice: 0 }],
     image: [""],
     category: "",
+    isAvailable: true
   });
   const [categories, setCategories] = useState<Category[]>([]);
+ // const [favorites, setFavorites] = useState(true)
   const router = useRouter();
 
   useEffect(() => {
@@ -139,7 +144,9 @@ export default function CreateCake() {
       setIsLoading(false)
     }
   };
-
+  const handleSwitchChange = (checked: boolean) => {
+    setNewCake((prevFavorite) => ({ ...prevFavorite, isAvailable: checked }))
+  }
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Add New Cake</h1>
@@ -254,6 +261,14 @@ export default function CreateCake() {
             ))}
           </SelectContent>
         </Select>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isAvailable"
+            checked={newCake.isAvailable}
+            onCheckedChange={handleSwitchChange}
+          />
+          <Label htmlFor="isAvailable">Available</Label>
+        </div>
         <Button type="submit" disabled={isLoading}>
         {isLoading ? "Adding..." : "Add Cake"}
       </Button>

@@ -5,8 +5,10 @@ import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import Link from "next/link";
 
 interface OrderItem {
+  productId:string;
   name: string;
   caketype: string;
   quantity: number;
@@ -80,6 +82,7 @@ export default function MyOrders() {
               <div className="space-y-4">
                 {order.orderItems.map((item, index) => (
                   <div key={index} className="flex items-center space-x-4">
+                     <Link href={`/cakes/${item.productId}`} >
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -87,6 +90,7 @@ export default function MyOrders() {
                       height={50}
                       className="rounded-md object-cover"
                     />
+                    </Link>
                     <div className="flex-grow">
                       <p className="font-semibold">{item.name}</p>
                       <p className="text-sm text-gray-500">

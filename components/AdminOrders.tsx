@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import Link from "next/link";
 interface OrderItem {
   productId: string;
   name: string;
@@ -285,6 +286,7 @@ export default function AdminOrders() {
                 {order.orderItems.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell>
+                    <Link href={`/cakes/${item.productId}`} >
                       <Image
                         src={item.image || "/placeholder.svg"}
                         alt={item.name}
@@ -292,6 +294,7 @@ export default function AdminOrders() {
                         height={50}
                         className="rounded-md object-cover"
                       />
+                      </Link>
                     </TableCell>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.quantity}</TableCell>

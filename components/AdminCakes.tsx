@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import Link from "next/link";
 
 interface Cake {
   _id: string;
@@ -87,11 +88,13 @@ export default function AdminCakes() {
               <CardTitle>{cake.name}</CardTitle>
             </CardHeader>
             <CardContent>
+            <Link href={`/cakes/${cake._id}`} >
               <img
                 src={cake.image[0]}
                 alt={cake.name}
                 className="w-full h-48 object-cover mb-4"
               />
+                </Link>
               <p className="text-sm text-gray-600 mb-2">
                 {cake.description.substring(0, 100)}...
               </p>
