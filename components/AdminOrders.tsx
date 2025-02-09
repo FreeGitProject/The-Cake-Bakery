@@ -31,6 +31,13 @@ interface OrderItem {
   price: number;
   image: string;
 }
+interface ShippingAddress {
+  name: string
+  address: string
+  city: string
+  zipCode: string
+  country: string
+}
 interface Order {
   _id: string;
   orderId: string;
@@ -44,6 +51,9 @@ interface Order {
   orderStatus: string;
   paymentStatus: string;
   createdAt: string;
+  shippingAddress: ShippingAddress
+  couponCode?: string
+  discountAmount?: number
 }
 
 export default function AdminOrders() {
@@ -258,6 +268,16 @@ export default function AdminOrders() {
                 <p>
                   <strong>Total Amount:</strong> ₹{order.totalAmount.toFixed(2)}
                 </p>
+                {order.couponCode && (
+                  <p>
+                    <strong>Coupon Applied:</strong> {order.couponCode}
+                  </p>
+                )}
+                {order.discountAmount && (
+                  <p>
+                    <strong>Discount Amount:</strong> ₹{order.discountAmount.toFixed(2)}
+                  </p>
+                )}
               </div>
               <div>
                 <p>
@@ -271,6 +291,15 @@ export default function AdminOrders() {
                   {new Date(order.createdAt).toLocaleString()}
                 </p>
               </div>
+            </div>
+            <div className="mb-4">
+              <h3 className="font-semibold mb-2">Shipping Address:</h3>
+              <p>{order.shippingAddress.name}</p>
+              <p>{order.shippingAddress.address}</p>
+              <p>
+                {order.shippingAddress.city}, {order.shippingAddress.zipCode}
+              </p>
+              <p>{order.shippingAddress.country}</p>
             </div>
             <Table>
               <TableHeader>
