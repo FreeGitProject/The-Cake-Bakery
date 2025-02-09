@@ -6,6 +6,7 @@ import { User } from "@/models/user"; // Assuming you have a User model
 import { Order } from "@/models/order";
 import { v4 as uuidv4 } from "uuid";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { Coupon } from "@/models/coupon";
 
 export async function POST(request: Request) {
   try {
@@ -30,6 +31,8 @@ export async function POST(request: Request) {
       shippingAddress,
       razorpayOrderId,
       razorpayPaymentId,
+      couponCode,
+      discountAmount,
     } = await request.json();
 
     const newOrder = new Order({
@@ -43,9 +46,16 @@ export async function POST(request: Request) {
       //paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Completed',
       razorpayOrderId,
       razorpayPaymentId,
+      couponCode,
+      discountAmount,
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();
+    if (couponCode) {
+      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usageCount: 1 } })
+    }
+
+
      if (paymentMethod === 'Cash on Delivery') {
     try {
       await sendOrderConfirmationEmail(newOrder, newOrder.paymentMethod); //'Cash on Delivery');

@@ -26,6 +26,8 @@ interface Order {
   paymentMethod: string;
   orderStatus: string;
   createdAt: string;
+  couponCode?: string
+  discountAmount?: number
 }
 
 export default function MyOrders() {
@@ -105,6 +107,12 @@ export default function MyOrders() {
                     </span>
                   </div>
                 ))}
+                    {order.couponCode && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Coupon Applied: {order.couponCode}</span>
+                    <span>-₹{order.discountAmount?.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold pt-4 border-t">
                   <span>Total</span>
                   <span> ₹{order.totalAmount.toFixed(2)}</span>

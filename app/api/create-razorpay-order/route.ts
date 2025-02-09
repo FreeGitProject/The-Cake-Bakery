@@ -15,7 +15,8 @@ const razorpay = new Razorpay({
 export async function POST(request: Request) {
   try {
     // Parse request data
-    const { totalAmount, orderItems, paymentMethod, shippingAddress } = await request.json();
+    const { totalAmount, orderItems, paymentMethod, shippingAddress, couponCode,
+      discountAmount, } = await request.json();
 
     // Ensure user session exists
     const session = await getServerSession(authOptions);
@@ -50,6 +51,8 @@ export async function POST(request: Request) {
       shippingAddress,
       paymentStatus: 'Pending',
       razorpayOrderId: razorpayOrder.id, // Associate with Razorpay order ID
+      couponCode,
+      discountAmount,
     });
 
     await newOrder.save();

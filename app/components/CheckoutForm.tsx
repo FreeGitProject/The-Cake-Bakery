@@ -41,6 +41,8 @@ export default function CheckoutForm() {
     country: "",
   });
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
+  const [couponCode, setCouponCode] = useState("")
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null)
 
   // Fetch user details
   useEffect(() => {
@@ -94,6 +96,36 @@ export default function CheckoutForm() {
       updateQuantity(id, newQuantity);
     }
   };
+  const handleApplyCoupon = async () => {
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode, orderTotal: getCartTotal() }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setAppliedCoupon({ code: data.couponCode, discountAmount: data.discountAmount })
+        toast({
+          title: "Coupon Applied",
+          description: `Discount of ₹${data.discountAmount.toFixed(2)} applied to your order.`,
+        })
+      } else {
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error)
+      toast({
+        title: "Error",
+        description: "Failed to apply coupon. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
@@ -144,9 +176,11 @@ export default function CheckoutForm() {
         weight: item.weight,
         image: item.image,
       })),
-      totalAmount: getCartTotal(),
+      totalAmount: getCartTotal() - (appliedCoupon?.discountAmount || 0),
       paymentMethod,
       shippingAddress: formData,
+      couponCode: appliedCoupon?.code,
+      discountAmount: appliedCoupon?.discountAmount,
     };
     //console.log("orderData",orderData)
     if (paymentMethod === "Online Payment") {
@@ -319,8 +353,31 @@ export default function CheckoutForm() {
             </div>
           ))}
           <div className="flex justify-between items-center pt-4 border-t mt-4">
-            <span className="font-bold">Total</span>
+            <span className="font-bold">Subtotal</span>
             <span className="font-bold">₹{getCartTotal().toFixed(2)}</span>
+          </div>
+          {appliedCoupon && (
+            <div className="flex justify-between items-center pt-2">
+              <span className="font-bold text-green-600">Discount</span>
+              <span className="font-bold text-green-600">-₹{appliedCoupon.discountAmount.toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center pt-4 border-t mt-4">
+            <span className="font-bold">Total</span>
+            <span className="font-bold">₹{(getCartTotal() - (appliedCoupon?.discountAmount || 0)).toFixed(2)}</span>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Apply Coupon</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex space-x-2">
+            <Input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Enter coupon code" />
+            <Button type="button" onClick={handleApplyCoupon}>
+              Apply
+            </Button>
           </div>
         </CardContent>
       </Card>
