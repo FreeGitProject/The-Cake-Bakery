@@ -37,7 +37,7 @@ export async function sendOrderConfirmationEmail(
   const message = {
     from: process.env.EMAIL_FROM,
     to: order.shippingAddress.email,
-    subject: `Order Confirmation - #${order.orderId}`,
+    subject: `Order Confirmation - #${order.orderNumber}`,
     html: `
       <div style="max-width: 600px; margin: 0 auto; font-family: 'Arial', sans-serif; background-color: #fff5f5; padding: 20px;">
   <div style="text-align: center; margin-bottom: 20px;">
@@ -47,7 +47,7 @@ export async function sendOrderConfirmationEmail(
 
   <div style="background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
     <p>Hello Cake Lover! 🍰</p>
-    <p>Order #${order.orderId} is ready to sweeten your day!</p>
+    <p>Order #${order.orderNumber} is ready to sweeten your day!</p>
 
     <div style="background-color: #fff0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
       <h2 style="color: #ff6b6b; margin-bottom: 15px;">Your Delectable Order</h2>
