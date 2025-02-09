@@ -23,6 +23,7 @@ const navItems = [
   { name: "Footer", path: "/admin/footer" },
   { name: 'Settings', path: '/admin/settings' },
   { name: "Users", path: "/admin/users" },
+  { name: "Coupons", path: "/admin/coupons" },
 ];
 
 export default function AdminNavbar() {

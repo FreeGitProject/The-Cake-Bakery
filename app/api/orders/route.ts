@@ -6,7 +6,8 @@ import { User } from "@/models/user"; // Assuming you have a User model
 import { Order } from "@/models/order";
 import { v4 as uuidv4 } from "uuid";
 import { sendOrderConfirmationEmail } from "@/lib/email";
-
+import { Coupon } from "@/models/coupon";
+import { generateOrderNumber } from "@/lib/orderCount"; // Import the helper
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
@@ -30,7 +31,11 @@ export async function POST(request: Request) {
       shippingAddress,
       razorpayOrderId,
       razorpayPaymentId,
+      couponCode,
+      discountAmount,
     } = await request.json();
+ // Generate order number using the helper
+ const orderNumber = await generateOrderNumber();
 
     const newOrder = new Order({
       orderId: uuidv4(),
@@ -43,9 +48,17 @@ export async function POST(request: Request) {
       //paymentStatus: paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Completed',
       razorpayOrderId,
       razorpayPaymentId,
+      couponCode,
+      discountAmount,
+      orderNumber:orderNumber
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();
+    if (couponCode) {
+      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usageCount: 1 } })
+    }
+
+
      if (paymentMethod === 'Cash on Delivery') {
     try {
       await sendOrderConfirmationEmail(newOrder, newOrder.paymentMethod); //'Cash on Delivery');

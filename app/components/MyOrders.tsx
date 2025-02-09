@@ -25,7 +25,10 @@ interface Order {
   paymentStatus: string;
   paymentMethod: string;
   orderStatus: string;
+  orderNumber: string;
   createdAt: string;
+  couponCode?: string
+  discountAmount?: number
 }
 
 export default function MyOrders() {
@@ -64,7 +67,7 @@ export default function MyOrders() {
         orders.map((order) => (
           <Card key={order._id}>
             <CardHeader>
-              <CardTitle>Order #{order.orderId}</CardTitle>
+              <CardTitle>Order #{order.orderNumber ?? order.orderId}</CardTitle>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleDateString()}
@@ -105,6 +108,12 @@ export default function MyOrders() {
                     </span>
                   </div>
                 ))}
+                    {order.couponCode && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Coupon Applied: {order.couponCode}</span>
+                    <span>-₹{order.discountAmount?.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between font-bold pt-4 border-t">
                   <span>Total</span>
                   <span> ₹{order.totalAmount.toFixed(2)}</span>

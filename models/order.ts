@@ -29,6 +29,9 @@ const orderSchema = new mongoose.Schema({
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   razorpayOrderId: { type: String },
   razorpayPaymentId: { type: String },
+  couponCode: { type: String },
+  discountAmount: { type: Number, default: 0 },
+  orderNumber:{ type: String }
 }, { timestamps: true });
 
 export const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
