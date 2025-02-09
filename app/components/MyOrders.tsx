@@ -215,7 +215,7 @@ export default function MyOrders() {
                   
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
                     <span className="font-medium text-gray-900">Total Amount</span>
-                    <span className="text-xl font-bold text-gray-900 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    <span className="text-xl font-bold text-gray-900 ">
                       ₹{order.totalAmount.toFixed(2)}
                     </span>
                   </div>

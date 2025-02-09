@@ -263,7 +263,7 @@ export default function AdminOrders() {
   return (
     <div className="space-y-6 p-6 max-w-7xl mx-auto">
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      <h2 className="text-3xl font-bold">
         Order Management
       </h2>
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
