@@ -6,6 +6,7 @@ import { Order } from '@/models/order';
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from 'next-auth/next';
 import { User } from '@/models/user';
+import { Coupon } from '@/models/coupon';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -56,7 +57,9 @@ export async function POST(request: Request) {
     });
 
     await newOrder.save();
-
+  if (couponCode) {
+      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usageCount: 1 } })
+    }
     // Return both the Razorpay order and the database order
     return NextResponse.json({
       message: 'Order created successfully',
