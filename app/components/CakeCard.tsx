@@ -51,6 +51,7 @@ interface Cake {
   image: string[];
   reviews: Reviews[];
   averageRating: number;
+  isAvailable: boolean;
 }
 
 interface CakeCardProps {
@@ -298,7 +299,9 @@ export default function CakeCard({
         </div>
 
         <div className="flex gap-2 w-full">
-          <Button
+        {cake.isAvailable ? (
+    <>
+     <Button
             className="w-full from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
             onClick={() => handleBuyNow(cake)}
           >
@@ -311,6 +314,17 @@ export default function CakeCard({
             <ShoppingCart className="mr-2 h-4 w-4" />
             Add to Cart
           </Button>
+    </>
+  ) : (
+    /* "Out of Stock" button */
+    <Button
+      className="w-full bg-primary text-primary-foreground opacity-60 cursor-not-allowed transition-all duration-300"
+      disabled
+    >
+      Out of Stock
+    </Button>
+  )}
+          
         </div>
         {/* Order Timeline */}
         <div className="flex justify-between w-full text-xs text-muted-foreground">

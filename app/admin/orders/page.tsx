@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function AdminOrdersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Manage Orders</h1>
+      {/* <h1 className="text-3xl font-bold mb-6">Manage Orders</h1> */}
       <AdminOrders />
     </div>
   )

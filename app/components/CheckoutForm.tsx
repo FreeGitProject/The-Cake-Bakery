@@ -27,7 +27,7 @@ declare global {
 
 export default function CheckoutForm() {
   const { cart, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
-
+  const [isLoading, setIsLoading] = useState(false)
   const { data: session } = useSession();
   const { toast } = useToast();
   const router = useRouter();
@@ -127,24 +127,25 @@ export default function CheckoutForm() {
     }
   }
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!session) {
-      toast({
-        title: "Please log in",
-        description: "You need to be logged in to place an order.",
-        variant: "destructive",
-      });
-      return;
-    }
+      e.preventDefault();
+      setIsLoading(true)
+      if (!session) {
+        toast({
+          title: "Please log in",
+          description: "You need to be logged in to place an order.",
+          variant: "destructive",
+        });
+        return;
+      }
 
- // Check delivery availability
- const pincode = formData.zipCode;
- try {
-   const response = await fetch("api/check-delivery", {
-     method: "POST",
-     headers: { "Content-Type": "application/json" },
-     body: JSON.stringify({ location: pincode }),
-   });
+    // Check delivery availability
+    const pincode = formData.zipCode;
+    try {
+      const response = await fetch("api/check-delivery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ location: pincode }),
+      });
 
    const data = await response.json();
 
@@ -184,7 +185,7 @@ export default function CheckoutForm() {
     };
     //console.log("orderData",orderData)
     if (paymentMethod === "Online Payment") {
-      initializeRazorpayPayment(orderData);
+     await initializeRazorpayPayment(orderData);
     } else {
       const result = await placeOrder(orderData);
       if (result.success) {
@@ -193,12 +194,15 @@ export default function CheckoutForm() {
           title: "Order placed successfully!",
           description: "Thank you for your purchase.",
         });
+        setIsLoading(false)
         router.push("/my-orders");
       }
     }
+   
   };
 
   const initializeRazorpayPayment = async (orderData: any) => {
+    setIsLoading(true)
     try {
       const response = await fetch("/api/create-razorpay-order", {
         method: "POST",
@@ -250,6 +254,7 @@ export default function CheckoutForm() {
               description:
                 "Thank you for your purchase. You will receive a confirmation email shortly.",
             });
+            setIsLoading(false)
             router.push("/my-orders");
           }
         },
@@ -272,6 +277,7 @@ export default function CheckoutForm() {
         variant: "destructive",
       });
     }
+    //setIsLoading(false)
   };
 
   const placeOrder = async (orderData: any) => {
@@ -480,8 +486,9 @@ export default function CheckoutForm() {
           </RadioGroup>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full">
-            Place Order
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            
+            {isLoading ? "Processing..." : "Place Order"}
           </Button>
         </CardFooter>
       </Card>
