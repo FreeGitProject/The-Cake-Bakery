@@ -25,6 +25,7 @@ interface Order {
   paymentStatus: string;
   paymentMethod: string;
   orderStatus: string;
+  orderNumber: string;
   createdAt: string;
   couponCode?: string
   discountAmount?: number
@@ -66,7 +67,7 @@ export default function MyOrders() {
         orders.map((order) => (
           <Card key={order._id}>
             <CardHeader>
-              <CardTitle>Order #{order.orderId}</CardTitle>
+              <CardTitle>Order #{order.orderNumber ?? order.orderId}</CardTitle>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
                   {new Date(order.createdAt).toLocaleDateString()}

@@ -31,6 +31,7 @@ const orderSchema = new mongoose.Schema({
   razorpayPaymentId: { type: String },
   couponCode: { type: String },
   discountAmount: { type: Number, default: 0 },
+  orderNumber:{ type: String }
 }, { timestamps: true });
 
 export const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);

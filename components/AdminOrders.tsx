@@ -49,6 +49,7 @@ interface Order {
   orderItems: OrderItem[];
   totalAmount: number;
   orderStatus: string;
+  orderNumber: string;
   paymentStatus: string;
   createdAt: string;
   shippingAddress: ShippingAddress
@@ -254,7 +255,7 @@ export default function AdminOrders() {
       {orders.map((order) => (
         <Card key={order._id}>
           <CardHeader>
-            <CardTitle>Order #{order.orderId}</CardTitle>
+            <CardTitle>Order #{order.orderNumber ?? order.orderId}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">

@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from 'next-auth/next';
 import { User } from '@/models/user';
 import { Coupon } from '@/models/coupon';
+import { generateOrderNumber } from '@/lib/orderCount';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -41,7 +42,8 @@ export async function POST(request: Request) {
     };
 
     const razorpayOrder = await razorpay.orders.create(options);
-
+ // Generate order number using the helper
+ const orderNumber = await generateOrderNumber();
     // Create an order in the database
     const newOrder = new Order({
       orderId: uuidv4(),
@@ -54,6 +56,7 @@ export async function POST(request: Request) {
       razorpayOrderId: razorpayOrder.id, // Associate with Razorpay order ID
       couponCode,
       discountAmount,
+      orderNumber:orderNumber
     });
 
     await newOrder.save();

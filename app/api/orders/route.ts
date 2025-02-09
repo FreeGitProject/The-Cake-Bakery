@@ -7,7 +7,7 @@ import { Order } from "@/models/order";
 import { v4 as uuidv4 } from "uuid";
 import { sendOrderConfirmationEmail } from "@/lib/email";
 import { Coupon } from "@/models/coupon";
-
+import { generateOrderNumber } from "@/lib/orderCount"; // Import the helper
 export async function POST(request: Request) {
   try {
     const session = await getServerSession();
@@ -34,6 +34,8 @@ export async function POST(request: Request) {
       couponCode,
       discountAmount,
     } = await request.json();
+ // Generate order number using the helper
+ const orderNumber = await generateOrderNumber();
 
     const newOrder = new Order({
       orderId: uuidv4(),
@@ -48,6 +50,7 @@ export async function POST(request: Request) {
       razorpayPaymentId,
       couponCode,
       discountAmount,
+      orderNumber:orderNumber
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();
