@@ -32,7 +32,7 @@ interface Cake {
   image: string[];
   reviews: Reviews[];
   averageRating: number;
-  isAvailable: boolean
+  isAvailable: boolean;
 }
 
 export default function Favorites() {

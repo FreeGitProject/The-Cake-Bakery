@@ -36,6 +36,7 @@ interface Cake {
   category: string;
   reviews:Reviews[];
   averageRating: number;
+  isAvailable: boolean;
 }
 
 interface Category {
