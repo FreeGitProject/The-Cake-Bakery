@@ -36,6 +36,7 @@ interface Cake {
   prices: Price[]; // Array of prices for different weights
   image: string[];
   category: string;
+  isAvailable: boolean;
 }
 interface DeliveryStatus {
   deliverable: boolean;
@@ -501,21 +502,39 @@ export default function CakeDetails({ id }: { id: string }) {
         </div>
 
         <div className="flex space-x-2">
-          <Button
-            className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
-            onClick={handleBuyNow}
-            disabled={!selectedWeight}
-          >
-            Buy Now
-          </Button>
-          <Button
-            onClick={() => handleAddToCart(cake)}
-            className="w-full  from-primary to-primary-foreground hover:opacity-90 transition-all duration-300"
-          >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Add to Cart
-          </Button>
-        </div>
+  {cake.isAvailable ? (
+    <>
+      {/* "Buy Now" button */}
+      <Button
+        className={`w-full bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 ${
+          !selectedWeight ? "opacity-60 cursor-not-allowed" : ""
+        }`}
+        onClick={handleBuyNow}
+        disabled={!selectedWeight}
+      >
+        Buy Now
+      </Button>
+
+      {/* "Add to Cart" button */}
+      <Button
+        onClick={() => handleAddToCart(cake)}
+        className="w-full bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300"
+      >
+        <ShoppingCart className="mr-2 h-4 w-4" />
+        Add to Cart
+      </Button>
+    </>
+  ) : (
+    /* "Out of Stock" button */
+    <Button
+      className="w-full bg-primary text-primary-foreground opacity-60 cursor-not-allowed transition-all duration-300"
+      disabled
+    >
+      Out of Stock
+    </Button>
+  )}
+</div>
+
       </div>
     );
   };
