@@ -212,8 +212,8 @@ const AdminNavbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden 2xl:flex items-center space-x-4">
+          {/* Desktop Navigation   remove for now  hidden 2xl:flex items-center space-x-4*/}
+          <div className="hidden">
             {/* Quick Actions */}
             <button 
               className="p-2 rounded-lg hover:bg-gray-100 relative"
@@ -245,8 +245,8 @@ const AdminNavbar: React.FC = () => {
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="2xl:hidden flex items-center space-x-4">
+          {/* Mobile Menu Button 2xl:hidden */}
+          <div className="flex items-center space-x-4">
             <button 
               className="p-2 rounded-lg hover:bg-gray-100 relative"
               aria-label="Notifications"
@@ -272,10 +272,10 @@ const AdminNavbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu 2xl:hidden*/}
         <div
           className={cn(
-            "fixed inset-0 z-50 2xl:hidden transition-all duration-300 ease-in-out",
+            "fixed inset-0 z-50  transition-all duration-300 ease-in-out",
             isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
         >
