@@ -59,6 +59,7 @@ const navItems: NavCategory[] = [
       { name: "Cakes", path: "/admin/cakes", icon: CakeIcon },
       { name: "Categories", path: "/admin/categories", icon: ListIcon },
       { name: "Orders", path: "/admin/orders", icon: ShoppingCartIcon },
+      { name: "Order Stats", path: "/admin/order-stats", icon: ShoppingCartIcon },
     ]
   },
   {
