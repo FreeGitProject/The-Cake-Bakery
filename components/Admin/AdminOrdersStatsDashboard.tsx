@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
+import Image from "next/image"
 import {
   BarChart,
   Bar,
@@ -37,6 +38,7 @@ interface OrderStats {
   topSellingProducts: Array<{
     _id: string
     name: string
+    image: string
     totalQuantity: number
     totalRevenue: number
   }>
@@ -144,10 +146,22 @@ export default function AdminOrdersStatsDashboard() {
             <CardTitle>Top Selling Products</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul>
+            <ul className="space-y-4">
               {stats.topSellingProducts.map((product) => (
-                <li key={product._id}>
-                  {product.name} - Quantity: {product.totalQuantity}, Revenue: ₹{product.totalRevenue.toFixed(2)}
+                <li key={product._id} className="flex items-center space-x-4">
+                  <Image
+                    src={product.image || "/placeholder.svg"}
+                    alt={product.name}
+                    width={50}
+                    height={50}
+                    className="rounded-md object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">{product.name}</p>
+                    <p className="text-sm text-gray-500">
+                      Quantity: {product.totalQuantity}, Revenue: ₹{product.totalRevenue.toFixed(2)}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>

@@ -57,13 +57,14 @@ export async function GET(request: Request) {
       },
     ])
 
-    // Get top selling products
+    // Get top selling products (now including image)
     const topSellingProducts = await Order.aggregate([
       { $unwind: "$orderItems" },
       {
         $group: {
           _id: "$orderItems.productId",
           name: { $first: "$orderItems.name" },
+          image: { $first: "$orderItems.image" },
           totalQuantity: { $sum: "$orderItems.quantity" },
           totalRevenue: { $sum: { $multiply: ["$orderItems.quantity", "$orderItems.price"] } },
         },
