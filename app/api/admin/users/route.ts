@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // Ensure it's always server-rendered
+
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
