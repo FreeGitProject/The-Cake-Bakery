@@ -36,9 +36,11 @@ import {
   List as ListIcon,
   ShoppingCart as ShoppingCartIcon,
   FileText as FileTextIcon,
-  //Footer as FooterIcon,
+  Ruler  as FooterIcon,
   Users as UsersIcon,
-  Tag as TagIcon
+  Tag as TagIcon,
+  ChartArea  as ChartAreaIcon,
+  MapPinPlus   as MapPinPlusIcon,
 } from 'lucide-react';
 //import { NavItem, NavCategory } from './types';
 
@@ -55,21 +57,22 @@ const navItems: NavCategory[] = [
   {
     category: "Management",
     items: [
-      { name: "Favorites", path: "/admin/favorites", icon: HeartIcon },
+      { name: "Favorites (not in used)", path: "/admin/favorites", icon: HeartIcon },
       { name: "Cakes", path: "/admin/cakes", icon: CakeIcon },
       { name: "Categories", path: "/admin/categories", icon: ListIcon },
       { name: "Orders", path: "/admin/orders", icon: ShoppingCartIcon },
-      { name: "Order Stats", path: "/admin/order-stats", icon: ShoppingCartIcon },
+      { name: "Order Stats", path: "/admin/order-stats", icon: ChartAreaIcon },
     ]
   },
   {
     category: "Settings & Content",
     items: [
       { name: "Policies", path: "/admin/policies", icon: FileTextIcon },
-      { name: "Footer", path: "/admin/footer", icon: FileTextIcon },
+      { name: "Footer", path: "/admin/footer", icon: FooterIcon },
       { name: "Settings", path: "/admin/settings", icon: Settings },
       { name: "Users", path: "/admin/users", icon: UsersIcon },
       { name: "Coupons", path: "/admin/coupons", icon: TagIcon },
+      { name: "Delivery areas", path: "/admin/delivery-areas", icon: MapPinPlusIcon },
     ]
   }
 ];
