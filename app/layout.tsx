@@ -11,6 +11,7 @@ import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 import Script from "next/script";
+import RotatingPromoBanner from "@/components/RotatingPromoBanner";
 export default function RootLayout({
   children,
 }: {
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <SessionProvider>
             <CartProvider>
+              {!isAdminPage && <RotatingPromoBanner />} {/* Exclude Header on admin pages */}
               {!isAdminPage && <Header />} {/* Exclude Header on admin pages */}
               <main className="min-h-screen">{children}</main>
               {!isAdminPage && <Footer />} {/* Exclude Footer on admin pages */}
