@@ -8,7 +8,17 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import Loader from '@/app/components/Loader'
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 interface NewsItem {
   _id?: string
   title: string
@@ -144,9 +154,25 @@ export default function AdminNews() {
               <p className="text-sm text-gray-500 mb-2">{new Date(item.date).toLocaleDateString()}</p>
               <p className="mb-2">{item.description}</p>
               <img src={item.imageUrl} alt={item.title} className="w-full h-40 object-cover mb-2" />
-              <Button variant="destructive" onClick={() => item._id && handleDelete(item._id)}>
-                Delete
-              </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete New Item</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete this item? This action cannot be undo.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => item._id && handleDelete(item._id)}>Confirm</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
             </CardContent>
           </Card>
         ))}
