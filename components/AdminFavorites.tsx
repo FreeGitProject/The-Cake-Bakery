@@ -175,7 +175,7 @@ export default function AdminFavorites() {
             <CardContent>
               <p className="mb-2">{favorite.description}</p>
               <img src={favorite.image} alt={favorite.name} className="w-full h-40 object-cover mb-2" />
-              <p className="mb-2">Price: ${favorite.price.toFixed(2)}</p>
+              <p className="mb-2">Price: ${favorite.price?.toFixed(2)}</p>
               <p className="mb-2">Available: {favorite.isAvailable ? 'Yes' : 'No'}</p>
               <Button variant="destructive" onClick={() => favorite._id && handleDelete(favorite._id)}>
                 Delete
