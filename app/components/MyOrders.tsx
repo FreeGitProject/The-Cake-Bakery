@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 //import { Badge } from '@/components/ui/badge';
-import { Calendar, Package, CreditCard, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Package, CreditCard, Clock, CheckCircle, XCircle, AlertCircle} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Loader from './Loader';
 
 interface OrderItem {
   productId: string;
@@ -98,6 +99,7 @@ const PaymentStatusBadge = ({ status }: { status: string }) => {
 export default function MyOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const { data: session } = useSession();
+  const [isLoading,setIsLoading] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -111,6 +113,7 @@ export default function MyOrders() {
       if (response.ok) {
         const data = await response.json();
         setOrders(data);
+        setIsLoading(true);
       } else {
         throw new Error("Failed to fetch orders");
       }
@@ -119,6 +122,7 @@ export default function MyOrders() {
     }
   };
 
+  
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-4">
@@ -128,7 +132,10 @@ export default function MyOrders() {
       </div>
     );
   }
-
+  if(!isLoading)
+  {
+    return <Loader/>;
+  }
   if (orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-4">
