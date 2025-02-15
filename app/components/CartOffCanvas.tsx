@@ -41,7 +41,7 @@ export default function CartOffCanvas({
         <SheetHeader>
           <SheetTitle>Your Cart</SheetTitle>
         </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-10rem)] mt-4">
+        <ScrollArea className="h-[calc(90vh-10rem)] mt-4">
           {cart.length === 0 ? (
             <p>Your cart is empty.</p>
           ) : (
