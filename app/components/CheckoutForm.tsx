@@ -155,6 +155,7 @@ export default function CheckoutForm() {
        description: data.message || "We cannot deliver to your location.",
        variant: "destructive",
      });
+     setIsLoading(false)
      return;
    }
  } catch (error) {
