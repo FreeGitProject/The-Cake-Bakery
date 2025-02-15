@@ -319,7 +319,7 @@ const AdminNavbar: React.FC = () => {
                     <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4">
                       {category.category}
                     </h3>
-                    <div className="space-y-1">
+                    <div onClick={handleMobileMenuToggle} className="space-y-1">
                       {category.items.map((item) => (
                         <NavLink
                           key={item.path}
