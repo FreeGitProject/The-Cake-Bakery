@@ -196,23 +196,23 @@ export default function AdminCategories() {
     }
   }
 
-  const handleArchive = async (category: Category) => {
-    const updatedCategory = {
-      ...category,
-      status: category.status === 'active' ? 'archived' : 'active'
-    }
-    try {
-      const response = await fetch(`/api/categories/${category._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCategory),
-      })
-      if (!response.ok) throw new Error('Failed to update category status')
-      await fetchCategories()
-    } catch (error) {
-      setError('Failed to update category status. Please try again.')
-    }
-  }
+  // const handleArchive = async (category: Category) => {
+  //   const updatedCategory = {
+  //     ...category,
+  //     status: category.status === 'active' ? 'archived' : 'active'
+  //   }
+  //   try {
+  //     const response = await fetch(`/api/categories/${category._id}`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(updatedCategory),
+  //     })
+  //     if (!response.ok) throw new Error('Failed to update category status')
+  //     await fetchCategories()
+  //   } catch (error) {
+  //     setError('Failed to update category status. Please try again.')
+  //   }
+  // }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
