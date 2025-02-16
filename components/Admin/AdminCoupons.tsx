@@ -405,12 +405,13 @@ export default function AdminCoupons() {
                         There are no active coupons at the moment. Create a new coupon to get started.
                       </p>
                     </CardContent>
-                    <CardFooter className="justify-center">
-                      <Button variant="outline" onClick={() => document.querySelector('[data-value="create"]')?.click()}>
+                    <Button
+                        variant="outline"
+                        onClick={() => (document.querySelector('[data-value="create"]') as HTMLElement)?.click()}
+                      >
                         <PlusCircle className="h-4 w-4 mr-2" />
                         Create New Coupon
                       </Button>
-                    </CardFooter>
                   </Card>
                 )}
             </div>
