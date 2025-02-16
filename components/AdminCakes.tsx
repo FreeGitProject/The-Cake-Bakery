@@ -51,7 +51,7 @@ export default function AdminCakes() {
     try {
       const response = await fetch(`/api/cakes?caketype=${cakeType}`);
       const data = await response.json();
-      setCakes(data);
+      setCakes(data.data);
     } catch (error) {
       console.error("Error fetching cakes:", error);
     }
