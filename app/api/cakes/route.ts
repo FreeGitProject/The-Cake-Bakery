@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
@@ -16,6 +17,10 @@ export async function GET(request: Request) {
     // Parse query parameters
     const url = new URL(request.url);
     const caketype = url.searchParams.get("caketype"); // 'cake' or 'pastries'
+    const category = url.searchParams.get("category");
+    const page = parseInt(url.searchParams.get("page") || "1", 10);
+    const limit = parseInt(url.searchParams.get("limit") || "12", 10);
+    const search = url.searchParams.get("search") || "";
 
     if (!caketype) {
     return NextResponse.json(
@@ -28,13 +33,13 @@ export async function GET(request: Request) {
     const adminSettings = await AdminSettings.findOne().exec();
     const cachingEnabled = adminSettings?.cachingEnabled ?? false;
     const cachingStrategy = adminSettings?.cachingStrategy ?? 'isr';
-
+    const cacheKey = `cakes_${caketype}_category${category}_page${page}_limit${limit}_search${search}`;
     // Cache key for Redis
-    const cacheKey = `cakes_${caketype}`;
+    //const cacheKey = `cakes_${caketype}`;
 
     // ISR Strategy: Use Next.js revalidation mechanism
     if (cachingEnabled && cachingStrategy === 'isr') {
-      const data = await fetchCakes(caketype); // Fetch data
+      const data = await fetchCakes(caketype, category, page, limit, search);
       revalidateTag(cacheKey); // Tag for ISR caching
       return NextResponse.json(data);
     }
@@ -47,13 +52,13 @@ export async function GET(request: Request) {
       }
 
       // Cache miss: Fetch from DB and store in Redis
-      const data = await fetchCakes(caketype);
+      const data = await fetchCakes(caketype, category, page, limit, search);
       await setToCache(cacheKey, data, 3600); // Cache for 1 hour
       return NextResponse.json(data);
     }
 
     // Default behavior: Fetch directly from DB if caching is disabled
-    const data = await fetchCakes(caketype);
+    const data = await fetchCakes(caketype, category, page, limit, search);
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
@@ -64,26 +69,22 @@ export async function GET(request: Request) {
 }
 
 // Helper function to fetch cakes from MongoDB
-async function fetchCakes(caketype: string) {
-  return Cake.aggregate([
-    {
-      $match: { caketype }, // Filter by caketype (either 'cake' or 'pastries')
-    },
-    {
-      $addFields: {
-        averageRating: {
-          $cond: [
-            { $gt: [{ $size: { $ifNull: ["$reviews", []] } }, 0] }, // Check if reviews array is non-empty
-            { $avg: "$reviews.rating" }, // Calculate the average rating
-            0, // Default to 0 if no reviews
-          ],
-        },
-      },
-    },
-    {
-      $sort: { createdAt: -1 }, // Sort by createdAt in descending order
-    },
+async function fetchCakes(caketype: string, category: string | null, page: number, limit: number, search: string) {
+  const skip = (page - 1) * limit;
+  const query: any = { caketype };
+  if (category) query.category = category;
+  if (search) query.name = { $regex: new RegExp(search, 'i') };
+
+  const data = await Cake.aggregate([
+    { $match: query },
+    { $addFields: { averageRating: { $cond: [ { $gt: [{ $size: { $ifNull: ["$reviews", []] } }, 0] }, { $avg: "$reviews.rating" }, 0 ] } } },
+    { $sort: { createdAt: -1 } },
+    { $skip: skip },
+    { $limit: limit }
   ]);
+
+  const total = await Cake.countDocuments(query);
+  return { data, total, page, limit };
 }
 
 
