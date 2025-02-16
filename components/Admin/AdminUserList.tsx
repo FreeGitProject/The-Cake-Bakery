@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { debounce } from "lodash"
+import { Search, Loader2, UserCog, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   AlertDialog,
@@ -14,6 +15,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useToast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -86,7 +102,7 @@ export default function AdminUserList() {
         setUsers(users.map((user) => (user._id === updatedUser._id ? updatedUser : user)))
         toast({
           title: "Success",
-          description: "User role updated successfully!",
+          description: `${selectedUser.username}'s role was updated to ${newRole}`,
         })
       } else {
         throw new Error("Failed to update user role")
@@ -107,85 +123,145 @@ export default function AdminUserList() {
   }
 
   return (
-    <div>
-  
-      <div className="mb-4">
-        <Input type="text" placeholder="Search by username or email" value={searchTerm} onChange={handleSearchChange} />
-      </div>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <button
-                          className="text-blue-600 hover:text-blue-800"
-                          onClick={() => {
-                            setSelectedUser(user)
-                            setNewRole(user.role === "admin" ? "user" : "admin")
-                          }}
-                        >
-                          Update Role
-                        </button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Update User Role</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to change {user.username}&apos;s role from {user.role} to{" "}
-                            {user.role === "admin" ? "user" : "admin"}?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleRoleChange}>Confirm</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="mt-4 flex justify-between items-center">
-            <div>
-              Page {currentPage} of {totalPages}
-            </div>
-            <div>
-              <Button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="mr-2"
-              >
-                Previous
-              </Button>
-              <Button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold">User Management</CardTitle>
+        <CardDescription>
+          View and manage user accounts and permission levels
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+          <Input 
+            type="text" 
+            placeholder="Search by username or email" 
+            value={searchTerm} 
+            onChange={handleSearchChange}
+            className="pl-10 bg-background"
+          />
+        </div>
+        
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
           </div>
-        </>
-      )}
-    </div>
+        ) : (
+          <>
+            <div className="rounded-md border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="w-1/3">Name</TableHead>
+                    <TableHead className="w-1/3">Email</TableHead>
+                    <TableHead className="w-1/6">Role</TableHead>
+                    <TableHead className="w-1/6">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                        No users found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    users.map((user) => (
+                      <TableRow key={user._id}>
+                        <TableCell className="font-medium">{user.username}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={user.role === "admin" ? "default" : "secondary"}
+                            className={user.role === "admin" ? "bg-blue-500" : ""}
+                          >
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setSelectedUser(user)
+                                      setNewRole(user.role === "admin" ? "user" : "admin")
+                                    }}
+                                  >
+                                    <UserCog className="mr-2 h-4 w-4" />
+                                    Change role to {user.role === "admin" ? "user" : "admin"}
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                            
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Update User Role</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to change <span className="font-semibold">{user.username}</span>'s role 
+                                  from <Badge variant="outline" className="mx-1">{user.role}</Badge> 
+                                  to <Badge variant="outline" className="mx-1">{user.role === "admin" ? "user" : "admin"}</Badge>?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={handleRoleChange}
+                                  className={user.role === "admin" ? "bg-amber-600 hover:bg-amber-700" : "bg-blue-600 hover:bg-blue-700"}
+                                >
+                                  Yes, update role
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+            
+            <div className="mt-6 flex justify-between items-center">
+              <div className="text-sm text-muted-foreground">
+                Showing page {currentPage} of {totalPages}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1 || isLoading}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || isLoading}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   )
 }
-
