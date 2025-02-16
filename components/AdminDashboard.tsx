@@ -17,6 +17,8 @@ const sections = [
   { name: 'Settings', path: '/admin/settings' },
   { name: "Users", path: "/admin/users" },
   { name: "Coupons", path: "/admin/coupons" },
+  { name: "Bulk Upload", path: "/admin/bulk-upload" },
+  { name: "Import Logs", path: "/admin/import-logs" },
 ]
 
 export default function AdminDashboard() {
