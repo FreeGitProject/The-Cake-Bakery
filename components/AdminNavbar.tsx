@@ -41,6 +41,8 @@ import {
   Tag as TagIcon,
   ChartArea  as ChartAreaIcon,
   MapPinPlus   as MapPinPlusIcon,
+  Import    as ImportIcon,
+  Logs     as LogsIcon,
 } from 'lucide-react';
 //import { NavItem, NavCategory } from './types';
 
@@ -62,6 +64,8 @@ const navItems: NavCategory[] = [
       { name: "Categories", path: "/admin/categories", icon: ListIcon },
       { name: "Orders", path: "/admin/orders", icon: ShoppingCartIcon },
       { name: "Order Stats", path: "/admin/order-stats", icon: ChartAreaIcon },
+      { name: "Bulk Upload", path: "/admin/bulk-upload", icon: ImportIcon },
+      { name: "Import Logs", path: "/admin/import-logs", icon: LogsIcon },
     ]
   },
   {
