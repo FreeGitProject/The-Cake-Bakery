@@ -1,6 +1,13 @@
-"use client";
-
-import { useState, useEffect } from "react";
+'use client'
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,33 +18,51 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast"
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { Loader2, PlusCircle, MinusCircle, AlertCircle } from "lucide-react";
 
 interface Category {
   _id: string;
   name: string;
 }
 
+interface Price {
+  weight: number;
+  costPrice: number;
+  sellPrice: number;
+}
+
 export default function CreateCake() {
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState("basic");
+  const router = useRouter();
+
   const [newCake, setNewCake] = useState({
     name: "",
     description: "",
-    caketype:"cake",//caketype means cake or pastries
+    caketype: "cake",
     type: "eggless",
     prices: [{ weight: 0, costPrice: 0, sellPrice: 0 }],
     image: [""],
     category: "",
-    isAvailable: true
+    isAvailable: true,
   });
+
   const [categories, setCategories] = useState<Category[]>([]);
- // const [favorites, setFavorites] = useState(true)
-  const router = useRouter();
 
   useEffect(() => {
     fetchCategories();
@@ -50,29 +75,84 @@ export default function CreateCake() {
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to fetch categories",
+      });
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setNewCake((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!newCake.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+    if (!newCake.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+    if (!newCake.category) {
+      newErrors.category = "Category is required";
+    }
+    
+    newCake.prices.forEach((price, index) => {
+      if (price.sellPrice <= price.costPrice) {
+        newErrors[`price-${index}`] = "Selling price must be higher than cost price";
+      }
+      if (price.weight <= 0) {
+        newErrors[`weight-${index}`] = "Weight must be greater than 0";
+      }
+    });
+
+    if (!newCake.image[0]) {
+      newErrors.image = "At least one image is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleTypeChange = (value: string) => {
-    setNewCake((prev) => ({ ...prev, type: value }));
-  };
-  const handleCakeTypeChange = (value: string) => {
-    setNewCake((prev) => ({ ...prev, caketype: value }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      toast({
+        variant: "destructive",
+        description: "Please fix the errors before submitting",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/cakes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCake),
+      });
+      
+      if (response.ok) {
+        toast({
+          description: "Cake created successfully",
+        });
+        router.push("/admin/cakes");
+      } else {
+        throw new Error("Failed to create cake");
+      }
+    } catch (error) {
+      console.error(error)
+      toast({
+        variant: "destructive",
+        description: "Failed to create cake",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePriceChange = (
     index: number,
-    field: "weight" | "costPrice" | "sellPrice",
+    field: keyof Price,
     value: number
   ) => {
     setNewCake((prev) => ({
@@ -83,196 +163,273 @@ export default function CreateCake() {
     }));
   };
 
-  const handleAddPrice = () => {
-    setNewCake((prev) => ({
-      ...prev,
-      prices: [...prev.prices, { weight: 0, costPrice: 0, sellPrice: 0 }],
-    }));
-  };
-
-  const handleRemovePrice = (index: number) => {
-    setNewCake((prev) => ({
-      ...prev,
-      prices: prev.prices.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleImageChange = (index: number, value: string) => {
-    setNewCake((prev) => ({
-      ...prev,
-      image: prev.image.map((img, i) => (i === index ? value : img)),
-    }));
-  };
-
-  const handleAddImage = () => {
-    setNewCake((prev) => ({
-      ...prev,
-      image: [...(prev.image || []), ""],
-    }));
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const updatedImages = [...newCake.image];
-    updatedImages.splice(index, 1);
-    setNewCake({ ...newCake, image: updatedImages });
-  };
-
-  const handleCategoryChange = (value: string) => {
-    setNewCake((prev) => ({ ...prev, category: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true)
-    try {
-      const response = await fetch("/api/cakes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCake),
-      });
-      if (response.ok) {
-        toast({
-          variant:"default",
-          description: "Created successfully."
-          
-        })
-        router.push("/admin/cakes");
-      }
-    } catch (error) {
-      console.error("Error adding cake:", error);
-    }finally {
-      setIsLoading(false)
-    }
-  };
-  const handleSwitchChange = (checked: boolean) => {
-    setNewCake((prevFavorite) => ({ ...prevFavorite, isAvailable: checked }))
-  }
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Add New Cake</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          name="name"
-          value={newCake.name}
-          onChange={handleInputChange}
-          placeholder="Name"
-          required
-        />
-        <Textarea
-          name="description"
-          value={newCake.description}
-          onChange={handleInputChange}
-          placeholder="Description"
-          required
-        />
-            <Select onValueChange={handleCakeTypeChange} value={newCake.caketype}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="cake">Cake</SelectItem>
-            <SelectItem value="pastries">Pastry</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select onValueChange={handleTypeChange} value={newCake.type}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Contains Egg">Contains Egg</SelectItem>
-            <SelectItem value="eggless">Eggless</SelectItem>
-          </SelectContent>
-        </Select>
-        <div>
-          <h3 className="font-bold">Prices</h3>
-          {newCake.prices.map((price, index) => (
-            <div key={index} className="flex space-x-2 items-center">
-              <Input
-                type="number"
-                value={price.weight}
-                onChange={(e) =>
-                  handlePriceChange(index, "weight", parseFloat(e.target.value))
-                }
-                placeholder="Weight (e.Kg., 500)"
-                required
-              />
-              <Input
-                type="number"
-                value={price.costPrice}
-                onChange={(e) =>
-                  handlePriceChange(index, "costPrice", parseFloat(e.target.value))
-                }
-                placeholder="Cost Price"
-                required
-              />
-              <Input
-                type="number"
-                value={price.sellPrice}
-                onChange={(e) =>
-                  handlePriceChange(index, "sellPrice", parseFloat(e.target.value))
-                }
-                placeholder="Sell Price"
-                required
-              />
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Add New Cake</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="basic">Basic Information</TabsTrigger>
+                <TabsTrigger value="pricing">Pricing</TabsTrigger>
+                <TabsTrigger value="images">Images</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="basic" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={newCake.name}
+                    onChange={(e) => setNewCake(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter cake name"
+                    className={errors.name ? "border-red-500" : ""}
+                  />
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={newCake.description}
+                    onChange={(e) => setNewCake(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Enter description"
+                    className={errors.description ? "border-red-500" : ""}
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-red-500">{errors.description}</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Cake Type</Label>
+                    <Select
+                      value={newCake.caketype}
+                      onValueChange={(value) => setNewCake(prev => ({ ...prev, caketype: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cake">Cake</SelectItem>
+                        <SelectItem value="pastries">Pastry</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Category</Label>
+                    <Select
+                      value={newCake.category}
+                      onValueChange={(value) => setNewCake(prev => ({ ...prev, category: value }))}
+                    >
+                      <SelectTrigger className={errors.category ? "border-red-500" : ""}>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category._id} value={category.name}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.category && (
+                      <p className="text-sm text-red-500">{errors.category}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Contains Egg</Label>
+                  <Select
+                    value={newCake.type}
+                    onValueChange={(value) => setNewCake(prev => ({ ...prev, type: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Contains Egg">Contains Egg</SelectItem>
+                      <SelectItem value="eggless">Eggless</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isAvailable"
+                    checked={newCake.isAvailable}
+                    onCheckedChange={(checked) => setNewCake(prev => ({ ...prev, isAvailable: checked }))}
+                  />
+                  <Label htmlFor="isAvailable">Available for Purchase</Label>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="pricing" className="space-y-4">
+                {newCake.prices.map((price, index) => (
+                  <Card key={index}>
+                    <CardContent className="pt-6">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label>Weight (kg)</Label>
+                          <Input
+                            type="number"
+                            value={price.weight}
+                            onChange={(e) => handlePriceChange(index, "weight", parseFloat(e.target.value))}
+                            min="0"
+                            step="0.1"
+                            className={errors[`weight-${index}`] ? "border-red-500" : ""}
+                          />
+                          {errors[`weight-${index}`] && (
+                            <p className="text-sm text-red-500">{errors[`weight-${index}`]}</p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Cost Price (₹)</Label>
+                          <Input
+                            type="number"
+                            value={price.costPrice}
+                            onChange={(e) => handlePriceChange(index, "costPrice", parseFloat(e.target.value))}
+                            min="0"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Selling Price (₹)</Label>
+                          <Input
+                            type="number"
+                            value={price.sellPrice}
+                            onChange={(e) => handlePriceChange(index, "sellPrice", parseFloat(e.target.value))}
+                            min="0"
+                            className={errors[`price-${index}`] ? "border-red-500" : ""}
+                          />
+                          {errors[`price-${index}`] && (
+                            <p className="text-sm text-red-500">{errors[`price-${index}`]}</p>
+                          )}
+                        </div>
+                      </div>
+                      {index > 0 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => {
+                            setNewCake(prev => ({
+                              ...prev,
+                              prices: prev.prices.filter((_, i) => i !== index)
+                            }));
+                          }}
+                        >
+                          <MinusCircle className="w-4 h-4 mr-2" />
+                          Remove Price Option
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setNewCake(prev => ({
+                      ...prev,
+                      prices: [...prev.prices, { weight: 0, costPrice: 0, sellPrice: 0 }]
+                    }));
+                  }}
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Price Option
+                </Button>
+              </TabsContent>
+
+              <TabsContent value="images" className="space-y-4">
+                {newCake.image.map((image, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Input
+                      value={image}
+                      onChange={(e) => {
+                        const newImages = [...newCake.image];
+                        newImages[index] = e.target.value;
+                        setNewCake(prev => ({ ...prev, image: newImages }));
+                      }}
+                      placeholder={`Image URL ${index + 1}`}
+                      className={index === 0 && errors.image ? "border-red-500" : ""}
+                    />
+                    {index > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setNewCake(prev => ({
+                            ...prev,
+                            image: prev.image.filter((_, i) => i !== index)
+                          }));
+                        }}
+                      >
+                        <MinusCircle className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                {errors.image && (
+                  <p className="text-sm text-red-500">{errors.image}</p>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setNewCake(prev => ({
+                      ...prev,
+                      image: [...prev.image, ""]
+                    }));
+                  }}
+                >
+                  <PlusCircle className="w-4 h-4 mr-2" />
+                  Add Image URL
+                </Button>
+              </TabsContent>
+            </Tabs>
+
+            {Object.keys(errors).length > 0 && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  Please fix the validation errors before submitting
+                </AlertDescription>
+              </Alert>
+            )}
+
+            <div className="flex justify-end space-x-4 pt-6">
               <Button
                 type="button"
-                variant="destructive"
-                onClick={() => handleRemovePrice(index)}
+                variant="outline"
+                onClick={() => router.push("/admin/cakes")}
               >
-                Remove
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Cake"
+                )}
               </Button>
             </div>
-          ))}
-          <Button type="button" onClick={handleAddPrice}>
-            Add Price
-          </Button>
-        </div>
-        {newCake.image.map((image, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <Input
-              value={image}
-              onChange={(e) => handleImageChange(index, e.target.value)}
-              placeholder={`Image URL ${index + 1}`}
-              required
-            />
-            {index > 0 && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => handleRemoveImage(index)}
-              >
-                Remove
-              </Button>
-            )}
-          </div>
-        ))}
-        <Button type="button" onClick={handleAddImage}>
-          Add Image
-        </Button>
-        <Select onValueChange={handleCategoryChange} value={newCake.category}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category._id} value={category.name}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isAvailable"
-            checked={newCake.isAvailable}
-            onCheckedChange={handleSwitchChange}
-          />
-          <Label htmlFor="isAvailable">Available</Label>
-        </div>
-        <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Adding..." : "Add Cake"}
-      </Button>
-      </form>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

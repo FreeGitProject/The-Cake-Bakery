@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 declare global {
   interface Window {
     Razorpay: any;
@@ -354,6 +354,13 @@ export default function CheckoutForm() {
                   </Button>
                 </div>
               </div>
+              <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeFromCart(item.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
               <p className="font-semibold">
               ₹{(item.price * item.quantity).toFixed(2)}
               </p>
