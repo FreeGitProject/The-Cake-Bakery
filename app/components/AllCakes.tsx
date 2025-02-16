@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import Loader from "./Loader";
 import CakeCard from "./CakeCard";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
-
+import { debounce } from "lodash"
 interface Price {
   weight: number;
   costPrice: number;
@@ -65,13 +65,13 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  //const [totalItems, setTotalItems] = useState(0);
   
   const { data: session } = useSession();
   const { toast } = useToast();
@@ -82,25 +82,35 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
     if (session) {
       fetchWishlist();
     }
-  }, [session, currentPage, searchTerm, categoryFilter]);
+  }, [session, currentPage, debouncedSearchTerm, categoryFilter]);
   
+
+
+  const debouncedSearch = useCallback(
+    debounce((term) => setDebouncedSearchTerm(term), 500),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSearch(searchTerm);
+  }, [searchTerm, debouncedSearch]);
+
 
   const fetchCakes = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await fetch(
         `/api/cakes?caketype=${caketype}&page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&category=${categoryFilter}`
       );
       const data: PaginatedResponse = await response.json();
       
       setCakes(data.data);
-     // setTotalItems(data.total);
       setItemsPerPage(data.limit);
       setTotalPages(Math.ceil(data.total / data.limit));
-      setLoading(false);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching cakes:", error);
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -182,12 +192,13 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
     setCurrentPage(1);
   };
 
+
   const handleCategoryChange = (value: string) => {
     setCategoryFilter(value.toLowerCase() === "all" ? "" : value);
     setCurrentPage(1);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
         <Loader />
     );
