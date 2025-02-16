@@ -15,16 +15,17 @@ import CakeCard from "./CakeCard";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 
-
 interface Price {
-  weight: number; // Weight in grams or kilograms
-  costPrice: number; // Cost price
-  sellPrice: number; // Selling price
+  weight: number;
+  costPrice: number;
+  sellPrice: number;
 }
+
 interface Reviews {
   userId: string;
   rating: number;
 }
+
 interface Cake {
   _id: string;
   name: string;
@@ -34,7 +35,7 @@ interface Cake {
   prices: Price[];
   image: string[];
   category: string;
-  reviews:Reviews[];
+  reviews: Reviews[];
   averageRating: number;
   isAvailable: boolean;
 }
@@ -43,74 +44,63 @@ interface Category {
   _id: string;
   name: string;
 }
+
 interface WishlistItem {
   _id: string;
   cakeId: string;
 }
+
 interface CakeTypeProps {
   caketype: "cake" | "pastries";
 }
+
+interface PaginatedResponse {
+  data: Cake[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export default function AllCakes({ caketype }: CakeTypeProps) {
   const [cakes, setCakes] = useState<Cake[]>([]);
-  const [filteredCakes, setFilteredCakes] = useState<Cake[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cakesPerPage, setCakesPerPage] = useState(8);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  //const [totalItems, setTotalItems] = useState(0);
+  
   const { data: session } = useSession();
   const { toast } = useToast();
+
   useEffect(() => {
     fetchCakes();
     fetchCategories();
     if (session) {
-      fetchWishlist()
+      fetchWishlist();
     }
-  }, [session]);
+  }, [session, currentPage, searchTerm, categoryFilter]);
+  
 
-  useEffect(() => {
-    filterCakes();
-  }, [cakes, searchTerm, categoryFilter]);
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const response = await fetch('/api/admin/settings');
-      if (response.ok) {
-        const settings = await response.json();
-        setCakesPerPage(settings.catalogPageSize);
-      }
-    };
-    fetchSettings();
-  }, []);
-  const fetchWishlist = async () => {
-    try {
-      const [wishlistResponse] = await Promise.all([
-     //   fetch("/api/cakes"),
-       // fetch("/api/categories"),
-        fetch("/api/wishlist"),
-      ]);
-
-    //  const cakesData = await cakesResponse.json();
-     // const categoriesData = await categoriesResponse.json();
-      const wishlistData = await wishlistResponse.json();
-
-    //  setCakes(cakesData);
-     // setCategories(categoriesData);
-      setWishlist(wishlistData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
   const fetchCakes = async () => {
     try {
-      const response = await fetch(`/api/cakes?caketype=${caketype}`);
-      const data = await response.json();
-      setCakes(data);
-      if (data && data.length > 0) setLoading(false);
+      setLoading(true);
+      const response = await fetch(
+        `/api/cakes?caketype=${caketype}&page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&category=${categoryFilter}`
+      );
+      const data: PaginatedResponse = await response.json();
+      
+      setCakes(data.data);
+     // setTotalItems(data.total);
+      setItemsPerPage(data.limit);
+      setTotalPages(Math.ceil(data.total / data.limit));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching cakes:", error);
+      setLoading(false);
     }
   };
 
@@ -124,33 +114,21 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
     }
   };
 
-  const filterCakes = () => {
-    let filtered = cakes;
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (cake) =>
-          cake.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          cake.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const fetchWishlist = async () => {
+    try {
+      const response = await fetch("/api/wishlist");
+      const wishlistData = await response.json();
+      setWishlist(wishlistData);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
     }
-    if (categoryFilter) {
-      if (categoryFilter.toLowerCase() === "all") setCategoryFilter("");
-      filtered = filtered.filter(
-        (cake) => cake.category.toLowerCase() === categoryFilter.toLowerCase()
-      );
-    }
-    setFilteredCakes(filtered);
-    setCurrentPage(1);
   };
 
   const handleAddToWishlist = async (cakeId: string) => {
-   // console.log(cakeId,"ca")
     try {
-      const cake = cakes.find((c) => c._id === cakeId)
-    //  console.log(cake)
-      if (cake)
-      {
-        const response =await fetch("/api/wishlist", {
+      const cake = cakes.find((c) => c._id === cakeId);
+      if (cake) {
+        const response = await fetch("/api/wishlist", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -160,19 +138,17 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
             name: cake.name,
             image: cake.image[0],
             price: cake.prices[0].sellPrice,
-            weight:cake.prices[0].weight,
+            weight: cake.prices[0].weight,
           }),
-        })
-        const wishlistItems = await response.json()
-       // console.log(response,wishlistItems)
-       if (response.ok) {
-        setWishlist([...wishlist,wishlistItems]);
-        toast({
-          title: "Added to wishlist",
-          description: "The item has been added to your wishlist.",
         });
-      }else {
-          console.error("Failed to add to wishlist");
+        
+        if (response.ok) {
+          const wishlistItem = await response.json();
+          setWishlist([...wishlist, wishlistItem]);
+          toast({
+            title: "Added to wishlist",
+            description: "The item has been added to your wishlist.",
+          });
         }
       }
     } catch (error) {
@@ -181,68 +157,66 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   };
 
   const handleRemoveFromWishlist = async (cakeId: string) => {
-    //console.log(cakeId,"ca remove ")
     const wishlistId = wishlist.find((item) => item.cakeId === cakeId)?._id;
-    //console.log(wishlistId)
-    try {
-      const response = await fetch(`/api/wishlist/${wishlistId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setWishlist(wishlist.filter((item) => item._id !== wishlistId));
-        toast({
-          title: "Removed from wishlist",
-          description: "The item has been removed from your wishlist.",
+    if (wishlistId) {
+      try {
+        const response = await fetch(`/api/wishlist/${wishlistId}`, {
+          method: "DELETE",
         });
-      }else {
-        console.error("Failed to remove from wishlist");
+
+        if (response.ok) {
+          setWishlist(wishlist.filter((item) => item._id !== wishlistId));
+          toast({
+            title: "Removed from wishlist",
+            description: "The item has been removed from your wishlist.",
+          });
+        }
+      } catch (error) {
+        console.error("Error removing from wishlist:", error);
       }
-    } catch (error) {
-      console.error("Error removing from wishlist:", error);
     }
   };
-  const indexOfLastCake = currentPage * cakesPerPage;
-  const indexOfFirstCake = indexOfLastCake - cakesPerPage;
-  const currentCakes = filteredCakes.slice(indexOfFirstCake, indexOfLastCake);
 
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value.toLowerCase() === "all" ? "" : value);
+    setCurrentPage(1);
+  };
 
   if (loading) {
     return (
-      <div>
         <Loader />
-      </div>
     );
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header Section */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-[#4A4A4A] mb-4">
-          Discover Our Cakes
+          Discover Our {caketype === "cake" ? "Cakes" : "Pastries"}
         </h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore our delicious collection of handcrafted cakes, made with love
-          and the finest ingredients.
+          Explore our delicious collection of handcrafted {caketype === "cake" ? "cakes" : "pastries"}, 
+          made with love and the finest ingredients.
         </p>
       </div>
 
-      {/* Search and Filter Section */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <Input
               type="text"
-              placeholder="Search for your favorite cake..."
+              placeholder={`Search for your favorite ${caketype}...`}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300"
             />
           </div>
           <div className="md:w-1/3">
-            <Select onValueChange={(value) => setCategoryFilter(value)}>
+            <Select onValueChange={handleCategoryChange}>
               <SelectTrigger className="w-full border-2 border-gray-200 focus:border-[#FF9494] transition-colors duration-300">
                 <SelectValue placeholder="Filter by category" />
               </SelectTrigger>
@@ -259,43 +233,63 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
         </div>
       </div>
 
-      {/* Cakes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {currentCakes.map((cake) => (
-           <CakeCard
-           key={cake._id}
-           cake={cake}
-           isWishlisted={wishlist?.some((item) => item.cakeId === cake._id)}
-           onAddToWishlist={handleAddToWishlist}
-           onRemoveFromWishlist={handleRemoveFromWishlist}
-         />
-       ))}
-      </div>
+      {cakes.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-xl text-gray-600">No {caketype} found matching your criteria.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {cakes.map((cake) => (
+            <CakeCard
+              key={cake._id}
+              cake={cake}
+              isWishlisted={wishlist?.some((item) => item.cakeId === cake._id)}
+              onAddToWishlist={handleAddToWishlist}
+              onRemoveFromWishlist={handleRemoveFromWishlist}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* Pagination */}
-      <div className="mt-12 flex justify-center gap-2">
-        {Array.from(
-          { length: Math.ceil(filteredCakes.length / cakesPerPage) },
-          (_, i) => (
+      {totalPages > 1 && (
+        <div className="mt-12 flex justify-center gap-2">
+          <Button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            variant="outline"
+            disabled={currentPage === 1}
+            className="border-2 hover:text-[#FF9494] transition-colors duration-300"
+          >
+            Previous
+          </Button>
+          
+          {Array.from({ length: totalPages }, (_, i) => (
             <Button
               key={i}
-              onClick={() => paginate(i + 1)}
+              onClick={() => setCurrentPage(i + 1)}
               variant={currentPage === i + 1 ? "default" : "outline"}
               className={`
-              w-10 h-10 p-0 
-              ${
-                currentPage === i + 1
+                w-10 h-10 p-0 
+                ${currentPage === i + 1
                   ? "bg-[#FF9494] hover:bg-[#FFB4B4]"
                   : "text-[#4A4A4A] hover:text-[#FF9494] border-2"
-              }
-              transition-colors duration-300
-            `}
+                }
+                transition-colors duration-300
+              `}
             >
               {i + 1}
             </Button>
-          )
-        )}
-      </div>
+          ))}
+          
+          <Button
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            variant="outline"
+            disabled={currentPage === totalPages}
+            className="border-2 hover:text-[#FF9494] transition-colors duration-300"
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
