@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { debounce } from "lodash"
-import { Search, Loader2, UserCog, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+import { Search, UserCog, ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   AlertDialog,
@@ -210,7 +210,7 @@ export default function AdminUserList() {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Update User Role</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to change <span className="font-semibold">{user.username}</span>'s role 
+                                  Are you sure you want to change <span className="font-semibold">{user.username}</span>&apos;s role 
                                   from <Badge variant="outline" className="mx-1">{user.role}</Badge> 
                                   to <Badge variant="outline" className="mx-1">{user.role === "admin" ? "user" : "admin"}</Badge>?
                                 </AlertDialogDescription>
