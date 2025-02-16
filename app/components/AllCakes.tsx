@@ -77,6 +77,7 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   const { toast } = useToast();
 
   useEffect(() => {
+    fetchSettings();
     fetchCakes();
     fetchCategories();
     if (session) {
@@ -84,6 +85,20 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
     }
   }, [session, currentPage, debouncedSearchTerm, categoryFilter]);
   
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        setItemsPerPage(settings.catalogPageSize);
+        fetchCakes(settings.catalogPageSize);
+      }
+     
+    
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+    }
+  };
 
 
   const debouncedSearch = useCallback(
@@ -96,11 +111,11 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   }, [searchTerm, debouncedSearch]);
 
 
-  const fetchCakes = async () => {
+  const fetchCakes = async (perPage = itemsPerPage) => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `/api/cakes?caketype=${caketype}&page=${currentPage}&limit=${itemsPerPage}&search=${searchTerm}&category=${categoryFilter}`
+        `/api/cakes?caketype=${caketype}&page=${currentPage}&limit=${perPage}&search=${searchTerm}&category=${categoryFilter}`
       );
       const data: PaginatedResponse = await response.json();
       
