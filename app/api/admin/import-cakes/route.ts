@@ -40,9 +40,12 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const publicId = `${file.name.split('.').slice(0, -1).join('.')}-${timestamp}`;
+
     const uploadResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
-        { folder: "cake-imports", resource_type: "raw", format: fileExtension }, 
+        { folder: "cake-imports", resource_type: "raw", format: fileExtension, public_id: publicId },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
