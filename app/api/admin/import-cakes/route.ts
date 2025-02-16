@@ -14,6 +14,24 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+function validateRow(row: any): string | null {
+  if (!row["name"] || !row["description"] || !row["caketype"] || !row["type"] || !row["prices"] || !row["image"]) {
+    return "Missing required fields: name, description, caketype, type, prices, or image.";
+  }
+  try {
+    const prices = JSON.parse(row["prices"]);
+    if (!Array.isArray(prices) || prices.some(p => !p.weight || !p.sellPrice)) {
+      return "Invalid prices format. Each price must have weight and sellPrice.";
+    }
+    const images = JSON.parse(row["image"]);
+    if (!Array.isArray(images) || images.length === 0) {
+      return "At least one image is required.";
+    }
+  } catch {
+    return "Invalid JSON format in prices or image fields.";
+  }
+  return null;
+}
 
 export async function POST(request: Request) {
   try {
@@ -72,16 +90,24 @@ export async function POST(request: Request) {
     const errorDetails: string[] = [];
 
     for (const [index, row] of data.entries()) {
+      const validationError = validateRow(row);
+      if (validationError) {
+        failureCount++;
+        errorDetails.push(`Row ${index + 2}: ${validationError}`);
+        continue;
+      }
       try {
+        const prices = JSON.parse(row["prices"]).map((p: any) => ({ weight: p.weight, costPrice: p.costPrice, sellPrice: p.sellPrice }));
         const cake = new Cake({
           name: row["name"],
           description: row["description"],
           caketype: row["caketype"],
           type: row["type"],
-          prices: JSON.parse(row["prices"]),
+          prices,
           image: JSON.parse(row["image"]),
           category: row["category"],
-          isAvailable: row["isAvailable"],
+          isAvailable: row["isAvailable"] === 'true' || row["isAvailable"] === true,
+          fileName: `${file.name}-${timestamp}`,
         });
         await cake.save();
         successCount++;
