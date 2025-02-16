@@ -31,14 +31,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    // Validate file extension
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+      return NextResponse.json({ error: "Invalid file type. Please upload an Excel file." }, { status: 400 });
+    }
+
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream({ folder: "cake-imports", resource_type: "raw" }, (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }).end(buffer);
+      cloudinary.uploader.upload_stream(
+        { folder: "cake-imports", resource_type: "raw", format: fileExtension }, 
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(buffer);
     });
 
     // @ts-ignore
@@ -54,7 +63,7 @@ export async function POST(request: Request) {
 
     const workbook = xlsx.read(buffer, { type: "buffer" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = xlsx.utils.sheet_to_json(sheet);
+    const data : any[]= xlsx.utils.sheet_to_json(sheet);
 
     let successCount = 0, failureCount = 0;
     const errorDetails: string[] = [];
