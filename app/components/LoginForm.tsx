@@ -105,7 +105,7 @@ export default function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="h-10"
-              placeholder="name@example.com"
+              placeholder="Your email"
               required
               disabled={isLoading}
             />
@@ -123,7 +123,7 @@ export default function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-10 pr-10"
-                placeholder="••••••••"
+                placeholder="Password"
                 required
                 disabled={isLoading}
               />

@@ -169,7 +169,7 @@ export default function RegisterForm() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="johndoe"
+                 // placeholder="johndoe"
                   className="h-10"
                   required
                   disabled={isLoading}
@@ -186,7 +186,7 @@ export default function RegisterForm() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john.doe@example.com"
+                //  placeholder="john.doe@example.com"
                   className="h-10"
                   required
                   disabled={isLoading}
@@ -204,7 +204,7 @@ export default function RegisterForm() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    //placeholder="••••••••"
                     className="h-10 pr-10"
                     required
                     disabled={isLoading}
