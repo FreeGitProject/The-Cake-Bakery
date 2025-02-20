@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -33,11 +34,11 @@ import {
   Plus,
   Trash2,
   Clock,
-  MapPin,
+  //MapPin,
   CreditCard,
   Truck,
   Gift,
-  CalendarClock,
+ // CalendarClock,
   AlertCircle,
 } from "lucide-react";
 import {
