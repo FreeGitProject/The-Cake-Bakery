@@ -8,7 +8,7 @@ const orderItemSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   weight: { type: Number, required: true },
   image: { type: String, required: true },
-  cakemessage: { type: String } // Added field
+  cakeMessage: { type: String, default: "" },
 });
 
 const orderSchema = new mongoose.Schema({

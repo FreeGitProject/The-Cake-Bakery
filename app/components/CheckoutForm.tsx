@@ -75,7 +75,7 @@ interface Address {
 }
 
 export default function PremiumCheckout() {
-  const { cart, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
+  const { cart, getCartTotal, clearCart, updateQuantity, updateCakeMessage,removeFromCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const { data: session } = useSession();
@@ -104,7 +104,6 @@ export default function PremiumCheckout() {
   const [isGift, setIsGift] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
-
   // Delivery slots
   const deliverySlots: DeliverySlot[] = useMemo(() => [
     { id: "morning", time: "9:00 AM - 12:00 PM", available: true },
@@ -197,7 +196,9 @@ export default function PremiumCheckout() {
       updateQuantity(id, newQuantity);
     }
   };
-
+  const handleCakeMessageChange = (id: string, message: string) => {
+    updateCakeMessage(id, message)
+  }
   // Handle coupon application
   const handleApplyCoupon = async () => {
     try {
@@ -384,6 +385,7 @@ export default function PremiumCheckout() {
           price: item.price,
           weight: item.weight,
           image: item.image,
+          cakeMessage: item.cakeMessage,
         })),
         totalAmount: orderSummary.total,
         paymentMethod,
@@ -518,6 +520,23 @@ export default function PremiumCheckout() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
+               {item.caketype !== 'pastries' && (
+                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2 sm:gap-4">
+                 <label htmlFor="cakeMessage" className="text-sm sm:text-base font-medium">
+                 Cake Message
+                 </label>
+                 <Input
+                 id="cakeMessage"
+                 type="text"
+                 value={item.cakeMessage}
+                 onChange={(e) => handleCakeMessageChange(item.id, e.target.value)}
+                 minLength={20}
+                 className="w-full sm:w-64 p-2 border rounded-md"
+                 placeholder="Enter at least 20 characters"
+                 />
+               </div>
+               )}
+
               </div>
             </div>
           ))}

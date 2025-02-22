@@ -11,6 +11,7 @@ interface CartItem {
   weight: number;
   quantity: number;
   image: string;
+  cakeMessage: string
 }
 
 interface CartContextType {
@@ -18,6 +19,7 @@ interface CartContextType {
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  updateCakeMessage: (id: string, cakeMessage: string) => void
   clearCart: () => void;
   getCartTotal: () => number;
 }
@@ -43,10 +45,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // Sync cart to cookies and localStorage whenever it changes
+  //Sync cart to cookies and localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
-    document.cookie = `cart=${JSON.stringify(cart)}; path=/; max-age=86400`; // 1 day
+   // document.cookie = `cart=${JSON.stringify(cart)}; path=/; max-age=86400`; // 1 day
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
@@ -83,6 +85,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .filter((item) => item.quantity > 0)
     );
   };
+  const updateCakeMessage = (id: string, cakeMessage: string) => {
+    setCart((prevCart) => prevCart.map((item) => (item.id === id ? { ...item, cakeMessage } : item)))
+  }
 
   const clearCart = () => {
     setCart([]);
@@ -94,7 +99,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, getCartTotal }}
+      value={{ cart, addToCart, removeFromCart, updateQuantity, updateCakeMessage,clearCart, getCartTotal }}
     >
       {children}
     </CartContext.Provider>
