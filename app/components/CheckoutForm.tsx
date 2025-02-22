@@ -63,7 +63,7 @@ interface DeliverySlot {
 }
 
 interface Address {
-  id: string;
+  _id: string;
   type: string;
   isDefault: boolean;
   street: string;
@@ -147,26 +147,32 @@ export default function PremiumCheckout() {
       if (!session?.user) return;
 
       try {
-        const [userResponse, addressesResponse] = await Promise.all([
-          fetch(`/api/user/${session.user.id}`),
-          fetch(`/api/user/${session.user.id}/addresses`)
-        ]);
+        //we ca also call more than one 
+        // const [userResponse, addressesResponse] = await Promise.all([
+        //   fetch(`/api/user/${session.user.id}`),
+        //   fetch(`/api/user/${session.user.id}/addresses`)
+        // ]);
+        const response = await fetch(`/api/user/${session.user.id}`);//,
+      
 
-        if (userResponse.ok && addressesResponse.ok) {
-          const userData = await userResponse.json();
-          const addressesData = await addressesResponse.json();
-
-          setFormData(prev => ({
+        if (response.ok) {
+          const userData = await response.json();
+          //const addressesData = await addressesResponse.json();
+         // const addressesData = userData;
+//console.log(addressesData)
+//console.log(addressesData.user.addresses)    
+setFormData(prev => ({
             ...prev,
-            name: userData.user.username || "",
-            email: userData.user.email || "",
-            phone: userData.user.phone || ""
+            name: userData?.user?.username || "",
+            email: userData?.user?.email || "",
+            phone: userData?.user?.addresses.find((addr: Address) => addr.isDefault).phone || ""
           }));
-
-          setSavedAddresses(addressesData.addresses);
-          const defaultAddress = addressesData.addresses.find((addr: Address) => addr.isDefault);
+       //   console.log(userData.addresses)
+          setSavedAddresses(userData?.user?.addresses);
+          const defaultAddress = userData?.user?.addresses?.find((addr: Address) => addr.isDefault);
+          //console.log(defaultAddress)
           if (defaultAddress) {
-            setSelectedAddress(defaultAddress.id);
+            setSelectedAddress(defaultAddress._id);
           }
         }
       } catch (error) {
@@ -234,7 +240,8 @@ export default function PremiumCheckout() {
 
   // Handle address selection
   const handleAddressSelect = (addressId: string) => {
-    const selected = savedAddresses.find(addr => addr.id === addressId);
+    const selected = savedAddresses.find(addr => addr._id === addressId);
+   // console.log(selected)
     if (selected) {
       setSelectedAddress(addressId);
       setFormData(prev => ({
@@ -652,7 +659,7 @@ export default function PremiumCheckout() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Saved Addresses */}
-                {savedAddresses.length > 0 && (
+                {savedAddresses?.length > 0 && (
                   <div className="space-y-4">
                     <Label>Saved Addresses</Label>
                     <Select value={selectedAddress} onValueChange={handleAddressSelect}>
@@ -660,8 +667,8 @@ export default function PremiumCheckout() {
                         <SelectValue placeholder="Choose a saved address" />
                       </SelectTrigger>
                       <SelectContent>
-                        {savedAddresses.map((addr) => (
-                          <SelectItem key={addr.id} value={addr.id}>
+                        {savedAddresses?.map((addr) => (
+                          <SelectItem key={addr._id} value={addr._id}>
                             {addr.type} - {addr.street}, {addr.city}
                           </SelectItem>
                         ))}

@@ -59,6 +59,7 @@ export default function Favorites() {
       weight: cake.prices[0].weight,
       quantity: 1,
       image: cake.image[0],
+      cakeMessage:""
     })
   }
   return (
