@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { CalendarIcon, PercentIcon, DollarSign, Trash2, Tag, ShoppingCart, PlusCircle, AlertCircle } from "lucide-react"
+import { CalendarIcon, PercentIcon, Trash2, Tag, ShoppingCart, PlusCircle, AlertCircle, IndianRupee } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -229,7 +229,7 @@ export default function AdminCoupons() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="percentage">Percentage (%)</SelectItem>
-                        <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
+                        <SelectItem value="fixed">Fixed Amount (₹)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -240,7 +240,7 @@ export default function AdminCoupons() {
                       {newCoupon.discountType === "percentage" ? (
                         <PercentIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       ) : (
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       )}
                       <Input
                         id="discountValue"
@@ -342,7 +342,7 @@ export default function AdminCoupons() {
                         >
                           {coupon.discountType === "percentage" 
                             ? `${coupon.discountValue}% OFF` 
-                            : `$${coupon.discountValue} OFF`}
+                            : `₹${coupon.discountValue} OFF`}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -360,7 +360,7 @@ export default function AdminCoupons() {
                           )}
                         </div>
                         <p className="text-sm">
-                          <span className="text-muted-foreground">Min order:</span> ${coupon.minOrderAmount}
+                          <span className="text-muted-foreground">Min order:</span> ₹{coupon.minOrderAmount}
                         </p>
                       </div>
                     </CardContent>
@@ -457,7 +457,7 @@ export default function AdminCoupons() {
                             {coupon.usageCount} times
                           </p>
                           <p className="text-sm">
-                            <span className="text-muted-foreground">Min order:</span> ${coupon.minOrderAmount}
+                            <span className="text-muted-foreground">Min order:</span> ₹{coupon.minOrderAmount}
                           </p>
                         </div>
                       </div>
