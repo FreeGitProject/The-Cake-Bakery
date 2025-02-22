@@ -32,6 +32,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Loader2, PlusCircle, MinusCircle, AlertCircle } from "lucide-react";
+import { EventForm } from "@/components/EventForm";
 
 interface Category {
   _id: string;
@@ -47,6 +48,9 @@ interface Price {
 export default function CreateCake() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isEvent, setIsEvent] = useState(false)
+  const [eventStartDate, setEventStartDate] = useState("")
+  const [eventEndDate, setEventEndDate] = useState("")
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState("basic");
   const router = useRouter();
@@ -60,6 +64,9 @@ export default function CreateCake() {
     image: [""],
     category: "",
     isAvailable: true,
+    isEvent,
+    eventStartDate: isEvent ? eventStartDate : undefined,
+    eventEndDate: isEvent ? eventEndDate : undefined,
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -270,6 +277,20 @@ export default function CreateCake() {
                     onCheckedChange={(checked) => setNewCake(prev => ({ ...prev, isAvailable: checked }))}
                   />
                   <Label htmlFor="isAvailable">Available for Purchase</Label>
+
+
+                  <div className="flex items-center space-x-2">
+        <Switch id="is-event" checked={isEvent} onCheckedChange={setIsEvent} />
+        <Label htmlFor="is-event">Is this an event?</Label>
+      </div>
+                  {isEvent && (
+        <EventForm
+          eventStartDate={eventStartDate}
+          eventEndDate={eventEndDate}
+          setEventStartDate={setEventStartDate}
+          setEventEndDate={setEventEndDate}
+        />
+      )}
                 </div>
               </TabsContent>
 
@@ -335,6 +356,7 @@ export default function CreateCake() {
                     </CardContent>
                   </Card>
                 ))}
+    
                 <Button
                   type="button"
                   variant="outline"
