@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 type PromoBannerProps = {
@@ -14,7 +14,7 @@ const PromoBanner = ({
   message = "🎂 Free delivery on orders over $50! Limited time offer",
   link = "/shop",
   linkText = "Shop Now",
-  onClose
+  backgroundColor, textColor, onClose
 }: PromoBannerProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -23,14 +23,13 @@ const PromoBanner = ({
     if (onClose) {
       onClose();
     }
-    // Optionally save to localStorage to keep banner closed
     localStorage.setItem('promoBannerClosed', 'true');
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="relative bg-pink-600 text-white">
+    <div className="relative px-4 text-center" style={{ backgroundColor, color: textColor }}>
       <div className="max-w-7xl mx-auto py-2 px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center">
           <span className="text-sm md:text-base font-medium">
@@ -51,49 +50,80 @@ const PromoBanner = ({
         </div>
       </div>
     </div>
+    
   );
 };
 
-// Example usage with multiple promotions that rotate
+interface PromoBannerData {
+  message: string;
+  link?: string;
+  linkText?: string;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
 const RotatingPromoBanner = () => {
   const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
-
-  const promotions = [
-    {
-      message: "🎂 Free delivery on orders over $50!",
-      linkText: "Order Now",
-      link: "/shop"
-    },
-    {
-      message: "🎉 New! Custom Birthday Cakes Available",
-      linkText: "Customize Now",
-      link: "/custom-cakes"
-    },
-    {
-      message: "💝 Valentine's Special: 20% off on all heart-shaped cakes",
-      linkText: "View Collection",
-      link: "/valentines"
+  const [banners, setBanners] = useState<PromoBannerData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  // const promotions = [
+  //   {
+  //     message: "🎂 Free delivery on orders over $50!",
+  //     linkText: "Order Now",
+  //     link: "/shop"
+  //   },
+  //   {
+  //     message: "🎉 New! Custom Birthday Cakes Available",
+  //     linkText: "Customize Now",
+  //     link: "/custom-cakes"
+  //   },
+  //   {
+  //     message: "💝 Valentine's Special: 20% off on all heart-shaped cakes",
+  //     linkText: "View Collection",
+  //     link: "/valentines"
+  //   }
+  // ];
+  useEffect(() => {
+    async function fetchBanners() {
+      try {
+        const response = await fetch("/api/admin/banners");
+        if (!response.ok) throw new Error("Failed to fetch banners");
+        const data: PromoBannerData[] = await response.json();
+        setBanners(data);
+      } catch (error) {
+        console.error("Error fetching promo banners:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  ];
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentPromoIndex((prev) => (prev + 1) % promotions.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
+    fetchBanners();
   }, []);
 
-  const currentPromo = promotions[currentPromoIndex];
+  useEffect(() => {
+    if (banners.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentPromoIndex((prev) => (prev + 1) % banners.length);
+      }, 5000);
+
+      return () => clearInterval(timer);
+    }
+  }, [banners]);
+
+  if (isLoading || banners.length === 0) return null;
+
+  const currentPromo = banners[currentPromoIndex];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 transition-transform duration-300">
+   // <div className="fixed top-0 left-0 right-0 z-50 transition-transform duration-300">
       <PromoBanner
         message={currentPromo.message}
         linkText={currentPromo.linkText}
         link={currentPromo.link}
+        backgroundColor={currentPromo.backgroundColor}
+        textColor={currentPromo.textColor}
       />
-    </div>
+    //</div>
   );
 };
 

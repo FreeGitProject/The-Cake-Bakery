@@ -11,8 +11,7 @@ import { CartProvider } from "@/context/CartContext";
 import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 import Script from "next/script";
-//import RotatingPromoBanner from "@/components/RotatingPromoBanner";
-import { PromoBanner } from "@/components/PromoBanner";
+import RotatingPromoBanner from "@/components/RotatingPromoBanner";
 export default function RootLayout({
   children,
 }: {
@@ -27,7 +26,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <SessionProvider>
             <CartProvider>
-              {!isAdminPage && <PromoBannerWrapper />} {/* Exclude Header on admin pages */}
+              {!isAdminPage && <RotatingPromoBanner />} {/* Exclude Header on admin pages */}
               {!isAdminPage && <Header />} {/* Exclude Header on admin pages */}
               <main className="min-h-screen">{children}</main>
               {!isAdminPage && <Footer />} {/* Exclude Footer on admin pages */}
@@ -45,18 +44,18 @@ export default function RootLayout({
 }
 
 
-function PromoBannerWrapper() {
-  return (
-    <PromoBanner
-      message="Special offer! 20% off on all cakes"
-      link="/cakes"
-      linkText="Shop now"
-      backgroundColor="#FF9494"
-      textColor="#FFFFFF"
-      onClose={() => {
-        // Handle close action (e.g., store in local storage to not show again for a while)
-        console.log("Banner closed")
-      }}
-    />
-  )
-}
+// function PromoBannerWrapper() {
+//   return (
+//     <PromoBanner
+//       message="Special offer! 20% off on all cakes"
+//       link="/cakes"
+//       linkText="Shop now"
+//       backgroundColor="#FF9494"
+//       textColor="#FFFFFF"
+//       onClose={() => {
+//         // Handle close action (e.g., store in local storage to not show again for a while)
+//         console.log("Banner closed")
+//       }}
+//     />
+//   )
+// }

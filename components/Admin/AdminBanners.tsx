@@ -97,7 +97,7 @@ export default function AdminBanners() {
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await fetch(`/api/banners/${id}`, {
+      const response = await fetch(`/api/admin/banners/${id}`, {
         method: "DELETE",
       })
       if (response.ok) {

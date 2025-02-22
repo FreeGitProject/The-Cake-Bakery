@@ -9,6 +9,12 @@ export async function GET() {
     await clientPromise
     const banners = await PromoBanner.find({}).sort({ createdAt: -1 })
     return NextResponse.json(banners)
+      // Ensure a valid response
+    // if (banners.length === 0) {
+    //   return NextResponse.json(null);
+    // }
+
+    // return NextResponse.json(banners[0]);
   } catch (error) {
     console.error("Error fetching banners:", error)
     return NextResponse.json({ error: "Failed to fetch banners" }, { status: 500 })
