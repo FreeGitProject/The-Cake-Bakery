@@ -19,6 +19,7 @@ const sections = [
   { name: "Coupons", path: "/admin/coupons" },
   { name: "Bulk Upload", path: "/admin/bulk-upload" },
   { name: "Import Logs", path: "/admin/import-logs" },
+  { name: "Banners", path: "/admin/banners" },
 ]
 
 export default function AdminDashboard() {

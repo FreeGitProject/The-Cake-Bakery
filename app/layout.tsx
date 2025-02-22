@@ -42,3 +42,20 @@ export default function RootLayout({
     </NextAuthSessionProvider>
   );
 }
+
+
+// function PromoBannerWrapper() {
+//   return (
+//     <PromoBanner
+//       message="Special offer! 20% off on all cakes"
+//       link="/cakes"
+//       linkText="Shop now"
+//       backgroundColor="#FF9494"
+//       textColor="#FFFFFF"
+//       onClose={() => {
+//         // Handle close action (e.g., store in local storage to not show again for a while)
+//         console.log("Banner closed")
+//       }}
+//     />
+//   )
+// }
