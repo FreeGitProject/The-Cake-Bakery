@@ -440,7 +440,6 @@ export default function PremiumCheckout() {
   );
 
   // Render cart items
-  // Render cart items
   const renderCartItems = () => (
     <Card>
       <CardHeader>
@@ -455,7 +454,7 @@ export default function PremiumCheckout() {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-20 h-20 object-cover rounded-lg"
+                  className="w-12 h-12 object-cover rounded"
                 />
                 {item.quantity > 1 && (
                   <Badge className="absolute -top-2 -right-2 bg-primary">
@@ -614,7 +613,7 @@ export default function PremiumCheckout() {
             <div className="text-4xl">🛒</div>
             <CardTitle>Your cart is empty</CardTitle>
             <CardDescription>Add some delicious items to your cart and come back!</CardDescription>
-            <Button onClick={() => router.push('/products')}>
+            <Button onClick={() => router.push('/cakes')}>
               Continue Shopping
             </Button>
           </CardContent>
