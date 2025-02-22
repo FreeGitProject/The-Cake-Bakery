@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, Bell } from 'lucide-react';
+import { X,  Bell } from 'lucide-react';//ChevronLeft, ChevronRight,
 import { motion, AnimatePresence } from 'framer-motion';
 
 type PromoBannerProps = {
