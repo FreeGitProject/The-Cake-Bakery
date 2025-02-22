@@ -366,7 +366,7 @@ export default function AdminOrders() {
                 <div className="flex items-start space-x-2">
                   <Timer className="w-5 h-5 text-gray-400 mt-1" />
                   <div>
-                    <p className="font-medium">Delivery Time</p>
+                    <p className="font-medium">Delivery Schedule</p>
                     <p className="text-gray-600">
                     Delivery Date: <span className="font-semibold">{order.deliveryDate}</span>
                     </p>
