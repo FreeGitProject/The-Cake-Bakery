@@ -123,6 +123,7 @@ export default function CakeCard({
         weight: price.weight,
         quantity: quantity,
         image: cake.image[0],
+        cakeMessage:""
       });
   };
   const handleBuyNow = (cake: Cake) => {
@@ -137,6 +138,7 @@ export default function CakeCard({
       quantity: 1,
       image: cake.image[0],
       weight: lowestPrice.weight,
+      cakeMessage:""
     });
     router.push("/checkout");
   };

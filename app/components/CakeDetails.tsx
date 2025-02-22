@@ -124,6 +124,7 @@ export default function CakeDetails({ id }: { id: string }) {
   const { addToCart } = useCart();
   const { data: session } = useSession();
   const [isInWishlist, setIsInWishlist] = useState(false);
+
   const router = useRouter();
   // console.log(id,"id")
   const fetchCake = async () => {
@@ -213,40 +214,14 @@ export default function CakeDetails({ id }: { id: string }) {
     }
   }, [session]);
 
-  const handleAddToCart = (cake: Cake) => {
-    if (!selectedWeight) return;
 
-    addToCart({
-      id: id,
-      name: cake.name,
-      caketype: cake.caketype, 
-      price: selectedWeight.sellPrice,
-      weight: selectedWeight.weight,
-      quantity: 1,
-      image: cake.image[0],
-    });
-  };
   const getTypeStyles = (type: string): string | null => {
     if (type.toLowerCase() === "eggless") {
       return " text-green-800";
     }
     return "text-[#944a28]";
   };
-
-  const handleBuyNow = () => {
-    if (cake && selectedWeight) {
-      addToCart({
-        id: cake.id,
-        name: cake.name,
-        caketype: cake.caketype,
-        price: selectedWeight.sellPrice,
-        quantity: 1,
-        image: cake.image[0],
-        weight: selectedWeight.weight,
-      });
-      router.push("/checkout");
-    }
-  };
+ 
 
   if (loading) {
     return (
@@ -365,6 +340,36 @@ export default function CakeDetails({ id }: { id: string }) {
     const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus | null>(
       null
     );
+    const [cakeMessage, setCakeMessage] = useState("")
+    const handleAddToCart = (cake: Cake) => {
+      if (!selectedWeight) return;
+  
+      addToCart({
+        id: id,
+        name: cake.name,
+        caketype: cake.caketype, 
+        price: selectedWeight.sellPrice,
+        weight: selectedWeight.weight,
+        quantity: 1,
+        image: cake.image[0],
+        cakeMessage,
+      });
+    };
+    const handleBuyNow = () => {
+      if (cake && selectedWeight) {
+        addToCart({
+          id: cake.id,
+          name: cake.name,
+          caketype: cake.caketype,
+          price: selectedWeight.sellPrice,
+          quantity: 1,
+          image: cake.image[0],
+          weight: selectedWeight.weight,
+          cakeMessage,
+        });
+        router.push("/checkout");
+      }
+    };
     const checkDeliveryAvailability = async () => {
       try {
         const response = await fetch("/api/check-delivery", {
@@ -438,7 +443,15 @@ export default function CakeDetails({ id }: { id: string }) {
             ))}
           </div>
         </div>
-
+       {cake.caketype !== 'pastries' && ( <div className="mb-4">
+            <Label htmlFor="cakeMessage">Cake Message</Label>
+            <Input
+              id="cakeMessage"
+              placeholder="Enter a message for your cake (optional)"
+              value={cakeMessage}
+              onChange={(e) => setCakeMessage(e.target.value)}
+            />
+          </div>)}
         <div className="space-y-2">
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold">
