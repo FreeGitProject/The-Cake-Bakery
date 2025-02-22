@@ -52,7 +52,7 @@ export async function sendOrderConfirmationEmail(
     <!-- Welcome Message -->
     <div style="margin-bottom: 30px;">
       <h2 style="color: #d44f4f; font-size: 22px; margin: 0 0 15px 0;">Dear ${order.shippingAddress.name},</h2>
-      <p style="color: #666; line-height: 1.6; margin: 0;">Thank you for choosing Sweet Delights. We're delighted to confirm your order and are already preparing your special treats with the utmost care and attention to detail.</p>
+      <p style="color: #666; line-height: 1.6; margin: 0;">Thank you for choosing The Cake Shop. We're delighted to confirm your order and are already preparing your special treats with the utmost care and attention to detail.</p>
     </div>
 
     <!-- Delivery Information Grid -->
@@ -149,7 +149,7 @@ export async function sendOrderConfirmationEmail(
       <p style="color: #888; margin: 0 0 10px 0;">Questions about your order?</p>
       <p style="color: #d44f4f; margin: 0 0 20px 0; font-weight: bold;">${process.env.EMAIL_FROM}</p>
       <div style="width: 50px; height: 2px; background: #ff6b6b; margin: 20px auto;"></div>
-      <p style="color: #888; margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Sweet Delights Cake Shop</p>
+      <p style="color: #888; margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">The Cake Shop</p>
     </div>
   </div>
 </div>
