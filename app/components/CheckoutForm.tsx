@@ -63,7 +63,7 @@ interface DeliverySlot {
 }
 
 interface Address {
-  id: string;
+  _id: string;
   type: string;
   isDefault: boolean;
   street: string;
@@ -71,10 +71,11 @@ interface Address {
   state: string;
   zipCode: string;
   country: string;
+  phone: string;
 }
 
 export default function PremiumCheckout() {
-  const { cart, getCartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
+  const { cart, getCartTotal, clearCart, updateQuantity, updateCakeMessage,removeFromCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const { data: session } = useSession();
@@ -103,7 +104,6 @@ export default function PremiumCheckout() {
   const [isGift, setIsGift] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
-
   // Delivery slots
   const deliverySlots: DeliverySlot[] = useMemo(() => [
     { id: "morning", time: "9:00 AM - 12:00 PM", available: true },
@@ -147,26 +147,32 @@ export default function PremiumCheckout() {
       if (!session?.user) return;
 
       try {
-        const [userResponse, addressesResponse] = await Promise.all([
-          fetch(`/api/user/${session.user.id}`),
-          fetch(`/api/user/${session.user.id}/addresses`)
-        ]);
+        //we ca also call more than one 
+        // const [userResponse, addressesResponse] = await Promise.all([
+        //   fetch(`/api/user/${session.user.id}`),
+        //   fetch(`/api/user/${session.user.id}/addresses`)
+        // ]);
+        const response = await fetch(`/api/user/${session.user.id}`);//,
+      
 
-        if (userResponse.ok && addressesResponse.ok) {
-          const userData = await userResponse.json();
-          const addressesData = await addressesResponse.json();
-
-          setFormData(prev => ({
+        if (response.ok) {
+          const userData = await response.json();
+          //const addressesData = await addressesResponse.json();
+         // const addressesData = userData;
+//console.log(addressesData)
+//console.log(addressesData.user.addresses)    
+setFormData(prev => ({
             ...prev,
-            name: userData.user.username || "",
-            email: userData.user.email || "",
-            phone: userData.user.phone || ""
+            name: userData?.user?.username || "",
+            email: userData?.user?.email || "",
+            phone: userData?.user?.addresses.find((addr: Address) => addr.isDefault).phone || ""
           }));
-
-          setSavedAddresses(addressesData.addresses);
-          const defaultAddress = addressesData.addresses.find((addr: Address) => addr.isDefault);
+       //   console.log(userData.addresses)
+          setSavedAddresses(userData?.user?.addresses);
+          const defaultAddress = userData?.user?.addresses?.find((addr: Address) => addr.isDefault);
+          //console.log(defaultAddress)
           if (defaultAddress) {
-            setSelectedAddress(defaultAddress.id);
+            setSelectedAddress(defaultAddress._id);
           }
         }
       } catch (error) {
@@ -196,7 +202,9 @@ export default function PremiumCheckout() {
       updateQuantity(id, newQuantity);
     }
   };
-
+  const handleCakeMessageChange = (id: string, message: string) => {
+    updateCakeMessage(id, message)
+  }
   // Handle coupon application
   const handleApplyCoupon = async () => {
     try {
@@ -232,7 +240,8 @@ export default function PremiumCheckout() {
 
   // Handle address selection
   const handleAddressSelect = (addressId: string) => {
-    const selected = savedAddresses.find(addr => addr.id === addressId);
+    const selected = savedAddresses.find(addr => addr._id === addressId);
+   // console.log(selected)
     if (selected) {
       setSelectedAddress(addressId);
       setFormData(prev => ({
@@ -383,6 +392,7 @@ export default function PremiumCheckout() {
           price: item.price,
           weight: item.weight,
           image: item.image,
+          cakeMessage: item.cakeMessage,
         })),
         totalAmount: orderSummary.total,
         paymentMethod,
@@ -517,6 +527,23 @@ export default function PremiumCheckout() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
+               {item.caketype !== 'pastries' && (
+                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2 sm:gap-4">
+                 <label htmlFor="cakeMessage" className="text-sm sm:text-base font-medium">
+                 Cake Message
+                 </label>
+                 <Input
+                 id="cakeMessage"
+                 type="text"
+                 value={item.cakeMessage}
+                 onChange={(e) => handleCakeMessageChange(item.id, e.target.value)}
+                 minLength={20}
+                 className="w-full sm:w-64 p-2 border rounded-md"
+                 placeholder="Enter at least 20 characters"
+                 />
+               </div>
+               )}
+
               </div>
             </div>
           ))}
@@ -632,7 +659,7 @@ export default function PremiumCheckout() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Saved Addresses */}
-                {savedAddresses.length > 0 && (
+                {savedAddresses?.length > 0 && (
                   <div className="space-y-4">
                     <Label>Saved Addresses</Label>
                     <Select value={selectedAddress} onValueChange={handleAddressSelect}>
@@ -640,8 +667,8 @@ export default function PremiumCheckout() {
                         <SelectValue placeholder="Choose a saved address" />
                       </SelectTrigger>
                       <SelectContent>
-                        {savedAddresses.map((addr) => (
-                          <SelectItem key={addr.id} value={addr.id}>
+                        {savedAddresses?.map((addr) => (
+                          <SelectItem key={addr._id} value={addr._id}>
                             {addr.type} - {addr.street}, {addr.city}
                           </SelectItem>
                         ))}

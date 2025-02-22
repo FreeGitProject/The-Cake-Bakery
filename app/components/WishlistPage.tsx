@@ -85,6 +85,7 @@ export default function WishlistPage() {
       quantity: 1,
       image: item.image,
       weight: item.weight, // You might want to add weight to the wishlist item model if needed
+      cakeMessage:""
     })
     toast({
       title: "Added to cart",

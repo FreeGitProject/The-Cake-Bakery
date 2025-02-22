@@ -18,7 +18,10 @@ export async function POST(request: Request) {
   try {
     // Parse request data
     const { totalAmount, orderItems, paymentMethod, shippingAddress, couponCode,
-      discountAmount, } = await request.json();
+      discountAmount,   deliveryDate,
+      deliverySlot,
+      isGift,
+      giftMessage, } = await request.json();
 
     // Ensure user session exists
     const session = await getServerSession(authOptions);
@@ -56,7 +59,11 @@ export async function POST(request: Request) {
       razorpayOrderId: razorpayOrder.id, // Associate with Razorpay order ID
       couponCode,
       discountAmount,
-      orderNumber:orderNumber
+      orderNumber:orderNumber,
+      deliveryDate,
+      deliverySlot,
+      isGift,
+      giftMessage,
     });
 
     await newOrder.save();

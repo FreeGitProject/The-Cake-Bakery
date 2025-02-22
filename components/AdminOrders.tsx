@@ -34,7 +34,8 @@ import {
   CreditCard,
   User,
   Tag,
-  Mail
+  Mail,
+  Timer
 } from 'lucide-react';
 import React from "react";
 interface OrderItem {
@@ -43,6 +44,7 @@ interface OrderItem {
   quantity: number;
   price: number;
   image: string;
+  cakeMessage: string;
 }
 interface ShippingAddress {
   name: string
@@ -65,9 +67,13 @@ interface Order {
   orderNumber: string;
   paymentStatus: string;
   createdAt: string;
-  shippingAddress: ShippingAddress
-  couponCode?: string
-  discountAmount?: number
+  shippingAddress: ShippingAddress;
+  couponCode?: string;
+  discountAmount?: number;
+  deliveryDate: string ;
+  deliverySlot:string ;
+  isGift: boolean; 
+  giftMessage:  string ;
 }
 const OrderStatusBadge = ({ status }: { status: string }) => {
   const getStatusStyle = () => {
@@ -357,6 +363,25 @@ export default function AdminOrders() {
                     )}
                   </div>
                 </div>
+                <div className="flex items-start space-x-2">
+                  <Timer className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="font-medium">Delivery Schedule</p>
+                    <p className="text-gray-600">
+                    Delivery Date: <span className="font-semibold">{order.deliveryDate}</span>
+                    </p>
+                    <p className="text-gray-600">
+                    Delivery Slot: <span className="font-semibold">{order.deliverySlot}</span>
+                    </p>
+                    {order.isGift && (
+                      <div className="flex items-cente">
+                        <p className="text-gray-600">
+                        Gift Message: <span className="font-semibold">{order.giftMessage} </span>
+                    </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -366,6 +391,7 @@ export default function AdminOrders() {
                   <TableRow>
                     <TableHead>Product</TableHead>
                     <TableHead>Name</TableHead>
+                    <TableHead>Cake Message</TableHead>
                     <TableHead className="text-right">Quantity</TableHead>
                     <TableHead className="text-right">Price</TableHead>
                     <TableHead className="text-right">Total</TableHead>
@@ -385,6 +411,7 @@ export default function AdminOrders() {
                         </Link>
                       </TableCell>
                       <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell className="font-medium">{item.cakeMessage}</TableCell>
                       <TableCell className="text-right">{item.quantity}</TableCell>
                       <TableCell className="text-right">₹{item.price.toFixed(2)}</TableCell>
                       <TableCell className="text-right font-medium">
