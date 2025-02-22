@@ -33,6 +33,10 @@ export async function POST(request: Request) {
       razorpayPaymentId,
       couponCode,
       discountAmount,
+      deliveryDate,
+      deliverySlot,
+      isGift,
+      giftMessage,
     } = await request.json();
  // Generate order number using the helper
  const orderNumber = await generateOrderNumber();
@@ -50,7 +54,11 @@ export async function POST(request: Request) {
       razorpayPaymentId,
       couponCode,
       discountAmount,
-      orderNumber:orderNumber
+      orderNumber:orderNumber,
+      deliveryDate,
+      deliverySlot,
+      isGift,
+      giftMessage,
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();

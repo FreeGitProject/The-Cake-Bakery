@@ -71,6 +71,7 @@ interface Address {
   state: string;
   zipCode: string;
   country: string;
+  phone: string;
 }
 
 export default function PremiumCheckout() {

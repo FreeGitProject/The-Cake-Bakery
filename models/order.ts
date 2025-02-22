@@ -8,6 +8,7 @@ const orderItemSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   weight: { type: Number, required: true },
   image: { type: String, required: true },
+  cakemessage: { type: String } // Added field
 });
 
 const orderSchema = new mongoose.Schema({
@@ -25,7 +26,13 @@ const orderSchema = new mongoose.Schema({
     city: String,
     zipCode: String,
     country: String,
+    phone: String,
+    specialInstructions: String // Added field
   },
+  deliveryDate: { type: String, required: true }, // Added field
+  deliverySlot: { type: String, required: true }, // Added field
+  isGift: { type: Boolean, default: false }, // Added field
+  giftMessage: { type: String }, // Added field
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   razorpayOrderId: { type: String },
   razorpayPaymentId: { type: String },
