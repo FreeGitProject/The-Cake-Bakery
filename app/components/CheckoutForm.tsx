@@ -20,13 +20,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -50,17 +44,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonItemsByCategory from "@/components/AddonItemsByCategory"
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from "zod"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+
 import DeliveryForm from "@/components/DeliveryForm";
 declare global {
   interface Window {
@@ -117,10 +101,10 @@ export default function PremiumCheckout() {
   const [selectedAddress, setSelectedAddress] = useState<string>("");
   const [paymentMethod, setPaymentMethod] = useState("Cash on Delivery");
   const [couponCode, setCouponCode] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState<string>("");
-  const [deliverySlot, setDeliverySlot] = useState<string>("");
-  const [isGift, setIsGift] = useState(false);
-  const [giftMessage, setGiftMessage] = useState("");
+  //const [deliveryDate, setDeliveryDate] = useState<string>("");
+  const [deliverySlot] = useState<string>("");
+  //const [isGift, setIsGift] = useState(false);
+  const [giftMessage] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
   // Delivery slots
   const deliverySlots: DeliverySlot[] = useMemo(() => [
@@ -206,11 +190,11 @@ setFormData(prev => ({
     fetchUserData();
   }, [session, toast]);
 
-  // Handle input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  // // Handle input changes
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormData(prev => ({ ...prev, [name]: value }));
+  // };
 
   // Handle quantity changes
   const handleQuantityChange = (id: string, newQuantity: number) => {

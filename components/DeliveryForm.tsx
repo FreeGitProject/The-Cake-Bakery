@@ -43,17 +43,57 @@ const formSchema = z.object({
   deliverySlot: z.string().min(1, 'Please select a delivery time slot'),
   isGift: z.boolean().default(false),
   giftMessage: z.string().optional(),
+  savedAddress: z.string().optional(), // add this line if needed
 });
-interface DeliveryFormProps {
-    formData: any;
-    onFormDataChange: (data: any) => void;
-    savedAddresses: any[];
+interface Address {
+    _id: string;
+    type: string;
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  }
+  
+
+  
+  interface FormData {
+    name?: string;
+    phone?: string;
+    email?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+    deliveryDate?: string;
+    deliverySlot?: string;
+    isGift?: boolean;
+    giftMessage?: string;
+  }
+  interface DeliveryDate {
+    value: string; // ISO date string like "2024-02-24"
+    label: string; // Formatted date like "Fri, Feb 23"
+  }
+  
+  interface DeliverySlot {
+    id: string;
+    time: string;
+    available: boolean;
+  }
+  
+  
+  interface DeliveryFormProps {
+    formData: FormData;
+    onFormDataChange: (data: FormData) => void;
+    savedAddresses: Address[];
     selectedAddress: string;
     onAddressSelect: (addressId: string) => void;
-    availableDeliveryDates: any[];
-    deliverySlots: any[];
+    availableDeliveryDates: DeliveryDate[];
+    deliverySlots: DeliverySlot[];
     setCheckoutStep: (step: number) => void;
   }
+  
 
   const DeliveryForm = ({
     formData,
@@ -78,11 +118,12 @@ interface DeliveryFormProps {
   
     // Watch form changes and update parent
     useEffect(() => {
-      const subscription = form.watch((value) => {
-        onFormDataChange(value);
-      });
-      return () => subscription.unsubscribe();
-    }, [form.watch, onFormDataChange]);
+        const subscription = form?.watch((value) => {
+          onFormDataChange(value);
+        });
+        return () => subscription?.unsubscribe();
+      }, [form, onFormDataChange]);
+      
   
     // Handle saved address selection
     const handleSavedAddressChange = (addressId: string) => {
@@ -98,9 +139,9 @@ interface DeliveryFormProps {
       }
     };
     const handleNextStep = () => {
-        form.handleSubmit((data) => {
+      //  form.handleSubmit((data) => {
           setCheckoutStep((prev) => typeof prev === 'number' ? prev + 1 : 1); // Ensure `prev` is a number
-        })();
+       // })();
       };
       
 
@@ -116,7 +157,7 @@ interface DeliveryFormProps {
            <FormField
            control={form.control}
            name="savedAddress"
-           render={({ field }) => (
+           render={() => (
              <FormItem>
                <FormLabel>Saved Addresses</FormLabel>
                <Select 
