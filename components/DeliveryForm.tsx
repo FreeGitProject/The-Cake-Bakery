@@ -118,12 +118,11 @@ interface Address {
   
     // Watch form changes and update parent
     useEffect(() => {
-        const subscription = form?.watch((value) => {
-          onFormDataChange(value);
-        });
-        return () => subscription?.unsubscribe();
-      }, [form, onFormDataChange]);
-      
+      const subscription = form.watch((value) => {
+        onFormDataChange(value);
+      });
+      return () => subscription.unsubscribe();
+    }, [form.watch, onFormDataChange]);
   
     // Handle saved address selection
     const handleSavedAddressChange = (addressId: string) => {
@@ -139,9 +138,9 @@ interface Address {
       }
     };
     const handleNextStep = () => {
-      //  form.handleSubmit((data) => {
+        form.handleSubmit(() => {
           setCheckoutStep((prev) => typeof prev === 'number' ? prev + 1 : 1); // Ensure `prev` is a number
-       // })();
+        })();
       };
       
 
