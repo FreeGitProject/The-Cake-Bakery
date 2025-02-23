@@ -50,6 +50,18 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonItemsByCategory from "@/components/AddonItemsByCategory"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from "zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import DeliveryForm from "@/components/DeliveryForm";
 declare global {
   interface Window {
     Razorpay: any;
@@ -77,7 +89,7 @@ interface Address {
 export default function PremiumCheckout() {
   const { cart, getCartTotal, clearCart, updateQuantity, updateCakeMessage,removeFromCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState(1);
+  const [checkoutStep, setCheckoutStep] = useState<number>(1);
   const { data: session } = useSession();
   const { toast } = useToast();
   const router = useRouter();
@@ -93,6 +105,12 @@ export default function PremiumCheckout() {
     country: "",
     phone: "",
     specialInstructions: "",
+    deliveryDate:"",
+    deliverySlot:"",
+    isGift:false,
+    giftMessage:""
+
+
   });
 
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
@@ -254,6 +272,10 @@ setFormData(prev => ({
       }));
     }
   };
+   // Handle form data changes
+   const handleFormDataChange = (data: any) => {
+    setFormData(data);
+  };
 
   // Validate current step
   const validateStep = (step: number): boolean => {
@@ -261,7 +283,7 @@ setFormData(prev => ({
       case 1: // Cart review
         return cart.length > 0;
       case 2: // Delivery details
-        return !!(formData.address && formData.city && formData.state && formData.zipCode && deliveryDate && deliverySlot);
+        return !!(formData.address && formData.city && formData.state && formData.zipCode && formData.phone && formData.deliveryDate && deliverySlot);
       case 3: // Payment
         return true;
       default:
@@ -409,10 +431,10 @@ setFormData(prev => ({
         totalAmount: orderSummary.total,
         paymentMethod,
         shippingAddress: formData,
-        deliveryDate,
-        deliverySlot,
-        isGift,
-        giftMessage: isGift ? giftMessage : "",
+        deliveryDate:formData?.deliveryDate,
+        deliverySlot:formData?.deliverySlot,
+        isGift:formData?.isGift,
+        giftMessage: formData?.isGift ? giftMessage : "",
         couponCode: appliedCoupon?.code,
         discountAmount: appliedCoupon?.discountAmount,
       };
@@ -674,208 +696,19 @@ setFormData(prev => ({
           {/* Step 1: Cart Review */}
           {checkoutStep === 1 && renderCartItems()}
 
-          {/* Step 2: Delivery Details */}
-          {checkoutStep === 2 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Delivery Details</CardTitle>
-                <CardDescription>Choose delivery options and address</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Saved Addresses */}
-                {savedAddresses?.length > 0 && (
-                  <div className="space-y-4">
-                    <Label>Saved Addresses</Label>
-                    <Select value={selectedAddress} onValueChange={handleAddressSelect}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose a saved address" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {savedAddresses?.map((addr) => (
-                          <SelectItem key={addr._id} value={addr._id}>
-                            {addr.type} - {addr.street}, {addr.city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Address Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <Label htmlFor="address">Street Address</Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="zipCode">Pin Code</Label>
-                    <Input
-                      id="zipCode"
-                      name="zipCode"
-                      value={formData.zipCode}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Delivery Options */}
-                <div className="space-y-4">
-                  <Label>Delivery Date</Label>
-                  <Select 
-                    value={deliveryDate} 
-                    onValueChange={setDeliveryDate}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select delivery date" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableDeliveryDates.map((date) => (
-                        <SelectItem key={date.value} value={date.value}>
-                          {date.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Label>Delivery Time Slot</Label>
-                  <Select 
-                    value={deliverySlot} 
-                    onValueChange={setDeliverySlot}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time slot" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {deliverySlots.map((slot) => (
-                        <SelectItem 
-                          key={slot.id} 
-                          value={slot.id}
-                          disabled={!slot.available}
-                        >
-                          {slot.time}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Gift Options */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="isGift"
-                      checked={isGift}
-                      onChange={(e) => setIsGift(e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    <Label htmlFor="isGift">This is a gift</Label>
-                  </div>
-
-                  {isGift && (
-                    <div>
-                      <Label htmlFor="giftMessage">Gift Message</Label>
-                      <textarea
-                        id="giftMessage"
-                        value={giftMessage}
-                        onChange={(e) => setGiftMessage(e.target.value)}
-                        className="w-full min-h-[100px] p-2 border rounded-md"
-                        placeholder="Enter your gift message..."
-                      />
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => setCheckoutStep(1)}
-                >
-                  Back to Cart
-                </Button>
-                <Button 
-                  type="button"
-                  onClick={handleNextStep}
-                >
-                  Continue to Payment
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
+      {/* Step 2: Delivery Details */}
+{checkoutStep === 2 && (
+  <DeliveryForm
+  formData={formData}
+  onFormDataChange={handleFormDataChange}
+  savedAddresses={savedAddresses}
+  selectedAddress={selectedAddress}
+  onAddressSelect={handleAddressSelect}
+  availableDeliveryDates={availableDeliveryDates}
+  deliverySlots={deliverySlots}
+  setCheckoutStep={setCheckoutStep}
+/>
+)}
 
           {/* Step 3: Payment */}
           {checkoutStep === 3 && (
