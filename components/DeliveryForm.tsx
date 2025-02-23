@@ -1,4 +1,3 @@
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
