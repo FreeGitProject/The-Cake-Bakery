@@ -105,6 +105,20 @@ export async function sendOrderConfirmationEmail(
             </div>
           </div>
         `).join('')}
+           <!-- Order Items -->
+        ${order.addonItems.map((item: any) => `
+          <div style="display: flex; align-items: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <img src="${item.image}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 20px;">
+            <div style="flex-grow: 1;">
+              <h4 style="margin: 0 0 8px 0; color: #d44f4f; font-size: 16px;">${item.name}
+              </h4>
+              <p style="margin: 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} × ₹${item.price.toFixed(2)}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin: 0; color: #d44f4f; font-weight: bold;">₹${(item.price * item.quantity).toFixed(2)}</p>
+            </div>
+          </div>
+        `).join('')}
 
         <!-- Price Summary -->
         <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">

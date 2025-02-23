@@ -18,11 +18,19 @@ interface OrderItem {
   price: number;
   image: string;
 }
+interface AddOnItem {
+  addonId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
 
 interface Order {
   _id: string;
   orderId: string;
   orderItems: OrderItem[];
+  addonItems: AddOnItem[];
   totalAmount: number;
   paymentStatus: string;
   paymentMethod: string;
@@ -209,7 +217,37 @@ export default function MyOrders() {
                     </div>
                   </div>
                 ))}
-
+                {order.addonItems.map((item, index) => (
+                  <div key={index} 
+                      className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 
+                                hover:bg-gray-50 p-3 rounded-lg transition-colors border border-transparent hover:border-gray-100">
+                    <div className="flex-shrink-0 w-full sm:w-auto">
+                      <div className="relative w-full sm:w-20 h-40 sm:h-20 rounded-lg overflow-hidden">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-grow space-y-1">
+                    
+                        <h4 className="font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                          {item.name}
+                        </h4>
+                     
+                      <div className="text-sm text-gray-500">
+                        <p>Quantity: {item.quantity}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right w-full sm:w-auto">
+                      <p className="font-semibold text-gray-900">₹{(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-sm text-gray-500">₹{item.price.toFixed(2)} each</p>
+                    </div>
+                  </div>
+                ))}
                 <div className="border-t pt-4 space-y-3">
                   {order.couponCode && (
                     <div className="flex justify-between text-sm">
