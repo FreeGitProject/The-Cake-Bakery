@@ -165,7 +165,7 @@ setFormData(prev => ({
             ...prev,
             name: userData?.user?.username || "",
             email: userData?.user?.email || "",
-            phone: userData?.user?.addresses.find((addr: Address) => addr.isDefault).phone || ""
+            phone: userData?.user?.addresses?.find((addr: Address) => addr.isDefault)?.phone || ""
           }));
        //   console.log(userData.addresses)
           setSavedAddresses(userData?.user?.addresses);
