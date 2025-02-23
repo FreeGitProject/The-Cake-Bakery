@@ -66,7 +66,7 @@ export default function CheckoutWithAddons() {
   }
 
   const handleAddAddon = (item: AddonItem) => {
-    debugger;
+   
     addToCart({
       id: item._id,
       caketype:"addon",

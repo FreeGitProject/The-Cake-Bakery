@@ -352,7 +352,7 @@ setFormData(prev => ({
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    debugger;
+
     e.preventDefault();
     if (!session) {
       toast({
