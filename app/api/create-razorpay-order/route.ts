@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       discountAmount,   deliveryDate,
       deliverySlot,
       isGift,
-      giftMessage, } = await request.json();
+      giftMessage,addonItems } = await request.json();
 
     // Ensure user session exists
     const session = await getServerSession(authOptions);
@@ -64,6 +64,7 @@ export async function POST(request: Request) {
       deliverySlot,
       isGift,
       giftMessage,
+      addonItems
     });
 
     await newOrder.save();

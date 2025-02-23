@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       deliverySlot,
       isGift,
       giftMessage,
+      addonItems
     } = await request.json();
  // Generate order number using the helper
  const orderNumber = await generateOrderNumber();
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
       deliverySlot,
       isGift,
       giftMessage,
+      addonItems
     });
     //console.log("newOrder",newOrder);
     await newOrder.save();
