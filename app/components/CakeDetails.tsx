@@ -18,7 +18,8 @@ import ReviewsAndRatings from "./ReviewsAndRatings";
 import RecentlyViewed from "./RecentlyViewed";
 import { toast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
+import AddonItemsModal from "@/components/AddonItemsModal"
 
 interface Price {
   weight: number;
@@ -27,7 +28,7 @@ interface Price {
 }
 
 interface Cake {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   type: string; // "egg" or "eggless"
@@ -124,8 +125,9 @@ export default function CakeDetails({ id }: { id: string }) {
   const { addToCart } = useCart();
   const { data: session } = useSession();
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const [isAddonModalOpen, setIsAddonModalOpen] = useState(false)
 
-  const router = useRouter();
+  //const router = useRouter();
   // console.log(id,"id")
   const fetchCake = async () => {
     try {
@@ -345,7 +347,7 @@ export default function CakeDetails({ id }: { id: string }) {
       if (!selectedWeight) return;
   
       addToCart({
-        id: id,
+        id: cake._id,
         name: cake.name,
         caketype: cake.caketype, 
         price: selectedWeight.sellPrice,
@@ -354,11 +356,13 @@ export default function CakeDetails({ id }: { id: string }) {
         image: cake.image[0],
         cakeMessage,
       });
+      setIsAddonModalOpen(true)
     };
-    const handleBuyNow = () => {
+    const handleBuyNow= (cake: Cake) => {
+      //console.log(cake)
       if (cake && selectedWeight) {
         addToCart({
-          id: cake.id,
+          id: cake._id,
           name: cake.name,
           caketype: cake.caketype,
           price: selectedWeight.sellPrice,
@@ -367,7 +371,8 @@ export default function CakeDetails({ id }: { id: string }) {
           weight: selectedWeight.weight,
           cakeMessage,
         });
-        router.push("/checkout");
+        setIsAddonModalOpen(true)
+        //router.push("/checkout");
       }
     };
     const checkDeliveryAvailability = async () => {
@@ -522,7 +527,7 @@ export default function CakeDetails({ id }: { id: string }) {
         className={`w-full bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 ${
           !selectedWeight ? "opacity-60 cursor-not-allowed" : ""
         }`}
-        onClick={handleBuyNow}
+        onClick={() => handleBuyNow(cake)}
         disabled={!selectedWeight}
       >
         Buy Now
@@ -563,6 +568,7 @@ export default function CakeDetails({ id }: { id: string }) {
         <ReviewsAndRatings cakeId={id} />
       </div>
       <RecentlyViewed currentCakeId={id} />
+      <AddonItemsModal isOpen={isAddonModalOpen} onClose={() => setIsAddonModalOpen(false) }  mode="buy"/>
     </div>
   );
 }

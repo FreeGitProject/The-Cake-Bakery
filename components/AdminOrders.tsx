@@ -38,6 +38,13 @@ import {
   Timer
 } from 'lucide-react';
 import React from "react";
+interface AddOnItem {
+  addonId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
 interface OrderItem {
   productId: string;
   name: string;
@@ -62,6 +69,7 @@ interface Order {
     email: string;
   };
   orderItems: OrderItem[];
+  addonItems: AddOnItem[];
   totalAmount: number;
   orderStatus: string;
   orderNumber: string;
@@ -389,7 +397,7 @@ export default function AdminOrders() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Product</TableHead>
+                    <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Cake Message</TableHead>
                     <TableHead className="text-right">Quantity</TableHead>
@@ -422,7 +430,44 @@ export default function AdminOrders() {
                 </TableBody>
               </Table>
             </div>
-
+          {order?.addonItems?.length > 0 &&
+            (
+              <div className="overflow-x-auto">
+                <h3>AddOn Items</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead className="text-right">Quantity</TableHead>
+                    <TableHead className="text-right">Price</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {order?.addonItems?.map((item, index) => (
+                    <TableRow key={index} className="hover:bg-gray-50">
+                      <TableCell className="block w-12 h-12 relative rounded-lg overflow-hidden">
+                          <Image
+                            src={item?.image || "/placeholder.svg"}
+                            alt={item?.name}
+                            fill
+                            className="object-cover "
+                          />
+                      </TableCell>
+                      <TableCell className="font-medium">{item?.name}</TableCell>
+                      <TableCell className="text-right">{item?.quantity}</TableCell>
+                      <TableCell className="text-right">₹{item?.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-medium">
+                        ₹{(item?.quantity * item?.price).toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            )
+          }
             <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
               <Select
                 onValueChange={(value) => updateOrderStatus(order._id, value)}

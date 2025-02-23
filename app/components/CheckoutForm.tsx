@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import AddonItemsByCategory from "@/components/AddonItemsByCategory"
 declare global {
   interface Window {
     Razorpay: any;
@@ -352,6 +352,7 @@ setFormData(prev => ({
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
+    debugger;
     e.preventDefault();
     if (!session) {
       toast({
@@ -384,7 +385,9 @@ setFormData(prev => ({
       }
 
       const orderData = {
-        orderItems: cart.map(item => ({
+        orderItems: cart
+        .filter(item => item.caketype !== 'addon') // Get only cakes & pastries
+        .map(item => ({
           productId: item.id,
           name: item.name,
           caketype: item.caketype,
@@ -393,6 +396,15 @@ setFormData(prev => ({
           weight: item.weight,
           image: item.image,
           cakeMessage: item.cakeMessage,
+        })),
+        addonItems: cart
+        .filter(item => item.caketype === 'addon') // Get only addon items
+        .map(item => ({
+          addonId: item.id,
+          name: item.name,
+          image: item.image,
+          quantity: item.quantity,
+          price: item.price,
         })),
         totalAmount: orderSummary.total,
         paymentMethod,
@@ -408,6 +420,7 @@ setFormData(prev => ({
       if (paymentMethod === "Online Payment") {
         await initializeRazorpayPayment(orderData);
       } else {
+       // console.log(orderData)
         const orderResponse = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -451,7 +464,8 @@ setFormData(prev => ({
 
   // Render cart items
   const renderCartItems = () => (
-    <Card>
+    <div>
+        <Card>
       <CardHeader>
         <CardTitle>Order Summary</CardTitle>
         <CardDescription>Review your items</CardDescription>
@@ -480,10 +494,14 @@ setFormData(prev => ({
                 </div>
                 
                 <div className="flex items-center text-sm text-gray-500">
-                  <span className="mr-2">
-                    {item.caketype === "cake" ? "Weight" : "Pieces"}: {item.weight}
-                    {item.caketype === "cake" ? "Kg" : ""}
-                  </span>
+                <span className="mr-2">
+                    {item.caketype !== "addon" && (
+                      <>
+                        {item.caketype === "cake" ? "Weight" : "Pieces"}: {item.weight}
+                        {item.caketype === "cake" ? "Kg" : ""}
+                      </>
+                    )}
+                </span>
                   <span>₹{item.price.toFixed(2)} each</span>
                 </div>
 
@@ -527,7 +545,7 @@ setFormData(prev => ({
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-               {item.caketype !== 'pastries' && (
+               {item.caketype !== 'pastries' && item.caketype !== "addon" && (
                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2 sm:gap-4">
                  <label htmlFor="cakeMessage" className="text-sm sm:text-base font-medium">
                  Cake Message
@@ -629,6 +647,12 @@ setFormData(prev => ({
         </Button>
       </CardFooter>
     </Card>
+    <div>
+      <>
+      <AddonItemsByCategory />
+      </>
+    </div>
+    </div>
   );
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
