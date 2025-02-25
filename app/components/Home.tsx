@@ -20,7 +20,7 @@ const CakeShopHero = ({
         const res = await fetch("/api/home");
         if (!res.ok) throw new Error("Failed to fetch home data");
         const data: HomeData[] = await res.json();
-
+//console.log(data)
         if (Array.isArray(data)) {
           setHomeDataList(data);
         } else {
@@ -37,11 +37,15 @@ const CakeShopHero = ({
   }, []);
 
   useEffect(() => {
+    if (homeDataList.length === 0) return;
+  
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % homeDataList.length);
     }, 5000);
+  
     return () => clearInterval(timer);
   }, [homeDataList.length]);
+  
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % homeDataList.length);

@@ -61,7 +61,7 @@ export default function AddonItemsModal({ isOpen, onClose, mode }: AddonItemsMod
 
   useEffect(() => {
     fetchAddonItems(searchQuery, selectedCategory, currentPage)
-  }, [selectedCategory, currentPage])
+  }, [])
 
   useEffect(() => {
     const total = Object.entries(selectedAddons).reduce((sum, [addonId, quantity]) => {
