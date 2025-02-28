@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState, useEffect } from "react";
-import Loader from "./Loader";
+//import Loader from "./Loader";
 interface HomeData {
   heroTitle: string
   heroSubtitle: string
@@ -9,32 +9,36 @@ interface HomeData {
   buttonText: string
   buttonLink: string
 }
-const CakeShopHero = ({
-}) => {
+interface CakeShopHeroProps {
+  homeDataList: HomeData[];
+  //isLoading: boolean;
+}
+const CakeShopHero: React.FC<CakeShopHeroProps> = ({ homeDataList }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [homeDataList, setHomeDataList] = useState<HomeData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    async function fetchHomeData() {
-      try {
-        const res = await fetch("/api/home");
-        if (!res.ok) throw new Error("Failed to fetch home data");
-        const data: HomeData[] = await res.json();
-//console.log(data)
-        if (Array.isArray(data)) {
-          setHomeDataList(data);
-        } else {
-          console.error("API did not return an array");
-          setHomeDataList([]);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching home data:", error);
-        setIsLoading(false);
-      }
-    }
-    fetchHomeData();
-  }, []);
+
+  //const [homeDataList, setHomeDataList] = useState<HomeData[]>([]);
+ //const [isLoading, setIsLoading] = useState(true);
+//   useEffect(() => {
+//     async function fetchHomeData() {
+//       try {
+//         const res = await fetch("/api/home");
+//         if (!res.ok) throw new Error("Failed to fetch home data");
+//         const data: HomeData[] = await res.json();
+// //console.log(data)
+//         if (Array.isArray(data)) {
+//           setHomeDataList(data);
+//         } else {
+//           console.error("API did not return an array");
+//           setHomeDataList([]);
+//         }
+//         setIsLoading(false);
+//       } catch (error) {
+//         console.error("Error fetching home data:", error);
+//         setIsLoading(false);
+//       }
+//     }
+//     fetchHomeData();
+//   }, []);
 
   useEffect(() => {
     if (homeDataList.length === 0) return;
@@ -54,13 +58,13 @@ const CakeShopHero = ({
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + homeDataList.length) % homeDataList.length);
   };
-  if (isLoading) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div>
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
   return (
     <section className="relative h-screen overflow-hidden">
       <style jsx>{`

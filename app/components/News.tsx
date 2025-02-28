@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
+import { useQuery } from '@tanstack/react-query'
 //import Image from 'next/image'
-import { useState, useEffect } from 'react'
 
 interface NewsItem {
   _id: string
@@ -11,21 +11,25 @@ interface NewsItem {
   imageUrl?: string
 }
 
-export default function News() {
-  const [news, setNews] = useState<NewsItem[]>([])
-
-  useEffect(() => {
-    async function fetchNews() {
-      try {
-        const res = await fetch('/api/news')
-        const data = await res.json()
-        setNews(data)
-      } catch (error) {
-        console.error('Error fetching news:', error)
-      }
-    }
-    fetchNews()
-  }, [])
+export default function News({ initialNews }: { initialNews: NewsItem[] }) {
+  //const [news, setNews] = useState<NewsItem[]>([])
+  const { data: news } = useQuery({
+    queryKey: ["news"],
+    //queryFn: getNews,
+    initialData: initialNews,
+  });
+  // useEffect(() => {
+  //   async function fetchNews() {
+  //     try {
+  //       const res = await fetch('/api/news')
+  //       const data = await res.json()
+  //       setNews(data)
+  //     } catch (error) {
+  //       console.error('Error fetching news:', error)
+  //     }
+  //   }
+  //   fetchNews()
+  // }, [])
 
   return (
     <section className="py-20 bg-white">

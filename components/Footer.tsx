@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+//import { useEffect, useState } from 'react'
 import NewsletterSubscribe from "@/components/NewsletterSubscribe"
 import { 
   Facebook, 
@@ -25,21 +25,21 @@ interface FooterData {
   }
 }
 
-export default function Footer() {
-  const [footerData, setFooterData] = useState<FooterData | null>(null)
+export default function Footer({ footerData }: { footerData: FooterData | null }) {
+  //const [footerData, setFooterData] = useState<FooterData | null>(null)
 
-  useEffect(() => {
-    async function fetchFooterData() {
-      try {
-        const res = await fetch('/api/footer')
-        const data = await res.json()
-        setFooterData(data)
-      } catch (error) {
-        console.error('Error fetching footer data:', error)
-      }
-    }
-    fetchFooterData()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchFooterData() {
+  //     try {
+  //       const res = await fetch('/api/footer')
+  //       const data = await res.json()
+  //       setFooterData(data)
+  //     } catch (error) {
+  //       console.error('Error fetching footer data:', error)
+  //     }
+  //   }
+  //   fetchFooterData()
+  // }, [])
 
   if (!footerData) {
     return <div><Loader/></div>
