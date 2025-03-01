@@ -28,18 +28,20 @@ export async function GET(request: Request) {
       { status: 400 }
     );
     }
-
+    // Get session
+    const session = await getServerSession(authOptions);
+    const isAdmin = session?.user?.role === 'admin';
     // Fetch admin settings
     const adminSettings = await AdminSettings.findOne().exec();
     const cachingEnabled = adminSettings?.cachingEnabled ?? false;
     const cachingStrategy = adminSettings?.cachingStrategy ?? 'isr';
-    const cacheKey = `cakes_${caketype}_category${category}_page${page}_limit${limit}_search${search}`;
+    const cacheKey = `cakes_${caketype}_category${category}_page${page}_limit${limit}_search${search}_admin${isAdmin}`;
     // Cache key for Redis
     //const cacheKey = `cakes_${caketype}`;
 
     // ISR Strategy: Use Next.js revalidation mechanism
     if (cachingEnabled && cachingStrategy === 'isr') {
-      const data = await fetchCakes(caketype, category, page, limit, search);
+      const data = await fetchCakes(caketype, category, page, limit, search,isAdmin);
       revalidateTag(cacheKey); // Tag for ISR caching
       return NextResponse.json(data);
     }
@@ -52,13 +54,13 @@ export async function GET(request: Request) {
       }
 
       // Cache miss: Fetch from DB and store in Redis
-      const data = await fetchCakes(caketype, category, page, limit, search);
+      const data = await fetchCakes(caketype, category, page, limit, search,isAdmin);
       await setToCache(cacheKey, data, 3600); // Cache for 1 hour
       return NextResponse.json(data);
     }
 
     // Default behavior: Fetch directly from DB if caching is disabled
-    const data = await fetchCakes(caketype, category, page, limit, search);
+    const data = await fetchCakes(caketype, category, page, limit, search,isAdmin);
     return NextResponse.json(data);
   } catch (error) {
     return NextResponse.json(
@@ -69,11 +71,14 @@ export async function GET(request: Request) {
 }
 
 // Helper function to fetch cakes from MongoDB
-async function fetchCakes(caketype: string, category: string | null, page: number, limit: number, search: string) {
+async function fetchCakes(caketype: string, category: string | null, page: number, limit: number, search: string,  isAdmin: boolean) {
   const skip = (page - 1) * limit;
   const query: any = { caketype };
   if (category) query.category = category;
   if (search) query.name = { $regex: new RegExp(search, 'i') };
+
+    // Apply isPublished filter only for non-admin users
+    if (!isAdmin) query.isPublished = true;
 
   const data = await Cake.aggregate([
     { $match: query },
