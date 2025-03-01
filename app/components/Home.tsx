@@ -5,7 +5,7 @@ import Loader from "./Loader";
 import { useData } from "@/context/DataContext";
 
 const CakeShopHero = () => {
-  const { homeDataList, isLoading } = useData(); // Fetch from context
+  const { homeDataList } = useData(); // Fetch from context
   const [currentSlide, setCurrentSlide] = useState(0);
 //console.log(homeDataList);
   useEffect(() => {
@@ -23,7 +23,7 @@ const CakeShopHero = () => {
     setCurrentSlide((prev) => (prev - 1 + homeDataList?.length) % homeDataList?.length);
   };
 
-  if (isLoading) {
+  if (homeDataList?.length==0) {
     return (
       <div>
         <Loader />
