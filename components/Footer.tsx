@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+//import { useEffect, useState } from 'react'
 import NewsletterSubscribe from "@/components/NewsletterSubscribe"
 import { 
   Facebook, 
@@ -13,34 +13,35 @@ import {
   Phone, 
   ChevronRight 
 } from 'lucide-react'
-interface FooterData {
-  companyName: string
-  description: string
-  email: string
-  phone: string
-  socialLinks: {
-    facebook: string
-    twitter: string
-    instagram: string
-  }
-}
+import { useData } from '@/context/DataContext'
+// interface FooterData {
+//   companyName: string
+//   description: string
+//   email: string
+//   phone: string
+//   socialLinks: {
+//     facebook: string
+//     twitter: string
+//     instagram: string
+//   }
+// }
 
 export default function Footer() {
-  const [footerData, setFooterData] = useState<FooterData | null>(null)
+  // const [footerData, setFooterData] = useState<FooterData | null>(null)
 
-  useEffect(() => {
-    async function fetchFooterData() {
-      try {
-        const res = await fetch('/api/footer')
-        const data = await res.json()
-        setFooterData(data)
-      } catch (error) {
-        console.error('Error fetching footer data:', error)
-      }
-    }
-    fetchFooterData()
-  }, [])
-
+  // useEffect(() => {
+  //   async function fetchFooterData() {
+  //     try {
+  //       const res = await fetch('/api/footer')
+  //       const data = await res.json()
+  //       setFooterData(data)
+  //     } catch (error) {
+  //       console.error('Error fetching footer data:', error)
+  //     }
+  //   }
+  //   fetchFooterData()
+  // }, [])
+const { footerData } = useData();
   if (!footerData) {
     return <div><Loader/></div>
   }

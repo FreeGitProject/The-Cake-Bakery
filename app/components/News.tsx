@@ -1,31 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
+import { useData } from '@/context/DataContext'
 //import Image from 'next/image'
-import { useState, useEffect } from 'react'
+// import { useState, useEffect } from 'react'
 
-interface NewsItem {
-  _id: string
-  title: string
-  date: string
-  description: string
-  imageUrl?: string
-}
+// interface NewsItem {
+//   _id: string
+//   title: string
+//   date: string
+//   description: string
+//   imageUrl?: string
+// }
 
 export default function News() {
-  const [news, setNews] = useState<NewsItem[]>([])
+  const { news, isLoading } = useData();
 
-  useEffect(() => {
-    async function fetchNews() {
-      try {
-        const res = await fetch('/api/news')
-        const data = await res.json()
-        setNews(data)
-      } catch (error) {
-        console.error('Error fetching news:', error)
-      }
-    }
-    fetchNews()
-  }, [])
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <section className="py-20 bg-white">
@@ -37,7 +27,7 @@ export default function News() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {news.map((item) => (
+          {news?.map((item) => (
             <div 
               key={item._id} 
               className="group cursor-pointer"

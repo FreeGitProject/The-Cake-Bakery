@@ -1,9 +1,9 @@
 "use client"
-import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
 import Link from 'next/link'
+import { useData } from '@/context/DataContext'
 
 // interface Cake {
 //   _id: string
@@ -36,20 +36,21 @@ interface Cake {
 }
 
 export default function Favorites() {
-  const [favorites, setFavorites] = useState<Cake[]>([])
+  // const [favorites, setFavorites] = useState<Cake[]>([])
+   const { favorites } = useData();
  const { addToCart } = useCart()
-  useEffect(() => {
-    async function fetchFavorites() {
-      try {
-        const res = await fetch('/api/favorites')
-        const data = await res.json()
-        setFavorites(data)
-      } catch (error) {
-        console.error('Error fetching favorites:', error)
-      }
-    }
-    fetchFavorites()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchFavorites() {
+  //     try {
+  //       const res = await fetch('/api/favorites')
+  //       const data = await res.json()
+  //       setFavorites(data)
+  //     } catch (error) {
+  //       console.error('Error fetching favorites:', error)
+  //     }
+  //   }
+  //   fetchFavorites()
+  // }, [])
   const handleAddToCart = (cake: Cake) => {
     addToCart({
       id: cake._id,
