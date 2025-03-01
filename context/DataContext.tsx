@@ -151,10 +151,10 @@ const useDataFetcher = () => {
   const { data: locationData, error: locationError } = useSWR<CompanyInfo>("/api/company-info", fetcher, swrOptions);
   const { data: favorites, error: favoritesError } = useSWR<Cake[]>("/api/favorites", fetcher, swrOptions);
 
-  const isLoading = !homeDataList || !news || !aboutData || !footerData || !favorites || !locationData;
+  const isLoading = !homeDataList || !news || !aboutData || !footerData || !locationData || !favorites;
 
-  if (homeError || newsError || aboutError || favoritesError || footerError || locationData) {
-    console.error("Error fetching data:", { homeError, newsError, aboutError, favoritesError,locationError });
+  if (homeError || newsError || aboutError || favoritesError || locationError || footerError ) {
+    console.error("Error fetching data:", { homeError, newsError, aboutError,locationError,favoritesError });
   }
 
   return {
