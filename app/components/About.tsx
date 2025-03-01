@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 //import Image from 'next/image'
-import { useEffect, useState } from 'react'
+//import { useEffect, useState } from 'react'
 import Loader from './Loader'
 
 interface AboutData {
@@ -12,21 +12,21 @@ interface AboutData {
   foundedYear: number
 }
 
-export default function About() {
-  const [aboutData, setAboutData] = useState<AboutData | null>(null)
+export default function About({ aboutData }: { aboutData: AboutData | null }) {
+ // const [aboutData, setAboutData] = useState<AboutData | null>(null)
 
-  useEffect(() => {
-    async function fetchAboutData() {
-      try {
-        const res = await fetch('/api/about')
-        const data = await res.json()
-        setAboutData(data)
-      } catch (error) {
-        console.error('Error fetching about data:', error)
-      }
-    }
-    fetchAboutData()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchAboutData() {
+  //     try {
+  //       const res = await fetch('/api/about')
+  //       const data = await res.json()
+  //       setAboutData(data)
+  //     } catch (error) {
+  //       console.error('Error fetching about data:', error)
+  //     }
+  //   }
+  //   fetchAboutData()
+  // }, [])
 
   if (!aboutData) {
     return <div><Loader/></div>

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react'
+//import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
@@ -35,21 +35,21 @@ interface Cake {
   isAvailable: boolean;
 }
 
-export default function Favorites() {
-  const [favorites, setFavorites] = useState<Cake[]>([])
+export default function Favorites({favorites}:{favorites:Cake[] | null}) {
+  //const [favorites, setFavorites] = useState<Cake[]>([])
  const { addToCart } = useCart()
-  useEffect(() => {
-    async function fetchFavorites() {
-      try {
-        const res = await fetch('/api/favorites')
-        const data = await res.json()
-        setFavorites(data)
-      } catch (error) {
-        console.error('Error fetching favorites:', error)
-      }
-    }
-    fetchFavorites()
-  }, [])
+  // useEffect(() => {
+  //   async function fetchFavorites() {
+  //     try {
+  //       const res = await fetch('/api/favorites')
+  //       const data = await res.json()
+  //       setFavorites(data)
+  //     } catch (error) {
+  //       console.error('Error fetching favorites:', error)
+  //     }
+  //   }
+  //   fetchFavorites()
+  // }, [])
   const handleAddToCart = (cake: Cake) => {
     addToCart({
       id: cake._id,
@@ -78,7 +78,7 @@ export default function Favorites() {
 
         {/* Favorites Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {favorites.map((cake) => (
+          {favorites?.map((cake) => (
             <div 
               key={cake._id} 
               className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden animate-fadeIn"
