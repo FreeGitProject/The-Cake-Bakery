@@ -13,6 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 import Script from "next/script";
 import RotatingPromoBanner from "@/components/RotatingPromoBanner";
 import { DataProvider } from "@/context/DataContext";
+import { LocationProvider } from "@/context/LocationContext";
 export default function RootLayout({
   children,
 }: {
@@ -28,10 +29,12 @@ export default function RootLayout({
           <SessionProvider>
             <CartProvider>
             <DataProvider>
+            <LocationProvider>
               {!isAdminPage && <RotatingPromoBanner />} {/* Exclude Header on admin pages */}
               {!isAdminPage && <Header />} {/* Exclude Header on admin pages */}
               <main className="min-h-screen">{children}</main>
               {!isAdminPage && <Footer />} {/* Exclude Footer on admin pages */}
+              </LocationProvider>
               </DataProvider>
             </CartProvider>
             <Script

@@ -21,6 +21,8 @@ const sections = [
   { name: "Import Logs", path: "/admin/import-logs" },
   { name: "Banners", path: "/admin/banners" },
   { name: "Addon Items", path: "/admin/addon-items" },
+  { name: "Locations", path: "/admin/locations" }, // Add 
+  { name: "Company Info", path: "/admin/company-info" },
 ]
 
 export default function AdminDashboard() {
