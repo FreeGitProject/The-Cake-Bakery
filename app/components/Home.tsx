@@ -2,54 +2,27 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
-interface HomeData {
-  heroTitle: string
-  heroSubtitle: string
-  heroImage: string
-  buttonText: string
-  buttonLink: string
-}
-const CakeShopHero = ({
-}) => {
+import { useData } from "@/context/DataContext";
+
+const CakeShopHero = () => {
+  const { homeDataList, isLoading } = useData(); // Fetch from context
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [homeDataList, setHomeDataList] = useState<HomeData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    async function fetchHomeData() {
-      try {
-        const res = await fetch("/api/home");
-        if (!res.ok) throw new Error("Failed to fetch home data");
-        const data: HomeData[] = await res.json();
-
-        if (Array.isArray(data)) {
-          setHomeDataList(data);
-        } else {
-          console.error("API did not return an array");
-          setHomeDataList([]);
-        }
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching home data:", error);
-        setIsLoading(false);
-      }
-    }
-    fetchHomeData();
-  }, []);
-
+//console.log(homeDataList);
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % homeDataList.length);
+      setCurrentSlide((prev) => (prev + 1) % homeDataList?.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [homeDataList.length]);
+  }, [homeDataList?.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % homeDataList.length);
+    setCurrentSlide((prev) => (prev + 1) % homeDataList?.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + homeDataList.length) % homeDataList.length);
+    setCurrentSlide((prev) => (prev - 1 + homeDataList?.length) % homeDataList?.length);
   };
+
   if (isLoading) {
     return (
       <div>
@@ -57,8 +30,10 @@ const CakeShopHero = ({
       </div>
     );
   }
+
   return (
     <section className="relative h-screen overflow-hidden">
+      {/* Styles */}
       <style jsx>{`
         @keyframes slideDown {
           from {
