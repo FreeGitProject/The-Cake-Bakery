@@ -21,6 +21,13 @@ const userSchema = new mongoose.Schema(
     addresses: { type: [addressSchema], default: [] }, // Array of addresses
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
+    selectedLocation: {
+      name: String,
+      state: String,
+      latitude: Number,
+      longitude: Number,
+    },
+    autoDetected: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
