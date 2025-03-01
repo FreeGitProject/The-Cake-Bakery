@@ -13,6 +13,7 @@ import {
   Phone, 
   ChevronRight 
 } from 'lucide-react'
+//import { useEffect, useState } from 'react'
 interface FooterData {
   companyName: string
   description: string

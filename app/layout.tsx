@@ -11,6 +11,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 import RotatingPromoBanner from "@/components/RotatingPromoBanner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+//import Footer from "@/components/Footer";
 //import FooterWrapper from "@/components/FooterWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,7 +31,7 @@ export default  function RootLayout({ children }: { children: React.ReactNode })
                 {!isAdminPage && <RotatingPromoBanner />}
                 {!isAdminPage && <Header />}
                 <main className="min-h-screen">{children}</main>
-                {/* {!isAdminPage && <FooterWrapper />} */}
+                {/* {!isAdminPage && <Footer />} */}
               </CartProvider>
               <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
               <Toaster />
