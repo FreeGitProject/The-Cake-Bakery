@@ -14,13 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, User, Heart } from "lucide-react";
+import { ShoppingCart, User, Heart, MapPin } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
+import { useLocation } from "@/context/LocationContext";
+import LocationModal from "./LocationModal";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { currentLocation, setIsLocationModalOpen } = useLocation()
   const navItems = [
     { name: "Home", path: "/" },
     // { name: 'Favorites', path: '/favorites' },
@@ -123,6 +126,10 @@ export default function Header() {
               // </Link>
               <WishlistButton />
             )}
+              <Button variant="ghost" className="relative p-2" onClick={() => setIsLocationModalOpen(true)}>
+                <MapPin className="h-6 w-6" />
+                {currentLocation && <span className="ml-2 text-sm font-medium">{currentLocation.name}</span>}
+              </Button>
             {/* User Menu */}
             {session ? (
               <DropdownMenu>
@@ -290,6 +297,7 @@ export default function Header() {
         </div>
       </nav>
       <CartOffCanvas isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+      <LocationModal />
     </header>
   );
 }
