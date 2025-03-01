@@ -60,6 +60,7 @@ interface Cake {
   image: string[];
   category: string;
   isAvailable: boolean;
+  isPublished: boolean;
 }
 
 export default function EditCake({ id }: { id: string }) {
@@ -80,6 +81,7 @@ export default function EditCake({ id }: { id: string }) {
     image: [""],
     category: "",
     isAvailable: true,
+    isPublished: false,
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -327,6 +329,14 @@ export default function EditCake({ id }: { id: string }) {
                     onCheckedChange={(checked) => setCake(prev => ({ ...prev, isAvailable: checked }))}
                   />
                   <Label htmlFor="isAvailable">Available for Purchase</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isPublished"
+                    checked={cake.isPublished}
+                    onCheckedChange={(checked) => setCake(prev => ({ ...prev, isPublished: checked }))}
+                  />
+                  <Label htmlFor="isPublished">IsPublished</Label>
                 </div>
               </TabsContent>
 

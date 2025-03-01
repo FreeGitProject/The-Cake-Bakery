@@ -60,6 +60,7 @@ export default function CreateCake() {
     image: [""],
     category: "",
     isAvailable: true,
+    isPublished: false,
   });
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -270,6 +271,14 @@ export default function CreateCake() {
                     onCheckedChange={(checked) => setNewCake(prev => ({ ...prev, isAvailable: checked }))}
                   />
                   <Label htmlFor="isAvailable">Available for Purchase</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isPublished"
+                    checked={newCake.isPublished}
+                    onCheckedChange={(checked) => setNewCake(prev => ({ ...prev, isPublished: checked }))}
+                  />
+                  <Label htmlFor="isPublished">IsPublished</Label>
                 </div>
               </TabsContent>
 
