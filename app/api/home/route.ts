@@ -4,18 +4,56 @@ import clientPromise from '@/lib/mongodb';
 import { Home } from '@/models/home';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from "@/lib/auth";
+import { AdminSettings } from '@/models/adminSettings';
+import {  getFromCache, setToCache } from '@/lib/redis';
+import { revalidateTag } from 'next/cache';
+import { CACHE_KEYS } from '@/lib/cacheKeys';
 // GET: Retrieve all Home entries
 export async function GET() {
   try {
     await clientPromise;
-    const homes = await Home.find({});
-    return NextResponse.json(homes);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error:any) {
+
+    // Fetch admin settings for caching
+    const adminSettings = await AdminSettings.findOne().exec();
+    const cachingEnabled = adminSettings?.cachingEnabled ?? false;
+    const cachingStrategy = adminSettings?.cachingStrategy ?? 'isr';
+
+    // Define cache key (without isAdmin)
+    const cacheKey = CACHE_KEYS.HOME;
+
+    // ISR Strategy
+    if (cachingEnabled && cachingStrategy === 'isr') {
+      const data = await fetchHomeData();
+      revalidateTag(cacheKey);
+      return NextResponse.json(data);
+    }
+
+    // Redis Strategy
+    if (cachingEnabled && cachingStrategy === 'redis') {
+      const cachedData = await getFromCache(cacheKey);
+      if (cachedData) {
+        return NextResponse.json(cachedData);
+      }
+
+      // Cache miss: Fetch from DB and store in Redis
+      const data = await fetchHomeData();
+      await setToCache(cacheKey, data, 3600); // Cache for 1 hour
+      return NextResponse.json(data);
+    }
+
+    // Default behavior: Fetch directly from DB if caching is disabled
+    const data = await fetchHomeData();
+    return NextResponse.json(data);
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch home data' }, { status: 500 });
   }
 }
 
+// Helper function to fetch Home data from MongoDB
+async function fetchHomeData() {
+  return await Home.find({});
+}
 // POST: Create or update a Home entry
 export async function POST(request: Request) {
   try {
