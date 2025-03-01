@@ -1,33 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
+import { useData } from '@/context/DataContext';
 //import Image from 'next/image'
-import { useEffect, useState } from 'react'
 import Loader from './Loader'
 
-interface AboutData {
-  title: string
-  description: string[]
-  imageUrl: string
-  founderName: string
-  foundedYear: number
-}
+
 
 export default function About() {
-  const [aboutData, setAboutData] = useState<AboutData | null>(null)
+  // const [aboutData, setAboutData] = useState<AboutData | null>(null)
 
-  useEffect(() => {
-    async function fetchAboutData() {
-      try {
-        const res = await fetch('/api/about')
-        const data = await res.json()
-        setAboutData(data)
-      } catch (error) {
-        console.error('Error fetching about data:', error)
-      }
-    }
-    fetchAboutData()
-  }, [])
-
+  // useEffect(() => {
+  //   async function fetchAboutData() {
+  //     try {
+  //       const res = await fetch('/api/about')
+  //       const data = await res.json()
+  //       setAboutData(data)
+  //     } catch (error) {
+  //       console.error('Error fetching about data:', error)
+  //     }
+  //   }
+  //   fetchAboutData()
+  // }, [])
+ const { aboutData } = useData();
   if (!aboutData) {
     return <div><Loader/></div>
   }

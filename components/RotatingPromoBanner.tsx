@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X,  Bell } from 'lucide-react';//ChevronLeft, ChevronRight,
 import { motion, AnimatePresence } from 'framer-motion';
-
+import useSWR from "swr";
 type PromoBannerProps = {
   message: string;
   link?: string;
@@ -84,7 +84,7 @@ const PromoBanner = ({
     </motion.div>
   );
 };
-
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 interface PromoBannerData {
   id: string;
   message: string;
@@ -98,29 +98,31 @@ interface PromoBannerData {
 
 const RotatingPromoBanner = () => {
   const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
-  const [banners, setBanners] = useState<PromoBannerData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    async function fetchBanners() {
-      try {
-        const response = await fetch("/api/admin/banners");
-        if (!response.ok) throw new Error("Failed to fetch banners");
-        const data: PromoBannerData[] = await response.json();
-        setBanners(data);
-      } catch (error) {
-        console.error("Error fetching promo banners:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchBanners() {
+  //     try {
+  //       const response = await fetch("/api/admin/banners");
+  //       if (!response.ok) throw new Error("Failed to fetch banners");
+  //       const data: PromoBannerData[] = await response.json();
+  //       setBanners(data);
+  //     } catch (error) {
+  //       console.error("Error fetching promo banners:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-    fetchBanners();
-  }, []);
-
+  //   fetchBanners();
+  // }, []);
+  const { data: banners } = useSWR<PromoBannerData[] | null>("/api/admin/banners", fetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    refreshInterval: 86400 * 1000, // Cache for 1 day (24 hours)
+  });
   useEffect(() => {
-    if (banners.length > 1 && !isPaused) {
+    if (banners && banners.length > 1 && !isPaused) {
       const timer = setInterval(() => {
         setCurrentPromoIndex((prev) => (prev + 1) % banners.length);
       }, 5000);
@@ -131,23 +133,23 @@ const RotatingPromoBanner = () => {
 
   const handlePrevious = () => {
     setCurrentPromoIndex((prev) => 
-      prev === 0 ? banners.length - 1 : prev - 1
+      prev === 0 ? banners!.length - 1 : prev - 1
     );
   };
 
   const handleNext = () => {
     setCurrentPromoIndex((prev) => 
-      (prev + 1) % banners.length
+      (prev + 1) % banners!.length
     );
   };
 
-  if (isLoading || banners.length === 0) return null;
+  if (!banners || banners.length === 0) return null;
 
   const currentPromo = banners[currentPromoIndex];
 
   return (
     <div 
-      className="relative"
+      className="relative z-50"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
