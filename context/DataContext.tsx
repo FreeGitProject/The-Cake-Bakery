@@ -59,12 +59,76 @@ interface FooterData {
       instagram: string;
     }
   }
-
+  interface CompanyInfo {
+    companyName: string
+    locations: Location[]
+    socialMedia: SocialMedia
+    delivery: Delivery
+  }
+  
+  interface Location {
+    name: string
+    address: Address
+    coordinates: Coordinates
+    hours: Hours
+    contact: Contact
+    features: string[]
+    specialHours: SpecialHours
+  }
+  
+  interface Address {
+    line1: string
+    line2?: string
+    city: string
+    state: string
+    pincode: string
+  }
+  
+  interface Coordinates {
+    lat: number
+    lng: number
+    mapUrl: string
+  }
+  
+  interface Hours {
+    weekdays: DayHours
+    saturday: DayHours
+    sunday: DayHours
+  }
+  
+  interface DayHours {
+    days: string
+    open: string
+    close: string
+  }
+  
+  interface Contact {
+    phone: string
+    email: string
+  }
+  
+  interface SpecialHours {
+    festivals?: string
+    holidays?: string
+  }
+  
+  interface SocialMedia {
+    instagram?: string
+    facebook?: string
+    twitter?: string
+  }
+  
+  interface Delivery {
+    radius: string
+    minimumOrder: number
+    partners: string[]
+  }
 interface DataContextProps {
   homeDataList: HomeData[] | [];
   news: NewsItem[] | [];
   aboutData: AboutData | null;
   footerData: FooterData | null;
+  locationData: CompanyInfo | null;
   favorites: Cake[] | [];
   isLoading: boolean;
 }
@@ -84,12 +148,13 @@ const useDataFetcher = () => {
   const { data: news, error: newsError } = useSWR<NewsItem[]>("/api/news", fetcher, swrOptions);
   const { data: aboutData, error: aboutError } = useSWR<AboutData>("/api/about", fetcher, swrOptions);
   const { data: footerData, error: footerError } = useSWR<FooterData>("/api/footer", fetcher, swrOptions);
+  const { data: locationData, error: locationError } = useSWR<CompanyInfo>("/api/company-info", fetcher, swrOptions);
   const { data: favorites, error: favoritesError } = useSWR<Cake[]>("/api/favorites", fetcher, swrOptions);
 
-  const isLoading = !homeDataList || !news || !aboutData || !footerData || !favorites;
+  const isLoading = !homeDataList || !news || !aboutData || !footerData || !favorites || !locationData;
 
-  if (homeError || newsError || aboutError || favoritesError || footerError) {
-    console.error("Error fetching data:", { homeError, newsError, aboutError, favoritesError });
+  if (homeError || newsError || aboutError || favoritesError || footerError || locationData) {
+    console.error("Error fetching data:", { homeError, newsError, aboutError, favoritesError,locationError });
   }
 
   return {
@@ -97,6 +162,7 @@ const useDataFetcher = () => {
     news: news || [],
     aboutData: aboutData ?? null, // Ensure aboutData is null instead of undefined
     footerData: footerData ?? null, // Ensure footerData is null instead of undefined
+    locationData: locationData ?? null, // Ensure footerData is null instead of undefined
     favorites: favorites || [],
     isLoading,
   };
