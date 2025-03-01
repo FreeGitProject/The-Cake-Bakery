@@ -33,6 +33,7 @@ const cakeSchema = new mongoose.Schema(
     reviews: [reviewSchema],
     averageRating: { type: Number, default: 0 },
     isAvailable: Boolean,
+    isPublished: Boolean,
   },
   { timestamps: true }
 );
