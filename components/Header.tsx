@@ -27,8 +27,8 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+ // const [searchOpen, setSearchOpen] = useState(false);
+  //const [searchTerm, setSearchTerm] = useState("");
   const { currentLocation, setIsLocationModalOpen } = useLocation();
   
   const navItems = [
@@ -156,35 +156,35 @@ export default function Header() {
     </Button>
   );
 
-  const SearchBar = () => (
-    <AnimatePresence>
-      {searchOpen && (
-        <motion.div 
-          className="absolute top-full left-0 w-full bg-white shadow-md p-4 z-50"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="relative mx-auto max-w-md">
-            <input
-              type="text"
-              placeholder="Search for cakes, pastries..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-full border border-[#FFD6EC] focus:outline-none focus:ring-2 focus:ring-[#FF9494] pl-10"
-            />
-            <button 
-              className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              onClick={() => setSearchOpen(false)}
-            >
-              <X className="h-5 w-5 text-[#4A4A4A]" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  // const SearchBar = () => (
+  //   <AnimatePresence>
+  //     {searchOpen && (
+  //       <motion.div 
+  //         className="absolute top-full left-0 w-full bg-white shadow-md p-4 z-50"
+  //         initial={{ opacity: 0, y: -10 }}
+  //         animate={{ opacity: 1, y: 0 }}
+  //         exit={{ opacity: 0, y: -10 }}
+  //         transition={{ duration: 0.2 }}
+  //       >
+  //         <div className="relative mx-auto max-w-md">
+  //           <input
+  //             type="text"
+  //             placeholder="Search for cakes, pastries..."
+  //             value={searchTerm}
+  //             onChange={(e) => setSearchTerm(e.target.value)}
+  //             className="w-full px-4 py-2 rounded-full border border-[#FFD6EC] focus:outline-none focus:ring-2 focus:ring-[#FF9494] pl-10"
+  //           />
+  //           <button 
+  //             className="absolute right-3 top-1/2 transform -translate-y-1/2"
+  //             onClick={() => setSearchOpen(false)}
+  //           >
+  //             <X className="h-5 w-5 text-[#4A4A4A]" />
+  //           </button>
+  //         </div>
+  //       </motion.div>
+  //     )}
+  //   </AnimatePresence>
+  // );
 
   return (
     <header className={cn(
@@ -215,7 +215,7 @@ export default function Header() {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-1">
-              <Button
+              {/* <Button
                 variant="ghost"
                 className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
                 onClick={() => setSearchOpen(!searchOpen)}
@@ -224,7 +224,7 @@ export default function Header() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </Button>
+              </Button> */}
               <CartButton />
               {session && <WishlistButton />}
               <LocationButton />
@@ -306,7 +306,7 @@ export default function Header() {
 
           {/* Mobile Header Options */}
           <div className="lg:hidden flex items-center space-x-3">
-            <Button
+            {/* <Button
               variant="ghost"
               className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
               onClick={() => setSearchOpen(!searchOpen)}
@@ -315,7 +315,7 @@ export default function Header() {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#4A4A4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </Button>
+            </Button> */}
             <CartButton />
             <LocationButton />
             <button
@@ -348,7 +348,7 @@ export default function Header() {
         </div>
 
         {/* Search Bar */}
-        <SearchBar />
+        {/* <SearchBar /> */}
 
         {/* Mobile Menu */}
         <AnimatePresence>

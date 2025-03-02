@@ -86,7 +86,7 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore] = useState(false);//setLoadingMore
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [typeFilter, setTypeFilter] = useState<string>("");
@@ -190,43 +190,43 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
     }
   };
 
-  const fetchMoreCakes = async () => {
-    if (currentPage < totalPages) {
-      try {
-        setLoadingMore(true);
-        const nextPage = currentPage + 1;
+  // const fetchMoreCakes = async () => {
+  //   if (currentPage < totalPages) {
+  //     try {
+  //       setLoadingMore(true);
+  //       const nextPage = currentPage + 1;
         
-        const queryParams = new URLSearchParams({
-          caketype: caketype,
-          page: nextPage.toString(),
-          limit: itemsPerPage.toString(),
-          search: debouncedSearchTerm,
-          category: categoryFilter,
-          type: typeFilter,
-          minPrice: priceRange[0].toString(),
-          maxPrice: priceRange[1].toString(),
-          available: availableOnly ? "true" : "",
-          sortBy: sortBy
-        });
+  //       const queryParams = new URLSearchParams({
+  //         caketype: caketype,
+  //         page: nextPage.toString(),
+  //         limit: itemsPerPage.toString(),
+  //         search: debouncedSearchTerm,
+  //         category: categoryFilter,
+  //         type: typeFilter,
+  //         minPrice: priceRange[0].toString(),
+  //         maxPrice: priceRange[1].toString(),
+  //         available: availableOnly ? "true" : "",
+  //         sortBy: sortBy
+  //       });
 
-        const response = await fetch(`/api/cakes?${queryParams.toString()}`);
-        const data: PaginatedResponse = await response.json();
+  //       const response = await fetch(`/api/cakes?${queryParams.toString()}`);
+  //       const data: PaginatedResponse = await response.json();
         
-        // Add animation delay for each new cake
-        const newCakesWithDelay = data.data.map((cake, index) => ({
-          ...cake,
-          animationDelay: index * 0.1
-        })) as unknown as Cake[];
+  //       // Add animation delay for each new cake
+  //       const newCakesWithDelay = data.data.map((cake, index) => ({
+  //         ...cake,
+  //         animationDelay: index * 0.1
+  //       })) as unknown as Cake[];
 
-        setCakes(prev => [...prev, ...newCakesWithDelay]);
-        setCurrentPage(nextPage);
-        setLoadingMore(false);
-      } catch (error) {
-        console.error("Error fetching more cakes:", error);
-        setLoadingMore(false);
-      }
-    }
-  };
+  //       setCakes(prev => [...prev, ...newCakesWithDelay]);
+  //       setCurrentPage(nextPage);
+  //       setLoadingMore(false);
+  //     } catch (error) {
+  //       console.error("Error fetching more cakes:", error);
+  //       setLoadingMore(false);
+  //     }
+  //   }
+  // };
 
   const fetchCategories = async () => {
     try {
@@ -385,12 +385,13 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
       range.unshift(1);
     }
 
-    if (range[range.length - 1] < totalPages) {
-      if (range[range.length - 1] < totalPages - 1) {
+    if ((range[range.length - 1] as number) < totalPages) {
+      if ((range[range.length - 1] as number) < totalPages - 1) {
         range.push("...");
       }
       range.push(totalPages);
     }
+    
 
     return range;
   };
@@ -400,7 +401,7 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
   }
   
   return (
-    <div className="w-full bg-gradient-to-b from-[#FFF6F6] to-white min-h-screen" ref={catalogRef}>
+    <div className="w-full bg-gradient-to-b to-white min-h-screen" ref={catalogRef}>
       <div className="container mx-auto px-3 sm:px-4 py-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -417,7 +418,7 @@ export default function AllCakes({ caketype }: CakeTypeProps) {
           </p>
         </motion.div>
 
-        <div className="sticky top-0 z-10 pt-2  bg-gradient-to-b from-[#FFF6F6] to-white shadow-sm">
+        <div className="z-10  bg-gradient-to-b  to-white shadow-sm">
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
