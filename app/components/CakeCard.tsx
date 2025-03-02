@@ -170,7 +170,7 @@ export default function CakeCard({
       {/* Category Badge */}
       <Badge
         variant="secondary"
-        className={`absolute top-3 left-3 z-10 ${getTypeStyles(cake.type)}`}
+        className={`absolute top-3 left-3 z-0 ${getTypeStyles(cake.type)}`}
       >
         <GrSquare className="mr-1 " />
         {cake.type.toUpperCase()}
@@ -193,7 +193,7 @@ export default function CakeCard({
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-3 right-3 z-10 transition-all duration-300 ${
+          className={`absolute top-3 right-3 z-0 transition-all duration-300 ${
             isWishlisted
               ? "text-red-500 hover:text-red-600"
               : "text-gray-400 hover:text-red-500"
