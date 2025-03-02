@@ -136,7 +136,7 @@ export default function EditCake({ id }: { id: string }) {
     }
     
     cake.prices.forEach((price, index) => {
-      if (price.sellPrice <= price.costPrice) {
+      if (price.sellPrice >= price.costPrice) {
         newErrors[`price-${index}`] = "Selling price must be higher than cost price";
       }
       if (price.weight <= 0) {
