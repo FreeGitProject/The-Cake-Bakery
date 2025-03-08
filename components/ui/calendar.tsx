@@ -60,12 +60,22 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
+        Nav: ({ onPreviousClick, onNextClick }) => (
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onPreviousClick}
+              className={cn("h-4 w-4", buttonVariants({ variant: "ghost" }))}
+            >
+              <ChevronLeft />
+            </button>
+            <button
+              onClick={onNextClick}
+              className={cn("h-4 w-4", buttonVariants({ variant: "ghost" }))}
+            >
+              <ChevronRight />
+            </button>
+          </div>
+        )
       }}
       {...props}
     />
