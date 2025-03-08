@@ -102,7 +102,11 @@ export async function POST(request: Request) {
 
     await clientPromise;
     const data = await request.json();
-    const cake = await Cake.create(data);
+   // Generate a unique SKU for the new cake
+   const sku = await generateUniqueSKU(data.name, data.category)
+
+   const cake = await Cake.create({ ...data, sku })
+
 
     // Fetch admin settings
     const settings = await AdminSettings.findOne({});
@@ -127,3 +131,21 @@ export async function POST(request: Request) {
 }
 
 
+async function generateUniqueSKU(name: string, category: string): Promise<string> {
+  const prefix = name.slice(0, 3).toUpperCase()
+  const categoryPrefix = category.slice(0, 2).toUpperCase()
+  const timestamp = Date.now().toString(36).slice(-4)
+  const randomString = Math.random().toString(36).slice(-2).toUpperCase()
+
+  const sku = `${prefix}${categoryPrefix}${timestamp}${randomString}`
+
+  // Check if the generated SKU already exists in the database
+  const existingCake = await Cake.findOne({ sku })
+
+  if (existingCake) {
+    // If SKU already exists, generate a new one recursively
+    return generateUniqueSKU(name, category)
+  }
+
+  return sku
+}
