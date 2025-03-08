@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const dynamic = "force-dynamic"; // Ensure it's always server-rendered
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
@@ -16,81 +14,154 @@ export async function GET(request: Request) {
 
     await clientPromise
 
-    // Get total orders and revenue
-    const totalOrdersAndRevenue = await Order.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalOrders: { $sum: 1 },
-          totalRevenue: { $sum: "$totalAmount" },
-        },
-      },
-    ])
+    const { searchParams } = new URL(request.url)
+    const startDate = searchParams.get("startDate") ? new Date(searchParams.get("startDate") as string) : new Date(0)
+    const endDate = searchParams.get("endDate") ? new Date(searchParams.get("endDate") as string) : new Date()
+    const status = searchParams.get("status")
 
-    // Get orders by status
-    const ordersByStatus = await Order.aggregate([
-      {
-        $group: {
-          _id: "$orderStatus",
-          count: { $sum: 1 },
-        },
-      },
-    ])
+    const matchStage: any = {
+      createdAt: { $gte: startDate, $lte: endDate },
+    }
 
-    // Get orders trend (last 30 days)
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+    if (status && status !== "All") {
+      matchStage.orderStatus = status
+    }
 
-    const ordersTrend = await Order.aggregate([
-      {
-        $match: {
-          createdAt: { $gte: thirtyDaysAgo },
+    const [
+      dailyStats,
+      monthlyStats,
+      overallStats,
+      revenueTrend,
+      bestSellingCakes,
+      topCustomers,
+      orderStatusDistribution,
+    ] = await Promise.all([
+      // Daily stats
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            totalOrders: { $sum: 1 },
+            revenue: { $sum: "$totalAmount" },
+            pending: { $sum: { $cond: [{ $eq: ["$orderStatus", "Placed"] }, 1, 0] } },
+            completed: { $sum: { $cond: [{ $eq: ["$orderStatus", "Delivered"] }, 1, 0] } },
+            canceled: { $sum: { $cond: [{ $eq: ["$orderStatus", "Cancelled"] }, 1, 0] } },
+          },
         },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          count: { $sum: 1 },
-          revenue: { $sum: "$totalAmount" },
-        },
-      },
-      {
-        $sort: { _id: 1 },
-      },
-    ])
+        { $sort: { _id: 1 } },
+      ]),
 
-    // Get top selling products (now including image)
-    const topSellingProducts = await Order.aggregate([
-      { $unwind: "$orderItems" },
-      {
-        $group: {
-          _id: "$orderItems.productId",
-          name: { $first: "$orderItems.name" },
-          image: { $first: "$orderItems.image" },
-          totalQuantity: { $sum: "$orderItems.quantity" },
-          totalRevenue: { $sum: { $multiply: ["$orderItems.quantity", "$orderItems.price"] } },
+      // Monthly stats
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+            totalOrders: { $sum: 1 },
+            revenue: { $sum: "$totalAmount" },
+            pending: { $sum: { $cond: [{ $eq: ["$orderStatus", "Placed"] }, 1, 0] } },
+            completed: { $sum: { $cond: [{ $eq: ["$orderStatus", "Delivered"] }, 1, 0] } },
+            canceled: { $sum: { $cond: [{ $eq: ["$orderStatus", "Cancelled"] }, 1, 0] } },
+          },
         },
-      },
-      { $sort: { totalQuantity: -1 } },
-      { $limit: 5 },
-    ])
+        { $sort: { _id: 1 } },
+      ]),
 
-    // Get payment method distribution
-    const paymentMethodDistribution = await Order.aggregate([
-      {
-        $group: {
-          _id: "$paymentMethod",
-          count: { $sum: 1 },
+      // Overall stats
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: null,
+            totalOrders: { $sum: 1 },
+            revenue: { $sum: "$totalAmount" },
+            pending: { $sum: { $cond: [{ $eq: ["$orderStatus", "Placed"] }, 1, 0] } },
+            completed: { $sum: { $cond: [{ $eq: ["$orderStatus", "Delivered"] }, 1, 0] } },
+            canceled: { $sum: { $cond: [{ $eq: ["$orderStatus", "Cancelled"] }, 1, 0] } },
+          },
         },
-      },
+      ]),
+
+      // Revenue trend
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            revenue: { $sum: "$totalAmount" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+
+      // Best-selling cakes
+      Order.aggregate([
+        { $match: matchStage },
+        { $unwind: "$orderItems" },
+        {
+          $group: {
+            _id: "$orderItems.productId",
+            name: { $first: "$orderItems.name" },
+            totalQuantity: { $sum: "$orderItems.quantity" },
+            totalRevenue: { $sum: { $multiply: ["$orderItems.quantity", "$orderItems.price"] } },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 5 },
+      ]),
+
+      // Top customers
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: "$userId",
+            totalOrders: { $sum: 1 },
+            totalSpent: { $sum: "$totalAmount" },
+          },
+        },
+        { $sort: { totalSpent: -1 } },
+        { $limit: 5 },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            totalOrders: 1,
+            totalSpent: 1,
+            username: { $arrayElemAt: ["$userDetails.username", 0] },
+            email: { $arrayElemAt: ["$userDetails.email", 0] },
+          },
+        },
+      ]),
+
+      // Order status distribution
+      Order.aggregate([
+        { $match: matchStage },
+        {
+          $group: {
+            _id: "$orderStatus",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
     ])
 
     return NextResponse.json({
-      totalOrdersAndRevenue: totalOrdersAndRevenue[0],
-      ordersByStatus,
-      ordersTrend,
-      topSellingProducts,
-      paymentMethodDistribution,
+      dailyStats,
+      monthlyStats,
+      overallStats: overallStats[0],
+      revenueTrend,
+      bestSellingCakes,
+      topCustomers,
+      orderStatusDistribution,
     })
   } catch (error) {
     console.error("Error fetching order statistics:", error)
