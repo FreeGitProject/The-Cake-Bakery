@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Cake Bakery
 
-## Getting Started
+Simple Next.js e-commerce demo for a cake shop.
 
-First, run the development server:
+## Quick start
+
+1. Install
+   ```bash
+   npm ci
+   ```
+
+2. Local dev
+   ```bash
+   npm run dev
+   ```
+
+3. Build / production
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## Environment
+
+Create a local env file from the example before running:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+# edit .env.local with real secrets (do NOT commit)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Important: do not commit `.env` or secrets. If secrets were committed previously, rotate them immediately.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- npm run dev — run development server
+- npm run build — build production app
+- npm start — run production server
+- npm run lint — run lints
 
-## Learn More
+## CI (dependency check)
 
-To learn more about Next.js, take a look at the following resources:
+This repo uses a lightweight GitHub Actions workflow that installs dependencies and produces an npm audit report:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Workflow file: .github/workflows/ci.yml
+- It runs on push / PR and uploads audit.json as an artifact.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To reproduce locally:
 
-## Deploy on Vercel
+```bash
+npm ci
+npm audit --json > audit.json || true
+cat audit.json
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If audit shows high severity issues:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Update direct dependencies: `npm update <pkg>`
+- Add resolutions/overrides for transitive fixes if needed
+- Re-run audit and push fixes
+
+## Security & housekeeping
+
+- Add `.env` to .gitignore
+- Use `.env.example` in repo with placeholders
+- Rotate leaked credentials immediately (MongoDB, SMTP, payment keys, Cloudinary, Redis)
+- Verify third-party webhooks server-side (e.g., Razorpay) and use timing-safe signature verification
+
+## Contributing
+
+1. Create a branch
+2. Run tests/lint locally
+3. Open PR
+
+## Contact
+
+Repository owner:
