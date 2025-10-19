@@ -75,3 +75,9 @@ If audit shows high severity issues:
 ## Contact
 
 Repository owner:
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+sreenShort
+
+<img width="1902" height="5119" alt="the-cake-bakery-nine vercel app_" src="https://github.com/user-attachments/assets/97cba4e0-b65d-4639-bf15-3894a8e94e43" />
+<img width="1902" height="5119" alt="the-cake-bakery-nine vercel app_ (1)" src="https://github.com/user-attachments/assets/c19d5ded-b7e8-45c6-b886-fb3d9c21e3f9" />
