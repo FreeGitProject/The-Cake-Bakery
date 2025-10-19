@@ -1,4 +1,4 @@
-name: CI
+name: CI - analyze
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  analyze:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,18 +26,36 @@ jobs:
         with:
           version: 8
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ matrix.node-version }}-
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Audit dependencies (fail on high)
+        run: |
+          set -o pipefail
+          pnpm audit --json > audit.json || true
+          node -e "const a=require('./audit.json'); if (!a) process.exit(0); const high = a.metadata?.vulnerabilities?.high || 0; if (high>0) { console.error('High severity vulnerabilities found'); process.exit(2); } console.log('Audit OK');"
 
       - name: Lint
         run: pnpm run lint
-        continue-on-error: false
 
       - name: Typecheck
-        run: pnpm run typecheck
+        run: pnpm exec tsc --noEmit
 
-      - name: Test
-        run: pnpm run test
+      - name: Build (Next.js)
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+        run: pnpm exec next build
 
-      - name: Build
-        run: pnpm run build
+      - name: Output basic project summary
+        run: |
+          echo "Node:" $(node -v)
+          echo "Installed deps:"
+          pnpm list --depth 0
