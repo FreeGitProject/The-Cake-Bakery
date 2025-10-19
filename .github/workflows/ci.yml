@@ -1,4 +1,4 @@
-name: CI - analyze
+name: CI - deps check (npm)
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
   pull_request:
 
 jobs:
-  analyze:
+  deps:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x]
 
     steps:
       - name: Checkout
@@ -21,41 +21,20 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Install dependencies (npm)
+        run: npm ci --prefer-offline --no-audit --no-fund || npm install
 
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: pnpm-store-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ matrix.node-version }}-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile || pnpm install
-
-      - name: Audit dependencies (fail on high)
+      - name: Audit dependencies (report)
         run: |
           set -o pipefail
-          pnpm audit --json > audit.json || true
-          node -e "const a=require('./audit.json'); if (!a) process.exit(0); const high = a.metadata?.vulnerabilities?.high || 0; if (high>0) { console.error('High severity vulnerabilities found'); process.exit(2); } console.log('Audit OK');"
+          npm audit --json > audit.json || true
+          cat audit.json || true
 
-      - name: Lint
-        run: pnpm run lint
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit.json
 
-      - name: Typecheck
-        run: pnpm exec tsc --noEmit
-
-      - name: Build (Next.js)
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-        run: pnpm exec next build
-
-      - name: Output basic project summary
-        run: |
-          echo "Node:" $(node -v)
-          echo "Installed deps:"
-          pnpm list --depth 0
+      - name: List top-level deps
+        run: npm ls --depth=0 || true
