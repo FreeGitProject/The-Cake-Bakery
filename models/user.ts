@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
       longitude: Number,
     },
     autoDetected: { type: Boolean, default: false },
+    lastLogin: { type: Date, default: null },
   },
   { timestamps: true }
 );
