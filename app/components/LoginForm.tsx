@@ -54,10 +54,26 @@ export default function LoginForm() {
       if (result?.error) {
         setError(result.error);
       } else {
-        toast({
-          title: "Welcome back!",
-          description: "You have successfully logged in.",
-        });
+        // record login and decide welcome message
+        try {
+          const res = await fetch("/api/auth/record-login", { method: "POST" });
+          const json = await res.json();
+          const firstTime = json?.firstTime === true;
+
+          toast({
+            title: firstTime ? "Welcome" : "Welcome back!",
+            description: firstTime
+              ? "Thanks for joining! Your account is ready."
+              : "You have successfully logged in.",
+          });
+        } catch (e) {
+          // fallback message if endpoint fails
+          toast({
+            title: "Welcome back!",
+            description: "You have successfully logged in.",
+          });
+        }
+
         router.push("/");
       }
     } catch (error) {
