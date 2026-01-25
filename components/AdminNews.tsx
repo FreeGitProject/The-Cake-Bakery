@@ -47,6 +47,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Image from "next/image";
 
 interface NewsItem {
   _id?: string;
@@ -69,7 +70,7 @@ export default function AdminNews() {
 
   useEffect(() => {
     fetchNewsItems();
-  }, []);
+  },);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -252,9 +253,10 @@ export default function AdminNews() {
                   <Card key={item._id} className="overflow-hidden flex flex-col h-full">
                     <div className="relative h-48 overflow-hidden">
                       {item.imageUrl ? (
-                        <img
+                        <Image
                           src={item.imageUrl}
                           alt={item.title}
+                          fill
                           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         />
                       ) : (
