@@ -6,9 +6,9 @@ import { authOptions } from "@/lib/auth";// <-- update to where you export authO
 import clientPromise from '@/lib/mongodb';// <-- update to your DB connect helper
 import { User } from '@/models/user';// <-- update to your User model path
 
-export async function POST(req: Request) {
+export async function POST() {
   // Ensure session (safer than trusting client-sent email)
-  const session = await getServerSession(authOptions as any) as Session | null;
+  const session = await getServerSession(authOptions) as Session | null;
 
   if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
