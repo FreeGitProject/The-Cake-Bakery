@@ -1,6 +1,6 @@
 "use client"
 import { motion } from 'framer-motion'
-import Loader from '@/app/components/Loader'
+//import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
 //import { useEffect, useState } from 'react'
