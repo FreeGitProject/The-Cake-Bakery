@@ -30,7 +30,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     fetchSettings();
-  }, []);
+  }, );
 
   const fetchSettings = async () => {
     try {
