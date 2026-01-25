@@ -59,7 +59,8 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/login");
+    window.location.reload();
+    //router.push("/login");
   };
 
   const LOGO_URL = "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";

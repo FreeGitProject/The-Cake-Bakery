@@ -45,7 +45,10 @@ const { data: footerData } = useFooter();
   // }, [])
 //const { footerData } = useData();
   if (!footerData) {
-    return <div><Loader/></div>
+    return <div>
+      {/* <Loader/> */}
+      hi foooter
+    </div>
   }
 
   return (

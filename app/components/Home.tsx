@@ -26,8 +26,9 @@ const CakeShopHero = () => {
 
   if (homeDataList?.length==0) {
     return (
-      <div>
-        <Loader />
+      <div className="relative h-screen overflow-hidden">
+        {/* Hi Home */}
+         <Loader /> 
       </div>
     );
   }

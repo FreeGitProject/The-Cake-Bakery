@@ -24,7 +24,10 @@ export default function About() {
   const { data: aboutData, isLoading } = useAbout();
 
   if (isLoading) {
-    return <div><Loader/></div>
+    return <div>
+    
+      <Loader/> 
+      </div>
   }
 
   // if (!aboutData) {
