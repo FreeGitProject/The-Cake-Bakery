@@ -2,13 +2,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Phone, Wifi, Car, Cake, Coffee, Calendar, Instagram, Facebook, Twitter } from 'lucide-react'
-import { useData } from '@/context/DataContext'
+//import { useData } from '@/context/DataContext'
 //import locationData from '../public/dataJson/location-data.json'
-
+import {useCompanyInfo} from '@/lib/useData'
 export default function Location() {
   const [activeTab, setActiveTab] = useState('info')
   //const location = locationData.locations[0]
-  const {locationData}  =useData()
+  const {data:locationData}  =useCompanyInfo()
   const location =locationData?.locations?.[0]
   const containerVariants = {
     hidden: { opacity: 0 },

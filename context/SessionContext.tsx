@@ -30,7 +30,7 @@ export const SessionProvider = ({
   }, [session]);
 
   if (status === "loading") {
-    return <Loader />; // Show the loader while session is loading
+    return <div className="flex justify-center items-center h-screen">hi SessionProvider</div>; // Show the loader while session is loading
   }
   return (
     <SessionContext.Provider
