@@ -244,6 +244,7 @@ interface Address {
             <FormField
               control={form.control}
               name="city"
+              disabled={true}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>City</FormLabel>
@@ -258,6 +259,7 @@ interface Address {
             <FormField
               control={form.control}
               name="state"
+              disabled={true}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>State</FormLabel>
@@ -286,6 +288,7 @@ interface Address {
             <FormField
               control={form.control}
               name="country"
+              disabled={true}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Country</FormLabel>
