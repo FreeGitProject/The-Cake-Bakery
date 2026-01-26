@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import { ShoppingCart, User, Heart, MapPin, LogOut, Home, Cake, Package, Menu, X, Settings, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
@@ -38,7 +38,7 @@ export default function Header() {
   ];
   
   const { session } = useSessionContext();
-  const router = useRouter();
+  //const router = useRouter();
   const { cart } = useCart();
   
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -59,7 +59,8 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/login");
+    window.location.reload();
+    //router.push("/login");
   };
 
   const LOGO_URL = "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";

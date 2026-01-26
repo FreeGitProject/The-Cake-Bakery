@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
-import { useData } from '@/context/DataContext';
+import { useAbout } from '@/lib/useData'
 //import Image from 'next/image'
 import Loader from './Loader'
 
@@ -21,10 +21,18 @@ export default function About() {
   //   }
   //   fetchAboutData()
   // }, [])
- const { aboutData } = useData();
-  if (!aboutData) {
-    return <div><Loader/></div>
+  const { data: aboutData, isLoading } = useAbout();
+
+  if (isLoading) {
+    return <div>
+    
+      <Loader/> 
+      </div>
   }
+
+  // if (!aboutData) {
+  //   return <div><Loader/></div>
+  // }
 
   return (
     <section className="relative py-24 bg-[#FF9494]">
@@ -38,7 +46,7 @@ export default function About() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-4">
-            {aboutData.title || 'Our Story'}
+            {aboutData?.title || 'Our Story'}
           </h2>
           <div className="w-24 h-1 bg-white/70 mx-auto" />
         </div>
@@ -48,7 +56,7 @@ export default function About() {
             <div className="absolute -inset-4 bg-[#FFB4B4] rounded-2xl opacity-50 group-hover:opacity-70 transition duration-300 blur-lg" />
             <div className="relative">
               <img
-                src={aboutData.imageUrl || "/bakery-image.jpg"}
+                src={aboutData?.imageUrl || "/bakery-image.jpg"}
                 alt="Our bakery"
                 className="rounded-2xl w-full object-cover h-[400px] shadow-xl transform group-hover:scale-[1.02] transition duration-300"
               />
@@ -57,7 +65,7 @@ export default function About() {
           </div>
 
           <div className="md:w-1/2 space-y-6">
-            {aboutData.description.map((paragraph, index) => (
+            {aboutData?.description.map((paragraph, index) => (
               <p 
                 key={index} 
                 className="text-lg text-white/90 leading-relaxed"
@@ -68,10 +76,10 @@ export default function About() {
             
             <div className="border-l-4 border-[#FFF5E4] pl-6 mt-8">
               <p className="text-lg font-medium text-white">
-                Founded by {aboutData.founderName}
+                Founded by {aboutData?.founderName}
               </p>
               <p className="text-white/80">
-                Established {aboutData.foundedYear}
+                Established {aboutData?.foundedYear}
               </p>
             </div>
 

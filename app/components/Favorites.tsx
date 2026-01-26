@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
 import Link from 'next/link'
-import { useData } from '@/context/DataContext'
-
+//import { useData } from '@/context/DataContext'
+import { useFavorites } from '@/lib/useData'
 // interface Cake {
 //   _id: string
 //   name: string
@@ -37,7 +37,8 @@ interface Cake {
 
 export default function Favorites() {
   // const [favorites, setFavorites] = useState<Cake[]>([])
-   const { favorites } = useData();
+   //const { favorites } = useData();
+   const {data:favorites} =useFavorites()
  const { addToCart } = useCart()
   // useEffect(() => {
   //   async function fetchFavorites() {
@@ -79,7 +80,7 @@ export default function Favorites() {
 
         {/* Favorites Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {favorites.map((cake) => (
+          {favorites?.map((cake) => (
             <div 
               key={cake._id} 
               className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden animate-fadeIn"

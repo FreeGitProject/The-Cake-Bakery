@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Manage delivery locations for your Cake-Bakery Shop",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminLocationsPage() {
   return (
     <div className="container mx-auto px-4 py-8">

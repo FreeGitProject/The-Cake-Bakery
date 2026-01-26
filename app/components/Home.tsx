@@ -2,17 +2,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
-import { useData } from "@/context/DataContext";
+//import { HomeData } from "@/types/data";
+import { useHomePageData } from '@/lib/useData';
 
 const CakeShopHero = () => {
-  const { homeDataList } = useData(); // Fetch from context
+  const { homeDataList } = useHomePageData();
   const [currentSlide, setCurrentSlide] = useState(0);
 //console.log(homeDataList);
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % homeDataList?.length);
     }, 5000);
-    return () => clearInterval(timer);
+    return () => clearInterval(timer);  
   }, [homeDataList?.length]);
 
   const nextSlide = () => {
@@ -25,8 +26,9 @@ const CakeShopHero = () => {
 
   if (homeDataList?.length==0) {
     return (
-      <div>
-        <Loader />
+      <div className="relative h-screen overflow-hidden">
+        {/* Hi Home */}
+         <Loader /> 
       </div>
     );
   }
@@ -76,7 +78,7 @@ const CakeShopHero = () => {
       `}</style>
 
       {/* Slides */}
-      {homeDataList.map((slide, index) => (
+      {homeDataList?.map((slide, index) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 
@@ -157,7 +159,7 @@ const CakeShopHero = () => {
 
       {/* Slide Indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
-        {homeDataList.map((_, index) => (
+        {homeDataList?.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}

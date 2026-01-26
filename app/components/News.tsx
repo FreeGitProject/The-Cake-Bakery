@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
-import { useData } from '@/context/DataContext'
+import { useNews } from '@/lib/useData'
+//import { useData } from '@/context/DataContext'
 //import Image from 'next/image'
 // import { useState, useEffect } from 'react'
 
@@ -13,7 +14,8 @@ import { useData } from '@/context/DataContext'
 // }
 
 export default function News() {
-  const { news, isLoading } = useData();
+  //const { news, isLoading } = useData();
+  const { data:news, isLoading } = useNews();
 
   if (isLoading) return <p>Loading...</p>;
 

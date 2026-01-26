@@ -1,6 +1,6 @@
 "use client"
 import { motion } from 'framer-motion'
-import Loader from '@/app/components/Loader'
+//import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
 //import { useEffect, useState } from 'react'
@@ -13,7 +13,8 @@ import {
   Phone, 
   ChevronRight 
 } from 'lucide-react'
-import { useData } from '@/context/DataContext'
+import { useFooter } from '@/lib/useData'
+//import { useData } from '@/context/DataContext'
 // interface FooterData {
 //   companyName: string
 //   description: string
@@ -27,6 +28,7 @@ import { useData } from '@/context/DataContext'
 // }
 
 export default function Footer() {
+const { data: footerData } = useFooter();
   // const [footerData, setFooterData] = useState<FooterData | null>(null)
 
   // useEffect(() => {
@@ -41,9 +43,12 @@ export default function Footer() {
   //   }
   //   fetchFooterData()
   // }, [])
-const { footerData } = useData();
+//const { footerData } = useData();
   if (!footerData) {
-    return <div><Loader/></div>
+    return <div>
+      {/* <Loader/> */}
+      hi foooter
+    </div>
   }
 
   return (

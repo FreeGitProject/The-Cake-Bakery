@@ -1,5 +1,6 @@
 import ResetPasswordForm from "@/components/ResetPasswordForm"
 import type { Metadata } from "next"
+    import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Reset Password | The Cake Shop",
@@ -10,7 +11,9 @@ export default function ResetPasswordPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Reset Password</h1>
-      <ResetPasswordForm />
+      <Suspense fallback={null}>
+        <ResetPasswordForm />
+      </Suspense>
     </div>
   )
 }
