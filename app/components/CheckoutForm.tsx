@@ -44,8 +44,12 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonItemsByCategory from "@/components/AddonItemsByCategory"
+// Add these imports at top
+// import { useOrderSocket } from '@/hooks/useOrderSocket'; // REMOVED: module not found
 
 import DeliveryForm from "@/components/DeliveryForm";
+import { useOrderSocket } from "@/hooks/useOrderSocket";
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -77,7 +81,7 @@ export default function PremiumCheckout() {
   const { data: session } = useSession();
   const { toast } = useToast();
   const router = useRouter();
-
+  const { sendOrder } = useOrderSocket(session?.user?.id); // Auto-connects
   // Enhanced state management
   const [formData, setFormData] = useState({
     name: "",
@@ -434,7 +438,16 @@ setFormData(prev => ({
         });
 
         if (orderResponse.ok) {
+           const orderDataResponse = await orderResponse.json(); // Get order data
           clearCart();
+           // 🔥 WEBSOCKET: Send order to admin INSTANTLY
+      sendOrder({
+        ...orderData, // Your order data
+        orderId: orderDataResponse.orderId || orderDataResponse._id,
+        orderNumber: orderDataResponse.orderNumber,
+        orderStatus: 'pending',
+        paymentStatus: paymentMethod === 'Online Payment' ? 'completed' : 'pending'
+      });
           toast({
             title: "Order Successful!",
             description: "Thank you for your purchase. You'll receive a confirmation email shortly.",
