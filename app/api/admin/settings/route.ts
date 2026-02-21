@@ -12,7 +12,7 @@ export async function GET() {
     // }
 
     await clientPromise;
-    const settings = await AdminSettings.findOne({}) || new AdminSettings();
+    const settings = (await AdminSettings.findOne({})) || new AdminSettings();
     return NextResponse.json(settings);
   } catch (error) {
     console.error('Error fetching admin settings:', error);
@@ -36,4 +36,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to update admin settings' }, { status: 500 });
   }
 }
-

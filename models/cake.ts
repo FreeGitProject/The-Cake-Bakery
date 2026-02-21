@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const priceSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const reviewSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     username: { type: String, required: true },
@@ -25,8 +25,8 @@ const cakeSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    caketype: { type: String, enum: ["cake", "pastries"], required: true }, // cake or pastries
-    type: { type: String, enum: ["contains egg", "eggless"], required: true }, // Egg or Eggless
+    caketype: { type: String, enum: ['cake', 'pastries'], required: true }, // cake or pastries
+    type: { type: String, enum: ['contains egg', 'eggless'], required: true }, // Egg or Eggless
     prices: { type: [priceSchema], required: true }, // Array of prices for different weights
     image: { type: [String], required: true }, // Array of image URLs
     category: { type: String, required: true },
@@ -38,4 +38,4 @@ const cakeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const Cake = mongoose.models.Cake || mongoose.model("Cake", cakeSchema);
+export const Cake = mongoose.models.Cake || mongoose.model('Cake', cakeSchema);

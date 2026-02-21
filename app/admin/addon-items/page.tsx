@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminAddonItems from "@/components/AdminAddonItems"
+import type { Metadata } from 'next';
+import AdminAddonItems from '@/features/admin/settings/components/AdminAddonItems';
 
 export const metadata: Metadata = {
-  title: "Manage Addon Items | Admin Dashboard",
-  description: "Manage addon items for your Cake-Bakery Shop",
-}
+  title: 'Manage Addon Items | Admin Dashboard',
+  description: 'Manage addon items for your Cake-Bakery Shop',
+};
 
 export default function AdminAddonItemsPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminAddonItemsPage() {
       <h1 className="text-3xl font-bold mb-6">Manage Addon Items</h1>
       <AdminAddonItems />
     </div>
-  )
+  );
 }
-

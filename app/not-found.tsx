@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import Link from 'next/link'
-import { Button } from "@/components/ui/button"
+import Link from 'next/link';
+import { Button } from '@/shared/components/ui/button';
 
 export default function NotFound() {
   return (
@@ -13,20 +13,13 @@ export default function NotFound() {
         </p>
         <div className="mt-8">
           <Link href="/">
-            <Button className="bg-[#FF9494] hover:bg-[#FFD1D1] text-white">
-              Back to Home
-            </Button>
+            <Button className="bg-[#FF9494] hover:bg-[#FFD1D1] text-white">Back to Home</Button>
           </Link>
         </div>
         <div className="mt-12">
-          <img
-            src="/cake-404.png"
-            alt="Sad cake"
-            className="mx-auto w-48 h-48 object-contain"
-          />
+          <img src="/cake-404.png" alt="Sad cake" className="mx-auto w-48 h-48 object-contain" />
         </div>
       </div>
     </div>
-  )
+  );
 }
-

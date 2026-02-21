@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT || "587"),
+  port: parseInt(process.env.EMAIL_PORT || '587'),
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -30,9 +30,9 @@ const transporter = nodemailer.createTransport({
 //   };
 export async function sendOrderConfirmationEmail(
   order: any,
-  paymentMethod: string = "Online Payment"
+  paymentMethod: string = 'Online Payment'
 ) {
-  const isCOD = paymentMethod.toLowerCase() === "cash on delivery";
+  const isCOD = paymentMethod.toLowerCase() === 'cash on delivery';
 
   const message = {
     from: process.env.EMAIL_FROM,
@@ -90,12 +90,14 @@ export async function sendOrderConfirmationEmail(
       <h3 style="color: #d44f4f; font-size: 20px; margin: 0 0 20px 0;">Order Summary</h3>
       <div style="background: linear-gradient(135deg, #fff8f8 0%, #fff2f2 100%); padding: 25px; border-radius: 12px;">
         <!-- Order Items -->
-        ${order.orderItems.map((item: any) => `
+        ${order.orderItems
+          .map(
+            (item: any) => `
           <div style="display: flex; align-items: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
             <img src="${item.image}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 20px;">
             <div style="flex-grow: 1;">
               <h4 style="margin: 0 0 8px 0; color: #d44f4f; font-size: 16px;">${item.name}
-                <span style="font-size: 14px; color: #888;">${item.weight ? `(${item.weight}${item.caketype === "cake" ? "Kg" : "pieces"})` : ""}</span>
+                <span style="font-size: 14px; color: #888;">${item.weight ? `(${item.weight}${item.caketype === 'cake' ? 'Kg' : 'pieces'})` : ''}</span>
               </h4>
               <p style="margin: 0; color: #666; font-size: 14px;">Quantity: ${item.quantity} × ₹${item.price.toFixed(2)}</p>
               ${item.cakeMessage ? `<p style="margin: 5px 0 0 0; color: #888; font-size: 14px;">Message: "${item.cakeMessage}"</p>` : ''}
@@ -104,9 +106,13 @@ export async function sendOrderConfirmationEmail(
               <p style="margin: 0; color: #d44f4f; font-weight: bold;">₹${(item.price * item.quantity).toFixed(2)}</p>
             </div>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
            <!-- Order Items -->
-        ${order.addonItems.map((item: any) => `
+        ${order.addonItems
+          .map(
+            (item: any) => `
           <div style="display: flex; align-items: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
             <img src="${item.image}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 20px;">
             <div style="flex-grow: 1;">
@@ -118,7 +124,9 @@ export async function sendOrderConfirmationEmail(
               <p style="margin: 0; color: #d44f4f; font-weight: bold;">₹${(item.price * item.quantity).toFixed(2)}</p>
             </div>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
 
         <!-- Price Summary -->
         <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
@@ -126,18 +134,26 @@ export async function sendOrderConfirmationEmail(
             <span style="color: #666;">Subtotal</span>
             <span style="color: #666;">₹${order.subtotal?.toFixed(2) || order.totalAmount.toFixed(2)}</span>
           </div>
-          ${order.shippingFee ? `
+          ${
+            order.shippingFee
+              ? `
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
               <span style="color: #666;">Shipping Fee</span>
               <span style="color: #666;">₹${order.shippingFee.toFixed(2)}</span>
             </div>
-          ` : ''}
-          ${order.discount ? `
+          `
+              : ''
+          }
+          ${
+            order.discount
+              ? `
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #2ecc71;">
               <span>Discount Applied</span>
               <span>-₹${order.discount.toFixed(2)}</span>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
           <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
             <span style="color: #d44f4f; font-size: 18px; font-weight: bold;">Total</span>
             <span style="color: #d44f4f; font-size: 18px; font-weight: bold;">₹${order.totalAmount.toFixed(2)}</span>

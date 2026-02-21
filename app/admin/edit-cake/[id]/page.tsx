@@ -1,12 +1,11 @@
-import EditCake from '@/app/components/admin/EditCake'
-import { Metadata } from 'next'
+import EditCake from '@/features/admin/cakes/components/EditCake';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Edit Cakes | Admin Dashboard',
   description: 'Edit the cakes in your The Cake Shop',
-}
+};
 
 export default function AdminEditCakePage({ params }: { params: { id: string } }) {
-  return <EditCake id={params.id}/>
+  return <EditCake id={params.id} />;
 }
-

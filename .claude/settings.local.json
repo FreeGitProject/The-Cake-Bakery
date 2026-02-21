@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(tail:*)",
+      "Bash(cd \"D:/Sample/The-Cake-Bakery\" && npx husky init 2>&1)",
+      "Bash(grep:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

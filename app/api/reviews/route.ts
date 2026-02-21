@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (!cake) {
       return NextResponse.json({ error: 'Cake not found' }, { status: 404 });
     }
-//console.log(cake,"cake");
+    //console.log(cake,"cake");
     cake.reviews.push({
       userId: session.user.id,
       username: session.user.name,
@@ -34,4 +34,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to submit review' }, { status: 500 });
   }
 }
-

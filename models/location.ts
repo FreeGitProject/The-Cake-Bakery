@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const locationSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -6,7 +6,6 @@ const locationSchema = new mongoose.Schema({
   latitude: { type: Number },
   longitude: { type: Number },
   isAvailable: Boolean,
-})
+});
 
-export const Location = mongoose.models.Location || mongoose.model("Location", locationSchema)
-
+export const Location = mongoose.models.Location || mongoose.model('Location', locationSchema);

@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminCompanyInfo from "@/components/Admin/AdminCompanyInfo"
+import type { Metadata } from 'next';
+import AdminCompanyInfo from '@/features/admin/settings/components/AdminCompanyInfo';
 
 export const metadata: Metadata = {
-  title: "Manage Company Information | Admin Dashboard",
-  description: "Manage company information for your Cake-Bakery Shop",
-}
+  title: 'Manage Company Information | Admin Dashboard',
+  description: 'Manage company information for your Cake-Bakery Shop',
+};
 
 export default function AdminCompanyInfoPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminCompanyInfoPage() {
       <h1 className="text-3xl font-bold mb-6">Manage Company Information</h1>
       <AdminCompanyInfo />
     </div>
-  )
+  );
 }
-

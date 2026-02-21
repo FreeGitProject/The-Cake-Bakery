@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import clientPromise from "@/lib/mongodb";
-import { CompanyInfo } from "@/models/companyInfo";
-import { getFromCache, setToCache, deleteFromCache } from "@/lib/redis";
-import { revalidateTag } from "next/cache";
-import { CACHE_KEYS } from "@/lib/cacheKeys";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import clientPromise from '@/lib/mongodb';
+import { CompanyInfo } from '@/models/companyInfo';
+import { getFromCache, setToCache, deleteFromCache } from '@/lib/redis';
+import { revalidateTag } from 'next/cache';
+import { CACHE_KEYS } from '@/lib/cacheKeys';
 
 export async function GET() {
   try {
@@ -26,16 +26,16 @@ export async function GET() {
 
     return NextResponse.json(companyInfo);
   } catch (error) {
-    console.error("Error fetching company info:", error);
-    return NextResponse.json({ error: "Failed to fetch company info" }, { status: 500 });
+    console.error('Error fetching company info:', error);
+    return NextResponse.json({ error: 'Failed to fetch company info' }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await clientPromise;
@@ -48,16 +48,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json(companyInfo);
   } catch (error) {
-    console.error("Error creating company info:", error);
-    return NextResponse.json({ error: "Failed to create company info" }, { status: 500 });
+    console.error('Error creating company info:', error);
+    return NextResponse.json({ error: 'Failed to create company info' }, { status: 500 });
   }
 }
 
 export async function PUT(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await clientPromise;
@@ -70,7 +70,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(companyInfo);
   } catch (error) {
-    console.error("Error updating company info:", error);
-    return NextResponse.json({ error: "Failed to update company info" }, { status: 500 });
+    console.error('Error updating company info:', error);
+    return NextResponse.json({ error: 'Failed to update company info' }, { status: 500 });
   }
 }

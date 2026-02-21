@@ -3,7 +3,7 @@ import Razorpay from 'razorpay';
 import { v4 as uuidv4 } from 'uuid';
 import clientPromise from '@/lib/mongodb';
 import { Order } from '@/models/order';
-import { authOptions } from "@/lib/auth";
+import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 import { User } from '@/models/user';
 import { Coupon } from '@/models/coupon';
@@ -17,11 +17,19 @@ const razorpay = new Razorpay({
 export async function POST(request: Request) {
   try {
     // Parse request data
-    const { totalAmount, orderItems, paymentMethod, shippingAddress, couponCode,
-      discountAmount,   deliveryDate,
+    const {
+      totalAmount,
+      orderItems,
+      paymentMethod,
+      shippingAddress,
+      couponCode,
+      discountAmount,
+      deliveryDate,
       deliverySlot,
       isGift,
-      giftMessage,addonItems } = await request.json();
+      giftMessage,
+      addonItems,
+    } = await request.json();
 
     // Ensure user session exists
     const session = await getServerSession(authOptions);
@@ -45,8 +53,8 @@ export async function POST(request: Request) {
     };
 
     const razorpayOrder = await razorpay.orders.create(options);
- // Generate order number using the helper
- const orderNumber = await generateOrderNumber();
+    // Generate order number using the helper
+    const orderNumber = await generateOrderNumber();
     // Create an order in the database
     const newOrder = new Order({
       orderId: uuidv4(),
@@ -59,17 +67,17 @@ export async function POST(request: Request) {
       razorpayOrderId: razorpayOrder.id, // Associate with Razorpay order ID
       couponCode,
       discountAmount,
-      orderNumber:orderNumber,
+      orderNumber: orderNumber,
       deliveryDate,
       deliverySlot,
       isGift,
       giftMessage,
-      addonItems
+      addonItems,
     });
 
     await newOrder.save();
-  if (couponCode) {
-      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usageCount: 1 } })
+    if (couponCode) {
+      await Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usageCount: 1 } });
     }
     // Return both the Razorpay order and the database order
     return NextResponse.json({

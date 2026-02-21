@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
-import AdminOrders from '@/components/AdminOrders'
+import { Metadata } from 'next';
+import AdminOrders from '@/features/admin/orders/components/AdminOrders';
 
 export const metadata: Metadata = {
   title: 'Manage Orders | Admin Dashboard',
   description: 'Manage customer orders in your Cake-Bakery Shop',
-}
+};
 
 export default function AdminOrdersPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminOrdersPage() {
       {/* <h1 className="text-3xl font-bold mb-6">Manage Orders</h1> */}
       <AdminOrders />
     </div>
-  )
+  );
 }
-

@@ -13,12 +13,12 @@ export async function POST(request: Request) {
     if (deliveryArea) {
       return NextResponse.json({
         deliverable: true,
-        message: "Delivery available in your area."
+        message: 'Delivery available in your area.',
       });
     } else {
       return NextResponse.json({
         deliverable: false,
-        message: "Sorry, delivery is not available in your area."
+        message: 'Sorry, delivery is not available in your area.',
       });
     }
   } catch (error) {
@@ -26,4 +26,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to check delivery availability' }, { status: 500 });
   }
 }
-

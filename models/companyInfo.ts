@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema({
   line1: { type: String, required: true },
@@ -6,24 +6,24 @@ const addressSchema = new mongoose.Schema({
   city: { type: String, required: true },
   state: { type: String, required: true },
   pincode: { type: String, required: true },
-})
+});
 
 const coordinatesSchema = new mongoose.Schema({
   lat: { type: Number, required: true },
   lng: { type: Number, required: true },
   mapUrl: { type: String, required: true },
-})
+});
 
 const hoursSchema = new mongoose.Schema({
   days: { type: String, required: true },
   open: { type: String, required: true },
   close: { type: String, required: true },
-})
+});
 
 const contactSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
-})
+});
 
 const locationSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -40,7 +40,7 @@ const locationSchema = new mongoose.Schema({
     festivals: { type: String },
     holidays: { type: String },
   },
-})
+});
 
 const companyInfoSchema = new mongoose.Schema({
   companyName: { type: String, required: true },
@@ -55,7 +55,7 @@ const companyInfoSchema = new mongoose.Schema({
     minimumOrder: { type: Number, required: true },
     partners: [{ type: String }],
   },
-})
+});
 
-export const CompanyInfo = mongoose.models.CompanyInfo || mongoose.model("CompanyInfo", companyInfoSchema)
-
+export const CompanyInfo =
+  mongoose.models.CompanyInfo || mongoose.model('CompanyInfo', companyInfoSchema);

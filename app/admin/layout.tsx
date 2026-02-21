@@ -1,15 +1,11 @@
-"use client";
+'use client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Toaster } from '@/components/ui/toaster';
-import AdminNavbar from '../../components/AdminNavbar';
+import { Toaster } from '@/shared/components/ui/toaster';
+import AdminNavbar from '@/shared/components/AdminNavbar';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
 

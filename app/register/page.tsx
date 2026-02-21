@@ -1,16 +1,16 @@
-import { Metadata } from 'next'
-import RegisterForm from '../../components/RegisterForm'
+import { Metadata } from 'next';
+import RegisterForm from '@/features/auth/components/RegisterForm';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 export const metadata: Metadata = {
   title: 'Register | Cake-Bakery Shop',
   description: 'Create a new account for Cake-Bakery Shop',
-}
+};
 
 export default async function RegisterPage() {
   const session = await getServerSession();
   //console.log("register",session)
-  if (session ) {
+  if (session) {
     redirect('/'); // Redirect to login if no session or user is not an admin
   }
   return (
@@ -18,6 +18,5 @@ export default async function RegisterPage() {
       {/* <h1 className="text-3xl font-bold mb-6 text-center">Register</h1> */}
       <RegisterForm />
     </div>
-  )
+  );
 }
-

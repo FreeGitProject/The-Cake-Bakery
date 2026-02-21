@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { Cake } from '@/models/cake';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from "@/lib/auth";
+import { authOptions } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 import { deleteFromCache } from '@/lib/redis';
 //import { AdminSettings } from '@/models/adminSettings';
@@ -16,21 +16,21 @@ export async function GET(request: Request, { params }: { params: { id: string }
         $addFields: {
           averageRating: {
             $cond: [
-              { $gt: [{ $size: { $ifNull: ["$reviews", []] } }, 0] }, // Check if reviews array is non-empty
-              { $avg: "$reviews.rating" }, // Calculate the average rating
+              { $gt: [{ $size: { $ifNull: ['$reviews', []] } }, 0] }, // Check if reviews array is non-empty
+              { $avg: '$reviews.rating' }, // Calculate the average rating
               0, // Default to 0 if no reviews
             ],
-          }
-        }
-      }
+          },
+        },
+      },
     ]);
-   
+
     if (cakes.length === 0) {
       return NextResponse.json({ error: 'Cake not found' }, { status: 404 });
     }
     const cake = cakes[0]; // Extract the first (and only) object from the array
     return NextResponse.json(cake);
-  } catch  {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch cake' }, { status: 500 });
   }
 }
@@ -47,36 +47,34 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (!cake) {
       return NextResponse.json({ error: 'Cake not found' }, { status: 404 });
     }
-   // Delete the cache for cakes to ensure fresh data
+    // Delete the cache for cakes to ensure fresh data
     const cacheKey = 'cakes';
     await deleteFromCache(cacheKey);
 
     return NextResponse.json(cake);
-  } catch  {
+  } catch {
     return NextResponse.json({ error: 'Failed to update cake' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-  
+
     //console.log(params.id,"delte")
     await clientPromise;
     const cake = await Cake.findByIdAndDelete(params.id);
     if (!cake) {
       return NextResponse.json({ error: 'Cake not found' }, { status: 404 });
     }
-     // Delete the cache for cakes to ensure fresh data
-     const cacheKey = 'cakes';
-     await deleteFromCache(cacheKey);
+    // Delete the cache for cakes to ensure fresh data
+    const cacheKey = 'cakes';
+    await deleteFromCache(cacheKey);
     return NextResponse.json({ message: 'Cake deleted successfully' });
-  } catch  {
+  } catch {
     return NextResponse.json({ error: 'Failed to delete cake' }, { status: 500 });
   }
 }
-

@@ -26,4 +26,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'An error occurred during verification' }, { status: 500 });
   }
 }
-

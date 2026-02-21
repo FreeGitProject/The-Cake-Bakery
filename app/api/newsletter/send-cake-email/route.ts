@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse } from "next/server"
-import nodemailer from "nodemailer"
-import { Subscriber } from "@/models/subscriber"
-import clientPromise from "@/lib/mongodb"
+import { NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
+import { Subscriber } from '@/models/subscriber';
+import clientPromise from '@/lib/mongodb';
 
 export async function POST(request: Request) {
   try {
-    await clientPromise
-    const cake = await request.json()
+    await clientPromise;
+    const cake = await request.json();
 
     // Fetch all subscribers
-    const subscribers = await Subscriber.find({})
+    const subscribers = await Subscriber.find({});
 
     // Create Nodemailer transporter
     const transporter = nodemailer.createTransport({
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-    })
+    });
 
     // Prepare email content
     const mailOptions = {
@@ -45,20 +45,19 @@ export async function POST(request: Request) {
           </body>
         </html>
       `,
-    }
+    };
 
     // Send email to all subscribers
     for (const subscriber of subscribers) {
       await transporter.sendMail({
         ...mailOptions,
         to: subscriber.email,
-      })
+      });
     }
 
-    return NextResponse.json({ message: "Emails sent successfully" })
+    return NextResponse.json({ message: 'Emails sent successfully' });
   } catch (error) {
-    console.error("Failed to send emails:", error)
-    return NextResponse.json({ error: "Failed to send emails" }, { status: 500 })
+    console.error('Failed to send emails:', error);
+    return NextResponse.json({ error: 'Failed to send emails' }, { status: 500 });
   }
 }
-

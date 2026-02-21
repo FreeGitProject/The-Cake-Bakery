@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminBanners from "@/components/Admin/AdminBanners"
+import type { Metadata } from 'next';
+import AdminBanners from '@/features/admin/content/components/AdminBanners';
 
 export const metadata: Metadata = {
-  title: "Manage Promo Banners | Admin Dashboard",
-  description: "Create and manage promotional banners for your Cake-Bakery Shop",
-}
+  title: 'Manage Promo Banners | Admin Dashboard',
+  description: 'Create and manage promotional banners for your Cake-Bakery Shop',
+};
 
 export default function AdminBannersPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminBannersPage() {
       <h1 className="text-3xl font-bold mb-6">Manage Promo Banners</h1>
       <AdminBanners />
     </div>
-  )
+  );
 }
-

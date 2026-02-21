@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
-import AdminSettings from '../../components/admin/AdminSettings'
+import { Metadata } from 'next';
+import AdminSettings from '@/features/admin/settings/components/AdminSettings';
 
 export const metadata: Metadata = {
   title: 'Admin Settings | The Cake Shop',
   description: 'Configure admin settings for the The Cake Shop',
-}
+};
 
 export default function AdminSettingsPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminSettingsPage() {
       <h1 className="text-3xl font-bold mb-6">Admin Settings</h1>
       <AdminSettings />
     </div>
-  )
+  );
 }
-

@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminBulkUpload from "@/components/AdminBulkUpload"
+import type { Metadata } from 'next';
+import AdminBulkUpload from '@/features/admin/cakes/components/AdminBulkUpload';
 
 export const metadata: Metadata = {
-  title: "Bulk Upload Cakes | Admin Dashboard",
-  description: "Upload multiple cakes using an Excel file",
-}
+  title: 'Bulk Upload Cakes | Admin Dashboard',
+  description: 'Upload multiple cakes using an Excel file',
+};
 
 export default function AdminBulkUploadPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminBulkUploadPage() {
       <h1 className="text-3xl font-bold mb-6">Bulk Upload Cakes</h1>
       <AdminBulkUpload />
     </div>
-  )
+  );
 }
-

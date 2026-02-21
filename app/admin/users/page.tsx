@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminUserList from "@/components/Admin/AdminUserList"
+import type { Metadata } from 'next';
+import AdminUserList from '@/features/admin/users/components/AdminUserList';
 
 export const metadata: Metadata = {
-  title: "User Management | Admin Dashboard",
-  description: "Manage users in your Cake-Bakery Shop",
-}
+  title: 'User Management | Admin Dashboard',
+  description: 'Manage users in your Cake-Bakery Shop',
+};
 
 export default function AdminUsersPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminUsersPage() {
       {/* <h1 className="text-3xl font-bold mb-6">User Management</h1> */}
       <AdminUserList />
     </div>
-  )
+  );
 }
-

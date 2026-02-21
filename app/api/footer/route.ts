@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { Footer } from '@/models/footer';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from "@/lib/auth";
+import { authOptions } from '@/lib/auth';
 // export async function GET() {
 //   try {
 //     await clientPromise;
@@ -65,8 +65,7 @@ export async function POST(request: Request) {
     const data = await request.json();
     const footer = await Footer.create(data);
     return NextResponse.json(footer);
-  } catch  {
+  } catch {
     return NextResponse.json({ error: 'Failed to create footer data' }, { status: 500 });
   }
 }
-

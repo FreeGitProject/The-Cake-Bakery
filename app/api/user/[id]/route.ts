@@ -21,7 +21,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ user });
   } catch (error) {
     console.error('Error fetching user details:', error);
-    return NextResponse.json({ error: 'An error occurred while fetching user details' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'An error occurred while fetching user details' },
+      { status: 500 }
+    );
   }
 }
 
@@ -46,7 +49,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ message: 'User updated successfully', user: updatedUser });
   } catch (error) {
     console.error('Error updating user details:', error);
-    return NextResponse.json({ error: 'An error occurred while updating user details' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'An error occurred while updating user details' },
+      { status: 500 }
+    );
   }
 }
 

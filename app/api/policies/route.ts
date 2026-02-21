@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import clientPromise from "@/lib/mongodb";
-import { Policy } from "@/models/policy";
-import { User } from "@/models/user"; // Assuming you have a User model
-import { authOptions } from "@/lib/auth";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import clientPromise from '@/lib/mongodb';
+import { Policy } from '@/models/policy';
+import { User } from '@/models/user'; // Assuming you have a User model
+import { authOptions } from '@/lib/auth';
 // Helper function to check if the user is an admin
 // async function isAdmin(userEmail: string) {
 //   const user = await User.findOne({ email: userEmail });
@@ -15,11 +15,8 @@ export async function GET() {
     const policies = await Policy.find({});
     return NextResponse.json(policies);
   } catch (error) {
-    console.error("Error fetching policies:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch policies" },
-      { status: 500 }
-    );
+    console.error('Error fetching policies:', error);
+    return NextResponse.json({ error: 'Failed to fetch policies' }, { status: 500 });
   }
 }
 
@@ -27,14 +24,14 @@ export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     //console.log("Policies", session);
     await clientPromise;
     // Fetch user by email
     const user = await User.findOne({ email: session.user.email });
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Check if the user is an admin
@@ -54,10 +51,7 @@ export async function POST(request: Request) {
     );
     return NextResponse.json(policy);
   } catch (error) {
-    console.error("Error updating policy:", error);
-    return NextResponse.json(
-      { error: "Failed to update policy" },
-      { status: 500 }
-    );
+    console.error('Error updating policy:', error);
+    return NextResponse.json({ error: 'Failed to update policy' }, { status: 500 });
   }
 }

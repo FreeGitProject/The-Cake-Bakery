@@ -1,9 +1,9 @@
-import AdminCoupons from "@/components/Admin/AdminCoupons";
-import type { Metadata } from "next";
+import AdminCoupons from '@/features/admin/settings/components/AdminCoupons';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Manage Coupons | Admin Dashboard",
-  description: "Manage discount coupons for your Cake-Bakery Shop",
+  title: 'Manage Coupons | Admin Dashboard',
+  description: 'Manage discount coupons for your Cake-Bakery Shop',
 };
 
 export default function AdminCouponsPage() {
@@ -12,5 +12,5 @@ export default function AdminCouponsPage() {
       {/* <h1 className="text-3xl font-bold mb-6">Manage Coupons</h1> */}
       <AdminCoupons />
     </div>
-  )
+  );
 }

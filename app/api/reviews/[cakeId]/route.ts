@@ -18,4 +18,3 @@ export async function GET(request: Request, { params }: { params: { cakeId: stri
     return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 });
   }
 }
-

@@ -1,11 +1,11 @@
-import ResetPasswordForm from "@/components/ResetPasswordForm"
-import type { Metadata } from "next"
-    import { Suspense } from "react"
+import ResetPasswordForm from '@/features/auth/components/ResetPasswordForm';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
-  title: "Reset Password | The Cake Shop",
-  description: "Reset your The Cake Shop account password",
-}
+  title: 'Reset Password | The Cake Shop',
+  description: 'Reset your The Cake Shop account password',
+};
 
 export default function ResetPasswordPage() {
   return (
@@ -15,6 +15,5 @@ export default function ResetPasswordPage() {
         <ResetPasswordForm />
       </Suspense>
     </div>
-  )
+  );
 }
-

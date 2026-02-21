@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from "@/lib/auth";
+import { authOptions } from '@/lib/auth';
 import clientPromise from '@/lib/mongodb';
 import { DeliveryArea } from '@/models/deliveryArea';
 
@@ -23,11 +23,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-   // console.log(session,"delivaryPost");
+    // console.log(session,"delivaryPost");
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-  
+
     await clientPromise;
     const data = await request.json();
     const deliveryArea = await DeliveryArea.create(data);
@@ -37,4 +37,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create delivery area' }, { status: 500 });
   }
 }
-

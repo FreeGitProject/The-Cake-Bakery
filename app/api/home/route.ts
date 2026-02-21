@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { Home } from '@/models/home';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from "@/lib/auth";
+import { authOptions } from '@/lib/auth';
 import { AdminSettings } from '@/models/adminSettings';
-import {  getFromCache, setToCache } from '@/lib/redis';
+import { getFromCache, setToCache } from '@/lib/redis';
 import { revalidateTag } from 'next/cache';
 import { CACHE_KEYS } from '@/lib/cacheKeys';
 // GET: Retrieve all Home entries
@@ -44,7 +44,7 @@ export async function GET() {
     // Default behavior: Fetch directly from DB if caching is disabled
     const data = await fetchHomeData();
     return NextResponse.json(data);
-     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch home data' }, { status: 500 });
   }
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       await home.save();
     }
     return NextResponse.json(home);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json({ error: 'Failed to save home data' }, { status: 500 });
   }
@@ -102,7 +102,7 @@ export async function DELETE(request: Request) {
     }
 
     return NextResponse.json({ message: 'Home entry deleted successfully' });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete home data' }, { status: 500 });
   }

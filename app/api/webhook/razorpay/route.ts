@@ -20,7 +20,9 @@ export async function POST(request: Request) {
     await clientPromise;
 
     if (payload.event === 'payment.captured') {
-      const order = await Order.findOne({ razorpayOrderId: payload.payload.payment.entity.order_id });
+      const order = await Order.findOne({
+        razorpayOrderId: payload.payload.payment.entity.order_id,
+      });
 
       if (order) {
         order.paymentStatus = 'Completed';
@@ -51,4 +53,3 @@ function verifyWebhookSignature(body: string, signature: string | null): boolean
 
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
 }
-

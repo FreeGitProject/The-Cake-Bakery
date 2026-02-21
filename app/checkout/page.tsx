@@ -1,6 +1,6 @@
 // app/checkout/page.tsx
 import { Metadata } from 'next';
-import CheckoutForm from '../components/CheckoutForm';
+import CheckoutForm from '@/features/cart/components/CheckoutForm';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth'; // Import your auth options if needed

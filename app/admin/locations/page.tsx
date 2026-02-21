@@ -1,12 +1,12 @@
-import type { Metadata } from "next"
-import AdminLocations from "@/components/Admin/AdminLocations"
+import type { Metadata } from 'next';
+import AdminLocations from '@/features/admin/settings/components/AdminLocations';
 
 export const metadata: Metadata = {
-  title: "Manage Locations | Admin Dashboard",
-  description: "Manage delivery locations for your Cake-Bakery Shop",
-}
+  title: 'Manage Locations | Admin Dashboard',
+  description: 'Manage delivery locations for your Cake-Bakery Shop',
+};
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export default function AdminLocationsPage() {
   return (
@@ -14,6 +14,5 @@ export default function AdminLocationsPage() {
       {/* <h1 className="text-3xl font-bold mb-6">Manage Locations</h1> */}
       <AdminLocations />
     </div>
-  )
+  );
 }
-

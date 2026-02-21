@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import AdminImportLogs from "@/components/AdminImportLogs"
+import type { Metadata } from 'next';
+import AdminImportLogs from '@/features/admin/cakes/components/AdminImportLogs';
 
 export const metadata: Metadata = {
-  title: "Import Logs | Admin Dashboard",
-  description: "View logs of bulk cake imports",
-}
+  title: 'Import Logs | Admin Dashboard',
+  description: 'View logs of bulk cake imports',
+};
 
 export default function AdminImportLogsPage() {
   return (
@@ -12,6 +12,5 @@ export default function AdminImportLogsPage() {
       {/* <h1 className="text-3xl font-bold mb-6">Import Logs</h1> */}
       <AdminImportLogs />
     </div>
-  )
+  );
 }
-

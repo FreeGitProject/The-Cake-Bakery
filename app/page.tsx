@@ -1,25 +1,21 @@
-
-
-import Home from './components/Home'
-import News from './components/News'
- import About from './components/About'
- import Favorites from './components/Favorites'
- import Location from '../components/Location'
+import Home from '@/features/content/components/Home';
+import News from '@/features/content/components/News';
+import About from '@/features/content/components/About';
+import Favorites from '@/features/content/components/Favorites';
+import Location from '@/features/location/components/Location';
 
 export const metadata = {
   title: 'The Cake Shop',
   description: 'Delicious cakes and pastries for every occasion',
 };
 export default function Page() {
-   
-   return (
+  return (
     <>
-      <Home/>
+      <Home />
       <News />
-       <About /> 
-      <Favorites /> 
-    <Location /> 
+      <About />
+      <Favorites />
+      <Location />
     </>
-  )
+  );
 }
-

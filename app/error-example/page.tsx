@@ -1,4 +1,4 @@
-import ErrorComponent from '../components/ErrorComponent'
+import ErrorComponent from '@/shared/components/ErrorComponent';
 
 export default function ErrorExamplePage() {
   return (
@@ -6,6 +6,5 @@ export default function ErrorExamplePage() {
       <h1 className="text-3xl font-bold mb-6">Error Example Page</h1>
       <ErrorComponent />
     </div>
-  )
+  );
 }
-
