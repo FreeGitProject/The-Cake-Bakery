@@ -31,25 +31,29 @@ export const useLocation = () => {
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  // Use a stable primitive as dependency to avoid infinite re-renders.
+  // The session object is a new reference on every render, but user.id is stable.
+  const userId = session?.user?.id;
 
   useEffect(() => {
+    if (status !== 'authenticated' || !userId) return;
+
     const fetchUserLocation = async () => {
-      if (session?.user) {
-        try {
-          const response = await fetch('/api/user-location');
-          if (response.ok) {
-            const data = await response.json();
-            setCurrentLocation(data.selectedLocation);
-          }
-        } catch (error) {
-          console.error('Error fetching user location:', error);
+      try {
+        const response = await fetch('/api/user-location');
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentLocation(data.selectedLocation);
         }
+      } catch (error) {
+        console.error('Error fetching user location:', error);
       }
     };
 
     fetchUserLocation();
-  }, [session]);
+  }, [userId, status]);
 
   return (
     <LocationContext.Provider
