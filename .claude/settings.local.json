@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head:*)",
+      "Bash(cd \"D:\\\\Sample\\\\The-Cake-Bakery\" && npm ls swr 2>&1)",
+      "Bash(tail:*)",
+      "Bash(cd \"D:\\\\Sample\\\\The-Cake-Bakery\" && npx next build 2>&1)"
+    ]
+  }
+}

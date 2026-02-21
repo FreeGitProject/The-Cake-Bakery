@@ -15,10 +15,8 @@ export default async function LoginPage() {
     redirect('/'); // Redirect to login if no session or user is not an admin
   }
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* <h1 className="text-3xl font-bold mb-6 text-center">Login</h1> */}
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-[#FAFAFA]">
       <LoginForm />
     </div>
   )
 }
-

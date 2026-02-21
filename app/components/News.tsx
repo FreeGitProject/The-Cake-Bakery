@@ -1,83 +1,96 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 import { useNews } from '@/lib/useData'
-//import { useData } from '@/context/DataContext'
-//import Image from 'next/image'
-// import { useState, useEffect } from 'react'
-
-// interface NewsItem {
-//   _id: string
-//   title: string
-//   date: string
-//   description: string
-//   imageUrl?: string
-// }
+import { motion } from 'framer-motion'
+import { ArrowRight, Calendar } from 'lucide-react'
 
 export default function News() {
-  //const { news, isLoading } = useData();
-  const { data:news, isLoading } = useNews();
+  const { data: news, isLoading } = useNews();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return (
+    <section className="py-24 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center py-20">
+          <div className="w-8 h-8 border-2 border-brand-pink border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    </section>
+  );
 
   return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[#4A4A4A] mb-4 relative inline-block">Latest Updates
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#FF9494] rounded-full"></div>
+    <section className="py-24 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="inline-block text-sm font-semibold tracking-widest uppercase text-[#FF9494] mb-3">
+            Stay Updated
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-text mb-4">
+            Latest Updates
           </h2>
-        </div>
+          <div className="w-16 h-1 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] mx-auto rounded-full" />
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {news?.map((item) => (
-            <div 
-              key={item._id} 
+        {/* News Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {news?.map((item, index) => (
+            <motion.article
+              key={item._id}
               className="group cursor-pointer"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="relative overflow-hidden rounded-lg mb-6">
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-                  <p className="text-white text-sm">
-                    {new Date(item.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+              <div className="bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1">
+                {/* Image */}
+                <div className="relative overflow-hidden aspect-[16/10]">
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Date Badge */}
+                  <div className="absolute top-4 left-4">
+                    <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-brand-text px-3 py-1.5 rounded-lg text-xs font-medium shadow-soft">
+                      <Calendar className="w-3 h-3 text-[#FF9494]" />
+                      {new Date(item.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold text-brand-text mb-2 group-hover:text-[#FF9494] transition-colors duration-300 line-clamp-2 leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-brand-text-secondary line-clamp-2 mb-4 leading-relaxed">
+                    {item.description}
                   </p>
+                  <div className="flex items-center text-[#FF9494] text-sm font-medium">
+                    <span>Read More</span>
+                    <ArrowRight className="w-4 h-4 ml-1.5 transform group-hover:translate-x-1.5 transition-transform duration-300" />
+                  </div>
                 </div>
               </div>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-[#FF9494] transition-colors">
-                {item.title}
-              </h3>
-              
-              <p className="text-gray-600 text-base line-clamp-2 mb-4">
-                {item.description}
-              </p>
-{/* 
-              <div className="flex items-center text-[#FF9494] font-medium">
-                <span className="group-hover:mr-4 transition-all">Read Article</span>
-                <svg 
-                  className="w-0 group-hover:w-4 transition-all" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </div> */}
-            </div>
+            </motion.article>
           ))}
         </div>
       </div>
     </section>
   )
 }
-

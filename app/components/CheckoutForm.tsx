@@ -34,6 +34,12 @@ import {
   Gift,
  // CalendarClock,
   AlertCircle,
+  ShoppingBag,
+  ChevronRight,
+  Sparkles,
+  Shield,
+  Tag,
+  CheckCircle2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -41,7 +47,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AddonItemsByCategory from "@/components/AddonItemsByCategory"
 
@@ -149,20 +154,20 @@ export default function PremiumCheckout() {
       if (!session?.user) return;
 
       try {
-        //we ca also call more than one 
+        //we ca also call more than one
         // const [userResponse, addressesResponse] = await Promise.all([
         //   fetch(`/api/user/${session.user.id}`),
         //   fetch(`/api/user/${session.user.id}/addresses`)
         // ]);
         const response = await fetch(`/api/user/${session.user.id}`);//,
-      
+
 
         if (response.ok) {
           const userData = await response.json();
           //const addressesData = await addressesResponse.json();
          // const addressesData = userData;
 //console.log(addressesData)
-//console.log(addressesData.user.addresses)    
+//console.log(addressesData.user.addresses)
 setFormData(prev => ({
             ...prev,
             name: userData?.user?.username || "",
@@ -456,221 +461,315 @@ setFormData(prev => ({
     }
   };
 
-  // Render progress bar
+  // Step configuration
+  const steps = [
+    { number: 1, label: "Review Cart", icon: ShoppingBag },
+    { number: 2, label: "Delivery", icon: Truck },
+    { number: 3, label: "Payment", icon: CreditCard },
+  ];
+
+  // Render premium step indicator
   const renderProgress = () => (
-    <div className="mb-6">
-      <Progress value={(checkoutStep / 3) * 100} className="h-2" />
-      <div className="flex justify-between mt-2 text-sm text-gray-600">
-        <span className={checkoutStep >= 1 ? "text-primary" : ""}>Review Cart</span>
-        <span className={checkoutStep >= 2 ? "text-primary" : ""}>Delivery Details</span>
-        <span className={checkoutStep >= 3 ? "text-primary" : ""}>Payment</span>
+    <div className="mb-10">
+      {/* Progress bar track */}
+      <div className="relative mb-8">
+        <div className="absolute top-5 left-0 right-0 h-[3px] bg-gray-100 rounded-full" />
+        <Progress
+          value={(checkoutStep / 3) * 100}
+          className="absolute top-5 left-0 right-0 h-[3px] [&>div]:bg-gradient-to-r [&>div]:from-[#FF9494] [&>div]:to-[#FFB4B4] [&>div]:transition-all [&>div]:duration-500"
+        />
+
+        {/* Step circles */}
+        <div className="relative flex justify-between">
+          {steps.map((step) => {
+            const isCompleted = checkoutStep > step.number;
+            const isActive = checkoutStep === step.number;
+            const StepIcon = step.icon;
+
+            return (
+              <div key={step.number} className="flex flex-col items-center">
+                <div
+                  className={`
+                    relative z-10 flex items-center justify-center w-10 h-10 rounded-full
+                    transition-all duration-300 border-2
+                    ${isCompleted
+                      ? "bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] border-transparent text-white shadow-glow"
+                      : isActive
+                        ? "bg-white border-[#FF9494] text-[#FF9494] shadow-glow"
+                        : "bg-white border-gray-200 text-gray-400"
+                    }
+                  `}
+                >
+                  {isCompleted ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    <StepIcon className="w-4 h-4" />
+                  )}
+                </div>
+                <span
+                  className={`
+                    mt-2.5 text-xs font-medium tracking-wide transition-colors duration-300
+                    ${isCompleted || isActive ? "text-brand-text" : "text-gray-400"}
+                  `}
+                >
+                  {step.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
 
   // Render cart items
   const renderCartItems = () => (
-    <div>
-        <Card>
-      <CardHeader>
-        <CardTitle>Order Summary</CardTitle>
-        <CardDescription>Review your items</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[300px] pr-4">
-          {cart.map((item) => (
-            <div key={item.id} className="flex items-center space-x-4 py-4 border-b last:border-0">
-              <div className="relative">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-12 h-12 object-cover rounded"
-                />
-                {item.quantity > 1 && (
-                  <Badge className="absolute -top-2 -right-2 bg-primary">
-                    x{item.quantity}
-                  </Badge>
-                )}
-              </div>
-              
-              <div className="flex-grow space-y-1">
-                <div className="flex justify-between">
-                  <h3 className="font-semibold text-base">{item.name}</h3>
-                  <p className="font-semibold">₹{(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-                
-                <div className="flex items-center text-sm text-gray-500">
-                <span className="mr-2">
-                    {item.caketype !== "addon" && (
-                      <>
-                        {item.caketype === "cake" ? "Weight" : "Pieces"}: {item.weight}
-                        {item.caketype === "cake" ? "Kg" : ""}
-                      </>
-                    )}
-                </span>
-                  <span>₹{item.price.toFixed(2)} each</span>
-                </div>
-
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                      disabled={item.quantity <= 1}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="w-8 text-center">{item.quantity}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive/90"
-                          onClick={() => removeFromCart(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Remove item</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-               {item.caketype !== 'pastries' && item.caketype !== "addon" && (
-                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-2 gap-2 sm:gap-4">
-                 <label htmlFor="cakeMessage" className="text-sm sm:text-base font-medium">
-                 Cake Message
-                 </label>
-                 <Input
-                 id="cakeMessage"
-                 type="text"
-                 value={item.cakeMessage}
-                 onChange={(e) => handleCakeMessageChange(item.id, e.target.value)}
-                 minLength={20}
-                 className="w-full sm:w-64 p-2 border rounded-md"
-                 placeholder="Enter at least 20 characters"
-                 />
-               </div>
-               )}
-
-              </div>
+    <div className="space-y-6 animate-fade-in">
+      <Card className="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-brand-cream/60 to-white pb-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white">
+              <ShoppingBag className="w-5 h-5" />
             </div>
-          ))}
-        </ScrollArea>
-
-        <div className="mt-6 space-y-4">
-          <div className="flex items-center">
-            <Input
-              placeholder="Enter coupon code"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              className="flex-grow mr-2"
-            />
-            <Button 
-              type="button" 
-              onClick={handleApplyCoupon}
-              disabled={!couponCode || isLoading}
-            >
-              Apply
-            </Button>
+            <div>
+              <CardTitle className="font-display text-xl text-brand-text">Order Summary</CardTitle>
+              <CardDescription className="text-brand-text-secondary mt-0.5">
+                {cart.length} {cart.length === 1 ? "item" : "items"} in your cart
+              </CardDescription>
+            </div>
           </div>
+        </CardHeader>
 
-          {appliedCoupon && (
-            <Alert className="bg-green-50 border-green-200">
-              <Gift className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-600">
-                Coupon &quot;{appliedCoupon.code}&quot; applied - You saved ₹{appliedCoupon.discountAmount.toFixed(2)}!
-              </AlertDescription>
-            </Alert>
-          )}
+        <CardContent className="p-0">
+          <ScrollArea className="h-[340px]">
+            <div className="divide-y divide-gray-50">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="group flex items-start gap-4 p-5 hover:bg-brand-cream/20 transition-all duration-300"
+                >
+                  {/* Product image */}
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-[72px] h-[72px] object-cover rounded-xl shadow-sm ring-1 ring-gray-100"
+                    />
+                    {item.quantity > 1 && (
+                      <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white border-0 text-[10px] font-bold shadow-sm px-1.5 py-0.5">
+                        x{item.quantity}
+                      </Badge>
+                    )}
+                  </div>
 
-          <Separator />
+                  {/* Product details */}
+                  <div className="flex-grow min-w-0 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-display font-semibold text-brand-text text-[15px] leading-tight truncate">
+                        {item.name}
+                      </h3>
+                      <p className="font-display font-bold text-brand-pink text-[15px] whitespace-nowrap">
+                        ₹{(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
-              <span>₹{orderSummary.subtotal.toFixed(2)}</span>
+                    <div className="flex items-center gap-2 text-xs text-brand-text-secondary">
+                      {item.caketype !== "addon" && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-brand-cream text-brand-text text-[11px] font-medium">
+                          {item.caketype === "cake" ? "Weight" : "Pieces"}: {item.weight}
+                          {item.caketype === "cake" ? "Kg" : ""}
+                        </span>
+                      )}
+                      <span className="text-[11px]">₹{item.price.toFixed(2)} each</span>
+                    </div>
+
+                    {/* Quantity controls */}
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          className="h-7 w-7 rounded-lg border-gray-200 hover:border-brand-pink hover:text-brand-pink transition-all duration-300"
+                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="w-8 text-center text-sm font-semibold text-brand-text">
+                          {item.quantity}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          className="h-7 w-7 rounded-lg border-gray-200 hover:border-brand-pink hover:text-brand-pink transition-all duration-300"
+                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-300"
+                              onClick={() => removeFromCart(item.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="text-xs">Remove item</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+
+                    {/* Cake message input */}
+                    {item.caketype !== 'pastries' && item.caketype !== "addon" && (
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+                        <label htmlFor={`cakeMessage-${item.id}`} className="text-xs font-medium text-brand-text-secondary whitespace-nowrap">
+                          Cake Message
+                        </label>
+                        <Input
+                          id={`cakeMessage-${item.id}`}
+                          type="text"
+                          value={item.cakeMessage}
+                          onChange={(e) => handleCakeMessageChange(item.id, e.target.value)}
+                          minLength={20}
+                          className="w-full sm:w-56 h-8 text-xs rounded-xl border-gray-200 focus:border-brand-pink focus:ring-brand-pink/20 transition-all duration-300 placeholder:text-gray-300"
+                          placeholder="Write a message on the cake..."
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-            
+          </ScrollArea>
+
+          {/* Coupon and pricing section */}
+          <div className="border-t border-gray-100 p-5 space-y-4">
+            {/* Coupon input */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-grow">
+                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Enter coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  className="pl-10 h-10 rounded-xl border-gray-200 focus:border-brand-pink focus:ring-brand-pink/20 transition-all duration-300 text-sm"
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={!couponCode || isLoading}
+                className="h-10 px-5 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] hover:shadow-glow text-white border-0 font-medium text-sm transition-all duration-300"
+              >
+                Apply
+              </Button>
+            </div>
+
             {appliedCoupon && (
-              <div className="flex justify-between text-sm text-green-600">
-                <span>Discount</span>
-                <span>-₹{orderSummary.discount.toFixed(2)}</span>
+              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                <Gift className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                <p className="text-sm text-emerald-700 font-medium">
+                  &quot;{appliedCoupon.code}&quot; applied &mdash; You saved ₹{appliedCoupon.discountAmount.toFixed(2)}!
+                </p>
               </div>
             )}
-            
-            <div className="flex justify-between text-sm">
-              <span>Delivery Fee</span>
-              <span>
-                {orderSummary.deliveryFee === 0 ? (
-                  <span className="text-green-600">FREE</span>
-                ) : (
-                  `₹${orderSummary.deliveryFee.toFixed(2)}`
-                )}
-              </span>
+
+            <Separator className="bg-gray-100" />
+
+            {/* Price breakdown */}
+            <div className="space-y-2.5">
+              <div className="flex justify-between text-sm text-brand-text-secondary">
+                <span>Subtotal</span>
+                <span className="font-medium text-brand-text">₹{orderSummary.subtotal.toFixed(2)}</span>
+              </div>
+
+              {appliedCoupon && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-emerald-600">Discount</span>
+                  <span className="font-medium text-emerald-600">-₹{orderSummary.discount.toFixed(2)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between text-sm text-brand-text-secondary">
+                <span>Delivery Fee</span>
+                <span>
+                  {orderSummary.deliveryFee === 0 ? (
+                    <span className="inline-flex items-center gap-1 text-emerald-600 font-medium">
+                      <Sparkles className="h-3 w-3" /> FREE
+                    </span>
+                  ) : (
+                    <span className="font-medium text-brand-text">₹{orderSummary.deliveryFee.toFixed(2)}</span>
+                  )}
+                </span>
+              </div>
+
+              <Separator className="bg-gray-100" />
+
+              <div className="flex justify-between items-center pt-1">
+                <span className="font-display font-bold text-brand-text text-lg">Total</span>
+                <span className="font-display font-bold text-brand-pink text-xl">
+                  ₹{orderSummary.total.toFixed(2)}
+                </span>
+              </div>
             </div>
 
-            <Separator />
-            
-            <div className="flex justify-between font-semibold">
-              <span>Total</span>
-              <span>₹{orderSummary.total.toFixed(2)}</span>
-            </div>
+            {/* Free delivery nudge */}
+            {orderSummary.subtotal < 1000 && (
+              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-brand-cream/50 border border-brand-cream">
+                <AlertCircle className="h-4 w-4 text-brand-pink flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-brand-text">
+                  Add items worth <span className="font-semibold text-brand-pink">₹{(1000 - orderSummary.subtotal).toFixed(2)}</span> more for free delivery!
+                </p>
+              </div>
+            )}
           </div>
+        </CardContent>
 
-          {orderSummary.subtotal < 1000 && (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Add items worth ₹{(1000 - orderSummary.subtotal).toFixed(2)} more for free delivery!
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button 
-          className="w-full"
-          onClick={handleNextStep}
-          disabled={cart.length === 0}
-        >
-          Continue to Delivery
-        </Button>
-      </CardFooter>
-    </Card>
-    <div>
-      <>
-      <AddonItemsByCategory />
-      </>
-    </div>
+        <CardFooter className="p-5 pt-0">
+          <Button
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] hover:shadow-glow text-white font-semibold text-[15px] border-0 transition-all duration-300 group"
+            onClick={handleNextStep}
+            disabled={cart.length === 0}
+          >
+            Continue to Delivery
+            <ChevronRight className="ml-1.5 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-300" />
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Addon items */}
+      <div>
+        <AddonItemsByCategory />
+      </div>
     </div>
   );
+
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6">
       {renderProgress()}
 
       {cart.length === 0 ? (
-        <Card className="text-center py-8">
-          <CardContent className="space-y-4">
-            <div className="text-4xl">🛒</div>
-            <CardTitle>Your cart is empty</CardTitle>
-            <CardDescription>Add some delicious items to your cart and come back!</CardDescription>
-            <Button onClick={() => router.push('/cakes')}>
+        <Card className="text-center py-16 rounded-2xl shadow-soft border border-gray-100 bg-white animate-scale-in">
+          <CardContent className="space-y-5">
+            <div className="mx-auto w-20 h-20 rounded-full bg-brand-cream flex items-center justify-center">
+              <ShoppingBag className="w-9 h-9 text-brand-pink" />
+            </div>
+            <CardTitle className="font-display text-2xl text-brand-text">Your cart is empty</CardTitle>
+            <CardDescription className="text-brand-text-secondary text-base max-w-sm mx-auto">
+              Add some delicious items to your cart and come back!
+            </CardDescription>
+            <Button
+              onClick={() => router.push('/cakes')}
+              className="mt-2 h-11 px-8 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] hover:shadow-glow text-white font-semibold border-0 transition-all duration-300"
+            >
               Continue Shopping
             </Button>
           </CardContent>
@@ -680,79 +779,127 @@ setFormData(prev => ({
           {/* Step 1: Cart Review */}
           {checkoutStep === 1 && renderCartItems()}
 
-      {/* Step 2: Delivery Details */}
-{checkoutStep === 2 && (
-  <DeliveryForm
-  formData={formData}
-  onFormDataChange={handleFormDataChange}
-  savedAddresses={savedAddresses}
-  selectedAddress={selectedAddress}
-  onAddressSelect={handleAddressSelect}
-  availableDeliveryDates={availableDeliveryDates}
-  deliverySlots={deliverySlots}
-  setCheckoutStep={setCheckoutStep}
-/>
-)}
+          {/* Step 2: Delivery Details */}
+          {checkoutStep === 2 && (
+            <DeliveryForm
+              formData={formData}
+              onFormDataChange={handleFormDataChange}
+              savedAddresses={savedAddresses}
+              selectedAddress={selectedAddress}
+              onAddressSelect={handleAddressSelect}
+              availableDeliveryDates={availableDeliveryDates}
+              deliverySlots={deliverySlots}
+              setCheckoutStep={setCheckoutStep}
+            />
+          )}
 
           {/* Step 3: Payment */}
           {checkoutStep === 3 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment Method</CardTitle>
-                <CardDescription>Choose your preferred payment method</CardDescription>
+            <Card className="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden animate-fade-in">
+              <CardHeader className="bg-gradient-to-r from-brand-cream/60 to-white pb-4 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="font-display text-xl text-brand-text">Payment Method</CardTitle>
+                    <CardDescription className="text-brand-text-secondary mt-0.5">
+                      Choose your preferred payment method
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
+
+              <CardContent className="p-5">
                 <RadioGroup
                   value={paymentMethod}
                   onValueChange={setPaymentMethod}
-                  className="space-y-4"
+                  className="space-y-3"
                 >
-                  <div className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50">
-                    <RadioGroupItem value="Cash on Delivery" id="cod" />
+                  {/* COD option */}
+                  <div
+                    className={`
+                      flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300
+                      ${paymentMethod === "Cash on Delivery"
+                        ? "border-brand-pink bg-brand-cream/30 shadow-sm"
+                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50/50"
+                      }
+                    `}
+                    onClick={() => setPaymentMethod("Cash on Delivery")}
+                  >
+                    <RadioGroupItem value="Cash on Delivery" id="cod" className="border-brand-pink text-brand-pink" />
                     <Label htmlFor="cod" className="flex-grow cursor-pointer">
-                      <div className="font-semibold">Cash on Delivery</div>
-                      <div className="text-sm text-gray-500">Pay when you receive your order</div>
+                      <div className="font-semibold text-brand-text text-[15px]">Cash on Delivery</div>
+                      <div className="text-xs text-brand-text-secondary mt-0.5">Pay when you receive your order</div>
                     </Label>
-                    <Truck className="h-6 w-6 text-gray-400" />
+                    <div className={`p-2.5 rounded-xl transition-colors duration-300 ${paymentMethod === "Cash on Delivery" ? "bg-brand-pink/10" : "bg-gray-100"}`}>
+                      <Truck className={`h-5 w-5 transition-colors duration-300 ${paymentMethod === "Cash on Delivery" ? "text-brand-pink" : "text-gray-400"}`} />
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50">
-                    <RadioGroupItem value="Online Payment" id="razorpay" />
+                  {/* Online payment option */}
+                  <div
+                    className={`
+                      flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300
+                      ${paymentMethod === "Online Payment"
+                        ? "border-brand-pink bg-brand-cream/30 shadow-sm"
+                        : "border-gray-100 hover:border-gray-200 hover:bg-gray-50/50"
+                      }
+                    `}
+                    onClick={() => setPaymentMethod("Online Payment")}
+                  >
+                    <RadioGroupItem value="Online Payment" id="razorpay" className="border-brand-pink text-brand-pink" />
                     <Label htmlFor="razorpay" className="flex-grow cursor-pointer">
-                      <div className="font-semibold">Pay Online (Razorpay)</div>
-                      <div className="text-sm text-gray-500">Secure payment via Razorpay</div>
+                      <div className="font-semibold text-brand-text text-[15px]">Pay Online (Razorpay)</div>
+                      <div className="text-xs text-brand-text-secondary mt-0.5">Secure payment via Razorpay</div>
                     </Label>
-                    <CreditCard className="h-6 w-6 text-gray-400" />
+                    <div className={`p-2.5 rounded-xl transition-colors duration-300 ${paymentMethod === "Online Payment" ? "bg-brand-pink/10" : "bg-gray-100"}`}>
+                      <CreditCard className={`h-5 w-5 transition-colors duration-300 ${paymentMethod === "Online Payment" ? "text-brand-pink" : "text-gray-400"}`} />
+                    </div>
                   </div>
                 </RadioGroup>
 
-                <div className="mt-6">
-                  <Alert>
-                    <Clock className="h-4 w-4" />
-                    <AlertDescription>
-                      Your order will be confirmed once payment is completed
-                    </AlertDescription>
-                  </Alert>
+                {/* Security notice */}
+                <div className="mt-5 flex items-center gap-2.5 p-3 rounded-xl bg-brand-cream/40 border border-brand-cream">
+                  <Shield className="h-4 w-4 text-brand-pink flex-shrink-0" />
+                  <p className="text-xs text-brand-text-secondary">
+                    Your payment information is processed securely. We never store your card details.
+                  </p>
+                </div>
+
+                {/* Order confirmation info */}
+                <div className="mt-3 flex items-center gap-2.5 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <Clock className="h-4 w-4 text-brand-text-secondary flex-shrink-0" />
+                  <p className="text-xs text-brand-text-secondary">
+                    Your order will be confirmed once payment is completed
+                  </p>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button 
-                  type="button" 
+
+              <CardFooter className="flex justify-between gap-3 p-5 border-t border-gray-100 bg-gray-50/30">
+                <Button
+                  type="button"
                   variant="outline"
                   onClick={() => setCheckoutStep(2)}
+                  className="h-11 px-6 rounded-xl border-gray-200 text-brand-text hover:bg-brand-cream/30 hover:border-brand-pink/30 font-medium transition-all duration-300"
                 >
                   Back
                 </Button>
-                <Button 
+                <Button
                   type="submit"
                   disabled={isLoading}
+                  className="h-11 px-8 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] hover:shadow-glow text-white font-semibold border-0 transition-all duration-300"
                 >
                   {isLoading ? (
-                    <span className="flex items-center">
-                      Processing... <Truck className="ml-2 h-4 w-4 animate-bounce" />
+                    <span className="flex items-center gap-2">
+                      Processing
+                      <Truck className="h-4 w-4 animate-bounce" />
                     </span>
                   ) : (
-                    `Pay ₹${orderSummary.total.toFixed(2)}`
+                    <span className="flex items-center gap-1.5">
+                      Pay ₹{orderSummary.total.toFixed(2)}
+                      <ChevronRight className="h-4 w-4" />
+                    </span>
                   )}
                 </Button>
               </CardFooter>
@@ -762,4 +909,4 @@ setFormData(prev => ({
       )}
     </div>
   )
-};
+}

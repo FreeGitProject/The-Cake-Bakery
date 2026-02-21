@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-//import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCart } from "@/context/CartContext"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { Heart, ShoppingCart, Trash2, HeartOff } from "lucide-react"
 
 interface WishlistItem {
   _id: string
@@ -30,7 +29,7 @@ export default function WishlistPage() {
     if (!session) {
       redirect('/login');
     }
-  
+
   useEffect(() => {
     if (session) {
       fetchWishlistItems()
@@ -98,51 +97,99 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">My Wishlist</h1>
-      {wishlistItems.length === 0 ? (
-        <p>Your wishlist is empty.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlistItems.map((item) => (
-            <Card key={item._id}>
-              
-              <CardHeader>
-              <div className="flex justify-between items-start">
-          <Link href={`/cakes/${item.cakeId}`} className="w-full">
-         
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Page Header */}
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-pink to-brand-pink-light flex items-center justify-center shadow-soft">
+            <Heart className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-brand-text">
+            My Wishlist
+          </h1>
+        </div>
+        <p className="text-brand-text-secondary mt-1 ml-[52px]">
+          {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'} saved
+        </p>
+        <div className="h-1 w-16 bg-gradient-to-r from-brand-pink to-brand-pink-light rounded-full mt-4" />
+      </div>
 
-            <CardTitle className="text-2xl font-bold from-primary to-primary-foreground bg-clip-text  line-clamp-1">
-              {item.name}
-            </CardTitle>
+      {wishlistItems.length === 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[40vh] p-8">
+          <div className="w-24 h-24 rounded-full bg-brand-cream flex items-center justify-center mb-6">
+            <HeartOff className="w-12 h-12 text-brand-pink/60" />
+          </div>
+          <h3 className="text-xl font-display font-semibold text-brand-text">Your wishlist is empty</h3>
+          <p className="text-brand-text-secondary mt-2 text-center max-w-sm">
+            Browse our collection and save your favorite treats for later.
+          </p>
+          <Link
+            href="/cakes"
+            className="mt-6 inline-flex items-center px-6 py-3 rounded-xl bg-gradient-to-r from-brand-pink to-brand-pink-light text-white font-semibold shadow-soft hover:shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+          >
+            Explore Cakes
           </Link>
         </div>
-               
-                {/* <CardTitle>{item.name}</CardTitle> */}
-               
-              </CardHeader>
-             
-              <CardContent>
-                <Image
-                  src={item.image || "/placeholder.svg"}
-                  alt={item.name}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover mb-4"
-                />
-                <p className="font-bold text-lg">₹{item.price.toFixed(2)}</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => removeFromWishlist(item._id)}>
-                  Remove
-                </Button>
-                <Button onClick={() => handleAddToCart(item)}>Add to Cart</Button>
-              </CardFooter>
-            </Card>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {wishlistItems.map((item, index) => (
+            <div
+              key={item._id}
+              className="group bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden border border-gray-100/80 hover:-translate-y-1"
+              style={{ animationDelay: `${index * 80}ms` }}
+            >
+              {/* Image Section */}
+              <Link href={`/cakes/${item.cakeId}`} className="block relative">
+                <div className="relative h-56 w-full overflow-hidden">
+                  <Image
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+                {/* Wishlist Heart Badge */}
+                <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-soft">
+                  <Heart className="w-4.5 h-4.5 text-brand-pink fill-brand-pink" />
+                </div>
+              </Link>
+
+              {/* Content Section */}
+              <div className="p-5">
+                <Link href={`/cakes/${item.cakeId}`}>
+                  <h3 className="font-display font-bold text-lg text-brand-text group-hover:text-brand-pink transition-colors duration-300 line-clamp-1">
+                    {item.name}
+                  </h3>
+                </Link>
+
+                <div className="mt-3 flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-brand-text">{'\u20B9'}{item.price.toFixed(2)}</span>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-5 flex gap-3">
+                  <Button
+                    onClick={() => handleAddToCart(item)}
+                    className="flex-1 h-11 rounded-xl bg-gradient-to-r from-brand-pink to-brand-pink-light text-white font-semibold shadow-soft hover:shadow-glow transition-all duration-300 hover:-translate-y-0.5 border-0"
+                  >
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => removeFromWishlist(item._id)}
+                    className="h-11 w-11 rounded-xl border-gray-200 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500 transition-all duration-300 p-0 flex-shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}
     </div>
   )
 }
-

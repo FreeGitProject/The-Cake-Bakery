@@ -9,15 +9,12 @@ export const metadata: Metadata = {
 
 export default async function RegisterPage() {
   const session = await getServerSession();
-  //console.log("register",session)
   if (session ) {
-    redirect('/'); // Redirect to login if no session or user is not an admin
+    redirect('/');
   }
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* <h1 className="text-3xl font-bold mb-6 text-center">Register</h1> */}
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16 bg-[#FAFAFA]">
       <RegisterForm />
     </div>
   )
 }
-

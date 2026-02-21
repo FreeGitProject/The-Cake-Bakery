@@ -8,10 +8,11 @@ export const metadata: Metadata = {
 
 export default function PoliciesPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Our Policies</h1>
-      <PoliciesComponent />
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text mb-8">Our Policies</h1>
+        <PoliciesComponent />
+      </div>
     </div>
   )
 }
-
