@@ -2,7 +2,7 @@
 "use client"
 import { useAbout } from '@/lib/useData'
 //import Image from 'next/image'
-import Loader from './Loader'
+//import Loader from './Loader'
 
 
 
@@ -25,8 +25,7 @@ export default function About() {
 
   if (isLoading) {
     return <div>
-    
-      <Loader/> 
+      About Loading...
       </div>
   }
 
