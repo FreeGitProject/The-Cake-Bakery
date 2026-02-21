@@ -3,8 +3,7 @@ import { Metadata } from 'next';
 import CheckoutForm from '../components/CheckoutForm';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth'; // Import your auth options if needed
-//import { cookies } from 'next/headers';
+import { authOptions } from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'Checkout | The Cake Shop',
@@ -14,22 +13,16 @@ export const metadata: Metadata = {
 export default async function CheckoutPage() {
   const session = await getServerSession(authOptions);
 
-  // // Fetch cart data from cookies (since `useCart` cannot be used on the server)
-  // const cartCookie = cookies().get('cart');
-  // const cart = cartCookie ? JSON.parse(cartCookie.value) : [];
-
-  // // Redirect if not logged in or cart is empty
-  // if (!session || cart.length === 0) {
-  //   redirect('/login');
-  // }
   if (!session) {
     redirect('/login');
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Checkout</h1>
-      <CheckoutForm />
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text mb-8">Checkout</h1>
+        <CheckoutForm />
+      </div>
     </div>
   );
 }

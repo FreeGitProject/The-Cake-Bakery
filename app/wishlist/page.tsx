@@ -6,6 +6,9 @@ export const metadata: Metadata = {
 }
 
 export default function Wishlist() {
-  return <WishlistPage />
+  return (
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <WishlistPage />
+    </div>
+  )
 }
-

@@ -217,14 +217,6 @@ export default function CakeDetails({ id }: { id: string }) {
   }, [session]);
 
 
-  const getTypeStyles = (type: string): string | null => {
-    if (type.toLowerCase() === "eggless") {
-      return " text-green-800";
-    }
-    return "text-[#944a28]";
-  };
- 
-
   if (loading) {
     return (
       <div>
@@ -235,17 +227,17 @@ export default function CakeDetails({ id }: { id: string }) {
 
   if (!cake) {
     return (
-      <div className="text-center py-10">
-        <p className="text-gray-600">Cake details not found.</p>
+      <div className="text-center py-20">
+        <p className="text-brand-text-secondary font-display text-lg">Cake details not found.</p>
       </div>
     );
   }
 
   const Thumbnails = () => (
-    <div className="flex lg:flex-col flex-row overflow-x-auto lg:overflow-y-auto lg:h-[400px] gap-2  lg:w-24 w-full">
+    <div className="flex lg:flex-col flex-row overflow-x-auto lg:overflow-y-auto lg:h-[450px] gap-3 lg:w-24 w-full">
       <div
         ref={thumbnailsContainerRef}
-        className="h-[150px] sm:h-[150px] lg:h-[500px] overflow-x-auto lg:overflow-y-auto scrollbar-hide flex flex-row lg:flex-col items-center gap-2"
+        className="h-[100px] sm:h-[110px] lg:h-[450px] overflow-x-auto lg:overflow-y-auto scrollbar-hide flex flex-row lg:flex-col items-center gap-3"
         style={{
           msOverflowStyle: "none",
           scrollbarWidth: "none",
@@ -258,11 +250,12 @@ export default function CakeDetails({ id }: { id: string }) {
           return (
             <div
               key={index}
-              className={`relative ${
-                select === index
-                  ? "border-2 border-primary"
-                  : "border border-qgray-border"
-              } w-[80px] h-[80px] sm:w-[90px] sm:h-[100px] p-[5px] cursor-pointer transition-all duration-200 hover:border-primary`}
+              className={`relative flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 cursor-pointer
+                ${
+                  select === index
+                    ? "ring-2 ring-brand-pink shadow-glow scale-105"
+                    : "ring-1 ring-gray-200 hover:ring-brand-pink-light hover:shadow-soft"
+                } w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] p-[3px] bg-white`}
               onClick={() => setSelect(index)}
             >
               <Image
@@ -270,11 +263,11 @@ export default function CakeDetails({ id }: { id: string }) {
                 alt={`Cake ${index}`}
                 width={100}
                 height={100}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-lg"
               />
               {isYouTubeVideo && (
                 <FaPlayCircle
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-75 text-2xl sm:text-3xl"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-80 text-2xl sm:text-3xl drop-shadow-lg"
                   aria-label="Play Video"
                 />
               )}
@@ -286,13 +279,13 @@ export default function CakeDetails({ id }: { id: string }) {
   );
 
   const MainImage = () => (
-    <div className="relative flex-1 overflow-hidden">
-      <div className="bg-white">
+    <div className="relative flex-1 overflow-hidden rounded-2xl shadow-card bg-white">
+      <div className="bg-white rounded-2xl overflow-hidden">
         {cake?.image[select]?.includes("youtube.com") ||
         cake?.image[select]?.includes("youtu.be") ? (
           convertToEmbedUrl(cake?.image[select]) ? (
             <iframe
-              className="w-full h-[200px] sm:h-[300px] lg:h-[500px]"
+              className="w-full h-[250px] sm:h-[350px] lg:h-[500px] rounded-2xl"
               src={convertToEmbedUrl(cake?.image[select])!}
               title={cake?.name}
               frameBorder="0"
@@ -300,7 +293,7 @@ export default function CakeDetails({ id }: { id: string }) {
               allowFullScreen
             ></iframe>
           ) : (
-            <p className="text-red-500 text-center mt-4">
+            <p className="text-red-500 text-center mt-4 py-12 font-medium">
               Video cannot be played. Invalid or restricted URL.
             </p>
           )
@@ -319,14 +312,14 @@ export default function CakeDetails({ id }: { id: string }) {
       </div>
       {/* not use for now because of this we can not use magnifier and  video paly  */}
       {/* <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 hover:opacity-100 transition-opacity">
-        <button 
+        <button
           onClick={() => setSelect(prev => Math.max(0, prev - 1))}
           className="p-2 rounded-full bg-white/80 shadow-lg hover:bg-white"
           disabled={select === 0}
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <button 
+        <button
           onClick={() => setSelect(prev => Math.min(cake.image.length - 1, prev + 1))}
           className="p-2 rounded-full bg-white/80 shadow-lg hover:bg-white"
           disabled={select === cake.image.length - 1}
@@ -345,11 +338,11 @@ export default function CakeDetails({ id }: { id: string }) {
     const [cakeMessage, setCakeMessage] = useState("")
     const handleAddToCart = (cake: Cake) => {
       if (!selectedWeight) return;
-  
+
       addToCart({
         id: cake._id,
         name: cake.name,
-        caketype: cake.caketype, 
+        caketype: cake.caketype,
         price: selectedWeight.sellPrice,
         weight: selectedWeight.weight,
         quantity: 1,
@@ -397,79 +390,71 @@ export default function CakeDetails({ id }: { id: string }) {
     if (!selectedWeight) return null;
 
     return (
-      <div className="flex flex-col gap-4 p-4 lg:w-80">
+      <div className="flex flex-col gap-5 lg:w-[360px] p-6 lg:p-0">
+        {/* Header: Name + Wishlist */}
         <div>
-          <div className="flex justify-between items-start">
-            <h1 className="text-3xl font-bold mb-4">{cake.name}</h1>
+          <div className="flex justify-between items-start gap-3">
+            <h1 className="font-display text-3xl lg:text-4xl font-bold text-brand-text leading-tight">
+              {cake.name}
+            </h1>
             {session && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={handleWishlistToggle}
-                className={`${isInWishlist ? "text-red-500" : "text-gray-500"}`}
+                className={`flex-shrink-0 rounded-full h-10 w-10 transition-all duration-300 hover:bg-brand-pink-lighter/40 ${
+                  isInWishlist ? "text-brand-pink" : "text-brand-text-secondary"
+                }`}
               >
                 <Heart
-                  className={`h-6 w-6 ${isInWishlist ? "fill-current" : ""}`}
+                  className={`h-5 w-5 transition-all duration-300 ${
+                    isInWishlist ? "fill-brand-pink" : ""
+                  }`}
                 />
               </Button>
             )}
           </div>
-          <div className={`flex items-center mb-4 ${getTypeStyles(cake.type)}`}>
-            <GrSquare className="mr-1 " />
-            {/* <span className="text-sm font-medium">
-                {cake.type.toUpperCase()}
-              </span> */}
-            <span className={`text-sm font-medium`}>
-              {cake.type.toUpperCase()}
-            </span>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground mb-2">
-          Category: {cake.category}
-        </p>
-        <p className="text-gray-600">{cake.description}</p>
 
-        <div className="space-y-4">
-          <h2 className="font-semibold">Select Weight</h2>
-          <div className="flex gap-2">
-            {cake.prices.map((price) => (
-              <button
-                key={price.weight}
-                onClick={() => setSelectedWeight(price)}
-                className={`px-4 py-2 rounded-full border-2 transition-all duration-200
+          {/* Type badge */}
+          <div className="flex items-center gap-2 mt-3">
+            <div
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase
                 ${
-                  selectedWeight.weight === price.weight
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-blue-200"
+                  cake.type.toLowerCase() === "eggless"
+                    ? "bg-green-50 text-green-700 ring-1 ring-green-200"
+                    : "bg-amber-50 text-amber-800 ring-1 ring-amber-200"
                 }`}
-              >
-                {price.weight} {cake.caketype === "cake" ? "Kg" : "pieces"}
-              </button>
-            ))}
+            >
+              <GrSquare className="text-[10px]" />
+              {cake.type.toUpperCase()}
+            </div>
           </div>
         </div>
-       {cake.caketype !== 'pastries' && ( <div className="mb-4">
-            <Label htmlFor="cakeMessage">Cake Message</Label>
-            <Input
-              id="cakeMessage"
-              placeholder="Enter a message for your cake (optional)"
-              value={cakeMessage}
-              onChange={(e) => setCakeMessage(e.target.value)}
-            />
-          </div>)}
-        <div className="space-y-2">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold">
-              ₹{selectedWeight.sellPrice}
+
+        {/* Category */}
+        <p className="text-sm text-brand-text-secondary">
+          Category: <span className="font-medium text-brand-text">{cake.category}</span>
+        </p>
+
+        {/* Description */}
+        <p className="text-brand-text-secondary leading-relaxed text-[15px]">
+          {cake.description}
+        </p>
+
+        {/* Price Display */}
+        <div className="bg-brand-cream/60 rounded-2xl p-4 space-y-1">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <span className="text-4xl font-bold text-brand-pink font-display">
+              &#8377;{selectedWeight.sellPrice}
             </span>
 
             {selectedWeight.costPrice != null &&
               selectedWeight.costPrice > 0 && (
                 <>
-                  <span className="text-lg text-gray-500 line-through">
-                    ₹{selectedWeight.costPrice}
+                  <span className="text-lg text-brand-text-secondary line-through">
+                    &#8377;{selectedWeight.costPrice}
                   </span>
-                  <span className="text-green-600 text-sm">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">
                     {Math.round(
                       (1 -
                         selectedWeight.sellPrice / selectedWeight.costPrice) *
@@ -480,91 +465,144 @@ export default function CakeDetails({ id }: { id: string }) {
                 </>
               )}
           </div>
+          <p className="text-xs text-brand-text-secondary">Inclusive of all taxes</p>
         </div>
-        {/* Delivery Location Check */}
-        <div className="mt-2">
-          <h2 className="text-xl font-semibold mb-4">
+
+        {/* Weight Selector */}
+        <div className="space-y-3">
+          <h2 className="font-display text-lg font-semibold text-brand-text">Select Weight</h2>
+          <div className="flex flex-wrap gap-2">
+            {cake.prices.map((price) => (
+              <button
+                key={price.weight}
+                onClick={() => setSelectedWeight(price)}
+                className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300
+                ${
+                  selectedWeight.weight === price.weight
+                    ? "bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white shadow-glow ring-2 ring-brand-pink/30"
+                    : "bg-white text-brand-text ring-1 ring-gray-200 hover:ring-brand-pink-light hover:bg-brand-cream/40"
+                }`}
+              >
+                {price.weight} {cake.caketype === "cake" ? "Kg" : "pieces"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Cake Message */}
+        {cake.caketype !== 'pastries' && (
+          <div className="space-y-2">
+            <Label htmlFor="cakeMessage" className="text-sm font-medium text-brand-text">
+              Cake Message
+            </Label>
+            <Input
+              id="cakeMessage"
+              placeholder="Enter a message for your cake (optional)"
+              value={cakeMessage}
+              onChange={(e) => setCakeMessage(e.target.value)}
+              className="rounded-xl border-gray-200 focus-visible:ring-brand-pink/50 focus-visible:border-brand-pink transition-all duration-300 bg-white placeholder:text-gray-400"
+            />
+          </div>
+        )}
+
+        {/* Delivery Check */}
+        <div className="bg-white rounded-2xl p-4 ring-1 ring-gray-100 shadow-soft space-y-3">
+          <h2 className="font-display text-lg font-semibold text-brand-text">
             Check Delivery Availability
           </h2>
-          <div className="flex items-end gap-4">
-            <div className="flex-grow">
-              <Label htmlFor="pincode">Enter Pincode</Label>
+          <div className="flex items-end gap-3">
+            <div className="flex-grow space-y-1.5">
+              <Label htmlFor="pincode" className="text-sm text-brand-text-secondary">
+                Enter Pincode
+              </Label>
               <Input
                 id="pincode"
                 type="text"
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
                 placeholder="Enter your pincode"
+                className="rounded-xl border-gray-200 focus-visible:ring-brand-pink/50 focus-visible:border-brand-pink transition-all duration-300 placeholder:text-gray-400"
               />
             </div>
-            <Button onClick={checkDeliveryAvailability}>Check</Button>
+            <Button
+              onClick={checkDeliveryAvailability}
+              className="rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white font-semibold hover:shadow-glow hover:translate-y-[-1px] transition-all duration-300 border-0 h-9 px-5"
+            >
+              Check
+            </Button>
           </div>
           {deliveryStatus && (
             <Alert
-              className="mt-4"
+              className={`mt-2 rounded-xl border-0 ${
+                deliveryStatus.deliverable
+                  ? "bg-green-50 text-green-800"
+                  : "bg-red-50 text-red-800"
+              }`}
               variant={deliveryStatus.deliverable ? "default" : "destructive"}
             >
               {deliveryStatus.deliverable ? (
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4 text-green-600" />
               ) : (
-                <XCircle className="h-4 w-4" />
+                <XCircle className="h-4 w-4 text-red-500" />
               )}
-              <AlertTitle>
+              <AlertTitle className="font-semibold">
                 {deliveryStatus.deliverable
                   ? "Delivery Available"
                   : "Delivery Unavailable"}
               </AlertTitle>
-              <AlertDescription>{deliveryStatus.message}</AlertDescription>
+              <AlertDescription className="text-sm opacity-90">
+                {deliveryStatus.message}
+              </AlertDescription>
             </Alert>
           )}
         </div>
 
-        <div className="flex space-x-2">
-  {cake.isAvailable ? (
-    <>
-      {/* "Buy Now" button */}
-      <Button
-        className={`w-full bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 ${
-          !selectedWeight ? "opacity-60 cursor-not-allowed" : ""
-        }`}
-        onClick={() => handleBuyNow(cake)}
-        disabled={!selectedWeight}
-      >
-        Buy Now
-      </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-3 pt-1">
+          {cake.isAvailable ? (
+            <>
+              {/* "Buy Now" button */}
+              <Button
+                className={`flex-1 h-12 rounded-xl bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white font-semibold text-[15px] shadow-glow hover:shadow-glow-lg hover:translate-y-[-2px] active:translate-y-0 transition-all duration-300 border-0 ${
+                  !selectedWeight ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+                onClick={() => handleBuyNow(cake)}
+                disabled={!selectedWeight}
+              >
+                Buy Now
+              </Button>
 
-      {/* "Add to Cart" button */}
-      <Button
-        onClick={() => handleAddToCart(cake)}
-        className="w-full bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300"
-      >
-        <ShoppingCart className="mr-2 h-4 w-4" />
-        Add to Cart
-      </Button>
-    </>
-  ) : (
-    /* "Out of Stock" button */
-    <Button
-      className="w-full bg-primary text-primary-foreground opacity-60 cursor-not-allowed transition-all duration-300"
-      disabled
-    >
-      Out of Stock
-    </Button>
-  )}
-</div>
-
+              {/* "Add to Cart" button */}
+              <Button
+                onClick={() => handleAddToCart(cake)}
+                className="flex-1 h-12 rounded-xl bg-white text-brand-pink font-semibold text-[15px] ring-2 ring-brand-pink hover:bg-brand-cream/50 hover:translate-y-[-2px] active:translate-y-0 transition-all duration-300 shadow-soft hover:shadow-card border-0"
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Add to Cart
+              </Button>
+            </>
+          ) : (
+            /* "Out of Stock" button */
+            <Button
+              className="w-full h-12 rounded-xl bg-gray-100 text-gray-400 font-semibold text-[15px] cursor-not-allowed border-0 shadow-none"
+              disabled
+            >
+              Out of Stock
+            </Button>
+          )}
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <div className="flex lg:flex-row flex-col gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 animate-fade-in">
+      <div className="flex lg:flex-row flex-col gap-6 lg:gap-10">
         <Thumbnails />
         <MainImage />
         <ProductInfo />
       </div>
-      <div className="mt-12">
+      <div className="mt-16">
         <ReviewsAndRatings cakeId={id} />
       </div>
       <RecentlyViewed currentCakeId={id} />
