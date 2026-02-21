@@ -11,11 +11,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (status === 'loading') return;
-    if (!session || session.user?.role !== 'admin') {
+    // Only redirect when we are certain the user is NOT an admin
+    if (status === 'unauthenticated') {
+      router.replace('/login');
+      return;
+    }
+    if (session && session.user?.role !== 'admin') {
       router.replace('/');
     }
   }, [session, status, router]);
 
+  // Show loading spinner while session is being determined
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -24,7 +30,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!session || session.user?.role !== 'admin') {
+  // Unauthenticated — wait for the redirect effect
+  if (status === 'unauthenticated') {
+    return null;
+  }
+
+  // Session exists but role not yet populated — keep showing spinner
+  if (!session?.user?.role) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
+
+  // Confirmed non-admin — wait for the redirect effect
+  if (session.user.role !== 'admin') {
     return null;
   }
 

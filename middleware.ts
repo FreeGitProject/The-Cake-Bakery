@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-// Secret used for NextAuth JWT signing
-const secret = process.env.NEXTAUTH_SECRET;
-
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
@@ -15,9 +12,8 @@ export async function middleware(request: NextRequest) {
   const isPublicPath = publicPaths.some((publicPath) => path.startsWith(publicPath));
 
   // Fetch JWT token from cookies using NextAuth's utility
-  const token = await getToken({ req: request, secret });
-
-  //console.log("Middleware:", { token, isPublicPath, path });
+  // Read secret inside the function — module-scope reads can be undefined on Vercel edge cold starts
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
   // Redirect unauthenticated users from protected paths
   if (!isPublicPath && !token) {
