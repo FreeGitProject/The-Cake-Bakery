@@ -2,30 +2,18 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Clock, Phone, Wifi, Car, Cake, Coffee, Calendar, Instagram, Facebook, Twitter } from 'lucide-react'
-//import { useData } from '@/context/DataContext'
-//import locationData from '../public/dataJson/location-data.json'
-import {useCompanyInfo} from '@/lib/useData'
+import { useCompanyInfo } from '@/lib/useData'
+
 export default function Location() {
   const [activeTab, setActiveTab] = useState('info')
-  //const location = locationData.locations[0]
-  const {data:locationData}  =useCompanyInfo()
-  const location =locationData?.locations?.[0]
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 }
-    }
-  }
+  const { data: locationData } = useCompanyInfo()
+  const location = locationData?.locations?.[0]
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  }
+  const tabs = [
+    { id: 'info', label: 'Basic Info' },
+    { id: 'features', label: 'Features' },
+    { id: 'delivery', label: 'Delivery' },
+  ]
 
   const FeatureIcon = ({ feature }: { feature: string }) => {
     const icons = {
@@ -39,100 +27,91 @@ export default function Location() {
   }
 
   return (
-    <section id="location" className="py-16 bg-[#FFD1D1]">
-      <motion.div 
-        className="container mx-auto px-4"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-      >
-        <motion.div 
-          className="text-center mb-12"
-          variants={itemVariants}
+    <section id="location" className="py-24 bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold text-[#4A4A4A] mb-4 relative inline-block">
+          <span className="inline-block text-sm font-semibold tracking-widest uppercase text-[#FF9494] mb-3">
+            Find Us
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-brand-text mb-4">
             Visit {locationData?.companyName}
-            <motion.div 
-              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#FF9494] rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: 96 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
           </h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] mx-auto rounded-full" />
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
           {/* Map Section */}
-          <motion.div 
+          <motion.div
             className="lg:w-1/2"
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="rounded-lg overflow-hidden shadow-lg">
+            <div className="rounded-2xl overflow-hidden shadow-card h-full min-h-[400px] lg:min-h-[480px] border border-gray-100">
               <iframe
                 src={location?.coordinates.mapUrl}
                 width="100%"
-                height="450"
-                style={{ border: 0 }}
+                height="100%"
+                style={{ border: 0, minHeight: '400px' }}
                 allowFullScreen
                 loading="lazy"
-                className="w-full"
+                className="w-full h-full"
               />
             </div>
           </motion.div>
 
           {/* Information Section */}
-          <motion.div 
+          <motion.div
             className="lg:w-1/2"
-            variants={itemVariants}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             {/* Tab Navigation */}
-            <div className="flex mb-6 bg-white rounded-lg p-2 shadow-md">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex-1 py-2 rounded-lg ${activeTab === 'info' ? 'bg-[#FF9494] text-white' : ''}`}
-                onClick={() => setActiveTab('info')}
-              >
-                Basic Info
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex-1 py-2 rounded-lg ${activeTab === 'features' ? 'bg-[#FF9494] text-white' : ''}`}
-                onClick={() => setActiveTab('features')}
-              >
-                Features
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex-1 py-2 rounded-lg ${activeTab === 'delivery' ? 'bg-[#FF9494] text-white' : ''}`}
-                onClick={() => setActiveTab('delivery')}
-              >
-                Delivery
-              </motion.button>
+            <div className="flex bg-[#FAFAFA] rounded-xl p-1 mb-6 gap-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-300
+                    ${activeTab === tab.id
+                      ? 'bg-white text-brand-text shadow-soft'
+                      : 'text-brand-text-secondary hover:text-brand-text'
+                    }`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             {/* Tab Content */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white rounded-lg p-6 shadow-lg"
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-soft"
               >
                 {activeTab === 'info' && (
                   <div className="space-y-6">
-                    <div className="flex items-start gap-3">
-                      <MapPin className="w-6 h-6 text-[#FF9494] mt-1" />
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#FFF5E4] flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-[#FF9494]" />
+                      </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-[#4A4A4A] mb-2">Address</h3>
-                        <p className="text-gray-600">
+                        <h3 className="text-sm font-semibold text-brand-text mb-1.5">Address</h3>
+                        <p className="text-sm text-brand-text-secondary leading-relaxed">
                           {location?.address.line1}<br />
                           {location?.address.line2}<br />
                           {location?.address.city}, {location?.address.state} {location?.address.pincode}
@@ -140,23 +119,33 @@ export default function Location() {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <Clock className="w-6 h-6 text-[#FF9494] mt-1" />
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#FFF5E4] flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-5 h-5 text-[#FF9494]" />
+                      </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-[#4A4A4A] mb-2">Hours</h3>
-                        <p className="text-gray-600">
-                          {location?.hours.weekdays.days}: {location?.hours.weekdays.open} - {location?.hours.weekdays.close}<br />
-                          {location?.hours.saturday.days}: {location?.hours.saturday.open} - {location?.hours.saturday.close}<br />
-                          {location?.hours.sunday.days}: {location?.hours.sunday.open} - {location?.hours.sunday.close}
-                        </p>
+                        <h3 className="text-sm font-semibold text-brand-text mb-1.5">Hours</h3>
+                        <div className="space-y-1">
+                          <p className="text-sm text-brand-text-secondary">
+                            <span className="font-medium text-brand-text">{location?.hours.weekdays.days}:</span> {location?.hours.weekdays.open} - {location?.hours.weekdays.close}
+                          </p>
+                          <p className="text-sm text-brand-text-secondary">
+                            <span className="font-medium text-brand-text">{location?.hours.saturday.days}:</span> {location?.hours.saturday.open} - {location?.hours.saturday.close}
+                          </p>
+                          <p className="text-sm text-brand-text-secondary">
+                            <span className="font-medium text-brand-text">{location?.hours.sunday.days}:</span> {location?.hours.sunday.open} - {location?.hours.sunday.close}
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <Phone className="w-6 h-6 text-[#FF9494] mt-1" />
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#FFF5E4] flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-5 h-5 text-[#FF9494]" />
+                      </div>
                       <div>
-                        <h3 className="text-xl font-semibold text-[#4A4A4A] mb-2">Contact</h3>
-                        <p className="text-gray-600">
+                        <h3 className="text-sm font-semibold text-brand-text mb-1.5">Contact</h3>
+                        <p className="text-sm text-brand-text-secondary">
                           Phone: {location?.contact.phone}<br />
                           Email: {location?.contact.email}
                         </p>
@@ -166,42 +155,47 @@ export default function Location() {
                 )}
 
                 {activeTab === 'features' && (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     {location?.features.map((feature, index) => (
                       <motion.div
                         key={feature}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-center gap-2 bg-[#FFF6F6] p-3 rounded-lg"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.08 }}
+                        className="flex items-center gap-3 bg-[#FAFAFA] p-3.5 rounded-xl hover:bg-[#FFF5E4] transition-colors duration-300"
                       >
-                        <FeatureIcon feature={feature} />
-                        <span className="text-gray-700">{feature}</span>
+                        <div className="text-[#FF9494]">
+                          <FeatureIcon feature={feature} />
+                        </div>
+                        <span className="text-sm font-medium text-brand-text">{feature}</span>
                       </motion.div>
                     ))}
                   </div>
                 )}
 
                 {activeTab === 'delivery' && (
-                  <div className="space-y-6">
-                    <div className="bg-[#FFF6F6] p-4 rounded-lg">
-                      <h3 className="text-xl font-semibold text-[#4A4A4A] mb-2">Delivery Information</h3>
-                      <p className="text-gray-600">
-                        Delivery Radius: {locationData?.delivery.radius}<br />
-                        Minimum Order: ₹{locationData?.delivery.minimumOrder}
-                      </p>
+                  <div className="space-y-5">
+                    <div className="bg-[#FAFAFA] p-5 rounded-xl">
+                      <h3 className="text-sm font-semibold text-brand-text mb-2">Delivery Information</h3>
+                      <div className="space-y-1.5">
+                        <p className="text-sm text-brand-text-secondary">
+                          <span className="font-medium text-brand-text">Delivery Radius:</span> {locationData?.delivery.radius}
+                        </p>
+                        <p className="text-sm text-brand-text-secondary">
+                          <span className="font-medium text-brand-text">Minimum Order:</span> &#8377;{locationData?.delivery.minimumOrder}
+                        </p>
+                      </div>
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-[#4A4A4A] mb-2">Delivery Partners</h3>
-                      <div className="flex gap-3">
+                      <h3 className="text-sm font-semibold text-brand-text mb-3">Delivery Partners</h3>
+                      <div className="flex flex-wrap gap-2">
                         {locationData?.delivery.partners.map((partner) => (
-                          <motion.span
+                          <span
                             key={partner}
-                            whileHover={{ scale: 1.1 }}
-                            className="bg-[#FF9494] text-white px-4 py-2 rounded-full text-sm"
+                            className="bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white px-4 py-2 rounded-xl text-sm font-medium shadow-soft hover:shadow-glow transition-shadow duration-300"
                           >
                             {partner}
-                          </motion.span>
+                          </span>
                         ))}
                       </div>
                     </div>
@@ -211,35 +205,26 @@ export default function Location() {
             </AnimatePresence>
 
             {/* Social Media Links */}
-            <motion.div 
-              className="flex justify-center gap-4 mt-6"
-              variants={itemVariants}
-            >
-              <motion.a
-                href={`https://instagram.com/${locationData?.socialMedia.instagram}`}
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                className="text-[#FF9494]"
-              >
-                <Instagram />
-              </motion.a>
-              <motion.a
-                href={`https://facebook.com/${locationData?.socialMedia.facebook}`}
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                className="text-[#FF9494]"
-              >
-                <Facebook />
-              </motion.a>
-              <motion.a
-                href={`https://twitter.com/${locationData?.socialMedia.twitter}`}
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                className="text-[#FF9494]"
-              >
-                <Twitter />
-              </motion.a>
-            </motion.div>
+            <div className="flex justify-center gap-3 mt-6">
+              {[
+                { icon: Instagram, href: `https://instagram.com/${locationData?.socialMedia.instagram}`, label: 'Instagram' },
+                { icon: Facebook, href: `https://facebook.com/${locationData?.socialMedia.facebook}`, label: 'Facebook' },
+                { icon: Twitter, href: `https://twitter.com/${locationData?.socialMedia.twitter}`, label: 'Twitter' },
+              ].map(({ icon: Icon, href, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  whileHover={{ y: -2 }}
+                  className="w-10 h-10 rounded-xl bg-[#FAFAFA] flex items-center justify-center text-brand-text-secondary hover:text-[#FF9494] hover:bg-[#FFF5E4] transition-all duration-300"
+                  aria-label={label}
+                >
+                  <Icon className="w-4 h-4" />
+                </motion.a>
+              ))}
+            </div>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

@@ -1,197 +1,192 @@
 "use client"
 import { motion } from 'framer-motion'
-//import Loader from '@/app/components/Loader'
 import Image from 'next/image'
 import Link from 'next/link'
-//import { useEffect, useState } from 'react'
 import NewsletterSubscribe from "@/components/NewsletterSubscribe"
-import { 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Mail, 
-  Phone, 
-  ChevronRight 
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  Mail,
+  Phone,
+  ChevronRight
 } from 'lucide-react'
 import { useFooter } from '@/lib/useData'
-//import { useData } from '@/context/DataContext'
-// interface FooterData {
-//   companyName: string
-//   description: string
-//   email: string
-//   phone: string
-//   socialLinks: {
-//     facebook: string
-//     twitter: string
-//     instagram: string
-//   }
-// }
 
 export default function Footer() {
-const { data: footerData } = useFooter();
-  // const [footerData, setFooterData] = useState<FooterData | null>(null)
+  const { data: footerData } = useFooter();
 
-  // useEffect(() => {
-  //   async function fetchFooterData() {
-  //     try {
-  //       const res = await fetch('/api/footer')
-  //       const data = await res.json()
-  //       setFooterData(data)
-  //     } catch (error) {
-  //       console.error('Error fetching footer data:', error)
-  //     }
-  //   }
-  //   fetchFooterData()
-  // }, [])
-//const { footerData } = useData();
   if (!footerData) {
-    return <div>
-      {/* <Loader/> */}
-      hi foooter
-    </div>
+    return (
+      <footer className="bg-brand-text py-12">
+        <div className="flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-white/30 border-t-white/80 rounded-full animate-spin" />
+        </div>
+      </footer>
+    );
   }
 
+  const quickLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Our Cakes', href: '/cakes' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Events', href: '/events' },
+    { name: 'Contact', href: '/contact' },
+    { name: 'Policies', href: '/policies' }
+  ];
+
+  const socialLinks = [
+    { icon: Facebook, href: footerData.socialLinks.facebook, label: 'Facebook' },
+    { icon: Instagram, href: footerData.socialLinks.instagram, label: 'Instagram' },
+    { icon: Twitter, href: footerData.socialLinks.twitter, label: 'Twitter' }
+  ];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  };
+
   return (
-    <footer className="relative bg-gradient-to-br from-[#FF9494] to-[#FFB4B4] text-white pt-16 pb-8">
-    {/* Decorative Top Border */}
-    <div className="absolute top-0 left-0 right-0 h-4 bg-[#FF9494] shadow-lg">
-      <div className="absolute top-0 left-0 right-0 h-2 bg-[#FFB4B4]" style={{
-        clipPath: "polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%)"
-      }}/>
-    </div>
-
-    <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-12">
-      {/* Brand Section */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex flex-col items-center md:items-start"
-      >
-        <motion.div 
-          whileHover={{ scale: 1.1, rotate: 6 }}
-          className="mb-6 rounded-full overflow-hidden border-4 border-white shadow-xl"
-        >
-          <Image 
-            src="https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png" 
-            alt="Cake Atelier Logo" 
-            width={150} 
-            height={150} 
-            className="object-cover"
-          />
-        </motion.div>
-        <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
-          {footerData.companyName}
-        </h2>
-        <p className="text-sm text-center md:text-left opacity-80">
-          {footerData.description}
-        </p>
-      </motion.div>
-
-      {/* Rest of the component remains the same as previous submission */}
-      {/* Quick Links, Contact Info, Newsletter sections */}
-      
-      {/* Quick Links */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="space-y-4"
-      >
-        <h3 className="text-xl font-semibold mb-6 border-b pb-2">Explore</h3>
-        {[
-          { name: 'Home', href: '/' },
-          { name: 'Our Cakes', href: '/cakes' },
-          { name: 'About Us', href: '/about' },
-          { name: 'Events', href: '/events' },
-          { name: 'Contact', href: '/contact' },
-          { name: 'Policies', href: '/policies' }
-        ].map((link) => (
-          <motion.div 
-            key={link.name}
-            whileHover={{ translateX: 10 }}
-            className="flex items-center"
-          >
-            <ChevronRight className="mr-2 text-white/70" size={16} />
-            <Link 
-              href={link.href} 
-              className="hover:text-white/80 transition-colors"
-            >
-              {link.name}
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Contact Info */}
-      <motion.div 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="space-y-6"
-      >
-        <h3 className="text-xl font-semibold mb-6 border-b pb-2">Connect</h3>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Mail className="text-white/70" />
-            <a 
-              href={`mailto:${footerData.email}`} 
-              className="hover:text-white/80 transition-colors"
-            >
-              {footerData.email}
-            </a>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Phone className="text-white/70" />
-            <a 
-              href={`tel:${footerData.phone}`} 
-              className="hover:text-white/80 transition-colors"
-            >
-              {footerData.phone}
-            </a>
-          </div>
-        </div>
-
-        {/* Social Links */}
-        <div className="flex space-x-6 mt-6">
-          {[
-            { icon: Facebook, href: footerData.socialLinks.facebook },
-            { icon: Instagram, href: footerData.socialLinks.instagram },
-            { icon: Twitter, href: footerData.socialLinks.twitter }
-          ].map(({ icon: Icon, href }) => (
-            <motion.a
-              key={href}
-              href={href}
-              target="_blank"
-              whileHover={{ scale: 1.2 }}
-              className="text-white/70 hover:text-white transition-colors"
-            >
-              <Icon size={24} />
-            </motion.a>
-          ))}
-        </div>
-      </motion.div>
-
-       {/* Newsletter */}
-       <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="bg-white/10 rounded-xl p-6 backdrop-blur-sm"
-        >
-          <h3 className="text-xl font-semibold mb-4">Stay Inspired</h3>
-          <p className="text-sm mb-4 opacity-80">
-            Subscribe to our newsletter for exclusive recipes, offers, and culinary insights.
-          </p>
-          <NewsletterSubscribe />
-        </motion.div>
+    <footer className="relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(160deg, #2D2D3F 0%, #1A1A2E 100%)',
+      }}
+    >
+      {/* Decorative gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#FF9494]/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#FFB4B4]/5 rounded-full blur-3xl" />
       </div>
 
-    {/* Copyright */}
-    <div className="text-center text-white/70 mt-12 pt-6 border-t border-white/20">
-      © {new Date().getFullYear()} {footerData.companyName}. All Rights Reserved.
-    </div>
-  </footer>
+      {/* Top accent line */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[#FF9494]/40 to-transparent" />
+
+      <motion.div
+        className="max-w-6xl mx-auto px-6 pt-16 pb-8 relative"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+          {/* Brand Section */}
+          <motion.div variants={itemVariants} className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="rounded-full overflow-hidden border-2 border-white/10 shadow-soft">
+                <Image
+                  src="https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png"
+                  alt="Cake Atelier Logo"
+                  width={48}
+                  height={48}
+                  className="object-cover"
+                />
+              </div>
+              <h2 className="font-display text-xl font-bold text-white">
+                {footerData.companyName}
+              </h2>
+            </div>
+            <p className="text-sm text-white/50 leading-relaxed max-w-xs">
+              {footerData.description}
+            </p>
+          </motion.div>
+
+          {/* Quick Links */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+              Explore
+            </h3>
+            <div className="space-y-3">
+              {quickLinks.map((link) => (
+                <div key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="group flex items-center text-sm text-white/50 hover:text-[#FF9494] transition-colors duration-300"
+                  >
+                    <ChevronRight className="w-3 h-3 mr-1.5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                    {link.name}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Contact Info */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+              Connect
+            </h3>
+            <div className="space-y-4">
+              <a
+                href={`mailto:${footerData.email}`}
+                className="flex items-center gap-3 text-sm text-white/50 hover:text-[#FF9494] transition-colors duration-300"
+              >
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4" />
+                </div>
+                {footerData.email}
+              </a>
+              <a
+                href={`tel:${footerData.phone}`}
+                className="flex items-center gap-3 text-sm text-white/50 hover:text-[#FF9494] transition-colors duration-300"
+              >
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4" />
+                </div>
+                {footerData.phone}
+              </a>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex gap-2 mt-6">
+              {socialLinks.map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#FF9494]/20 flex items-center justify-center text-white/40 hover:text-[#FF9494] transition-all duration-300"
+                  aria-label={label}
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Newsletter */}
+          <motion.div variants={itemVariants}>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+              Stay Inspired
+            </h3>
+            <p className="text-sm text-white/50 mb-4 leading-relaxed">
+              Subscribe for exclusive recipes, offers, and culinary insights.
+            </p>
+            <div className="[&_input]:bg-white/5 [&_input]:border-white/10 [&_input]:text-white [&_input]:placeholder:text-white/30 [&_input]:rounded-xl [&_input]:text-sm
+                            [&_button]:bg-gradient-to-r [&_button]:from-[#FF9494] [&_button]:to-[#FFB4B4] [&_button]:text-white [&_button]:rounded-xl [&_button]:text-sm [&_button]:font-medium [&_button]:border-0 [&_button]:hover:shadow-glow [&_button]:transition-shadow [&_button]:duration-300">
+              <NewsletterSubscribe />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-12 pt-6 border-t border-white/5">
+          <p className="text-center text-xs text-white/30">
+            &copy; {new Date().getFullYear()} {footerData.companyName}. All Rights Reserved.
+          </p>
+        </div>
+      </motion.div>
+    </footer>
   )
 }
-

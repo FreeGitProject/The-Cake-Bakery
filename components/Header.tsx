@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-//import { useRouter } from "next/navigation";
 import { ShoppingCart, User, Heart, MapPin, LogOut, Home, Cake, Package, Menu, X, Settings, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import CartOffCanvas from "../app/components/CartOffCanvas";
@@ -27,32 +26,20 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
- // const [searchOpen, setSearchOpen] = useState(false);
-  //const [searchTerm, setSearchTerm] = useState("");
   const { currentLocation, setIsLocationModalOpen } = useLocation();
-  
+
   const navItems = [
     { name: "Home", path: "/", icon: <Home className="w-4 h-4 mr-2" /> },
     { name: "Cakes", path: "/cakes", icon: <Cake className="w-4 h-4 mr-2" /> },
     { name: "Pastries", path: "/pastries", icon: <Package className="w-4 h-4 mr-2" /> },
   ];
-  
+
   const { session } = useSessionContext();
-  //const router = useRouter();
   const { cart } = useCart();
-  
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
-  // Handle scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -60,29 +47,20 @@ export default function Header() {
   const handleSignOut = async () => {
     await signOut({ redirect: false });
     window.location.reload();
-    //router.push("/login");
   };
 
   const LOGO_URL = "https://res.cloudinary.com/dzabikj6s/image/upload/v1735310817/The-cake-shop/Logo_p9gapg.png";
 
-  // Animations
   const mobileMenuVariants = {
-    closed: { 
+    closed: {
       opacity: 0,
       height: 0,
-      transition: { 
-        duration: 0.3,
-        when: "afterChildren" 
-      }
+      transition: { duration: 0.3, when: "afterChildren" }
     },
-    open: { 
+    open: {
       opacity: 1,
       height: "auto",
-      transition: { 
-        duration: 0.3,
-        when: "beforeChildren", 
-        staggerChildren: 0.05 
-      }
+      transition: { duration: 0.3, when: "beforeChildren", staggerChildren: 0.05 }
     }
   };
 
@@ -91,20 +69,20 @@ export default function Header() {
     open: { y: 0, opacity: 1 }
   };
 
-  // Subcomponents
   const Logo = () => (
-    <Link href="/" className="flex items-center group">
+    <Link href="/" className="flex items-center gap-3 group">
       <div className="relative">
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] rounded-full opacity-0 group-hover:opacity-40 blur transition-opacity duration-300" />
         <Image
           src={LOGO_URL}
           alt="The Cake Shop Logo"
-          width={50}
-          height={50}
-          className="rounded-full transform group-hover:rotate-12 transition-transform duration-300"
+          width={44}
+          height={44}
+          className="relative rounded-full transform group-hover:rotate-6 transition-transform duration-300 ring-2 ring-white shadow-soft"
           priority
         />
       </div>
-      <span className="ml-3 font-serif text-xl sm:text-2xl md:text-3xl font-bold text-[#4A4A4A] group-hover:text-[#FF9494] transition-colors duration-300">
+      <span className="font-display text-xl sm:text-2xl font-bold text-brand-text group-hover:text-brand-pink transition-colors duration-300">
         The Cake Shop
       </span>
     </Link>
@@ -113,16 +91,16 @@ export default function Header() {
   const CartButton = () => (
     <Button
       variant="ghost"
-      className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
+      className="relative p-2 rounded-xl hover:bg-brand-cream transition-all duration-300"
       onClick={() => setIsCartOpen(true)}
       aria-label="Open cart"
     >
-      <ShoppingCart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+      <ShoppingCart className="h-5 w-5 text-brand-text group-hover:text-brand-pink transition-colors duration-300" />
       {cartItemCount > 0 && (
-        <motion.span 
+        <motion.span
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-1 -right-1 bg-[#FF9494] text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+          className="absolute -top-0.5 -right-0.5 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-glow"
         >
           {cartItemCount}
         </motion.span>
@@ -134,169 +112,134 @@ export default function Header() {
     <Link href="/wishlist">
       <Button
         variant="ghost"
-        className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
+        className="relative p-2 rounded-xl hover:bg-brand-cream transition-all duration-300"
         aria-label="Open wishlist"
       >
-        <Heart className="h-6 w-6 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+        <Heart className="h-5 w-5 text-brand-text hover:text-brand-pink transition-colors duration-300" />
       </Button>
     </Link>
   );
 
   const LocationButton = () => (
-    <Button 
-      variant="ghost" 
-      className="relative p-2 flex items-center hover:bg-[#FFF5E4] transition-colors duration-300" 
+    <Button
+      variant="ghost"
+      className="relative p-2 flex items-center gap-1.5 rounded-xl hover:bg-brand-cream transition-all duration-300"
       onClick={() => setIsLocationModalOpen(true)}
     >
-      <MapPin className="h-5 w-5 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" />
+      <MapPin className="h-4 w-4 text-brand-pink" />
       {currentLocation && (
-        <span className="ml-2 text-sm font-medium max-w-[100px] truncate">
+        <span className="text-xs font-medium text-brand-text max-w-[80px] truncate">
           {currentLocation.name}
         </span>
       )}
     </Button>
   );
 
-  // const SearchBar = () => (
-  //   <AnimatePresence>
-  //     {searchOpen && (
-  //       <motion.div 
-  //         className="absolute top-full left-0 w-full bg-white shadow-md p-4 z-50"
-  //         initial={{ opacity: 0, y: -10 }}
-  //         animate={{ opacity: 1, y: 0 }}
-  //         exit={{ opacity: 0, y: -10 }}
-  //         transition={{ duration: 0.2 }}
-  //       >
-  //         <div className="relative mx-auto max-w-md">
-  //           <input
-  //             type="text"
-  //             placeholder="Search for cakes, pastries..."
-  //             value={searchTerm}
-  //             onChange={(e) => setSearchTerm(e.target.value)}
-  //             className="w-full px-4 py-2 rounded-full border border-[#FFD6EC] focus:outline-none focus:ring-2 focus:ring-[#FF9494] pl-10"
-  //           />
-  //           <button 
-  //             className="absolute right-3 top-1/2 transform -translate-y-1/2"
-  //             onClick={() => setSearchOpen(false)}
-  //           >
-  //             <X className="h-5 w-5 text-[#4A4A4A]" />
-  //           </button>
-  //         </div>
-  //       </motion.div>
-  //     )}
-  //   </AnimatePresence>
-  // );
-
   return (
     <header className={cn(
-      "sticky top-0 z-50 transition-all duration-300 backdrop-blur-sm",
-      scrolled ? "bg-white/90 shadow-md" : "bg-white"
+      "sticky top-0 z-50 transition-all duration-500",
+      scrolled
+        ? "bg-white/80 backdrop-blur-xl shadow-soft border-b border-black/[0.04]"
+        : "bg-white/95 backdrop-blur-sm"
     )}>
-      <nav className="container mx-auto px-4 sm:px-6 py-3">
-        {/* Main Navigation Bar */}
-        <div className="flex items-center justify-between relative">
-          {/* Logo and Brand Name */}
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-[72px]">
           <Logo />
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-3">
-            {/* Navigation Links */}
-            <div className="flex space-x-6 mr-4">
+          <div className="hidden lg:flex items-center gap-2">
+            <div className="flex items-center gap-1 mr-2">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
-                  className="text-[#4A4A4A] hover:text-[#FF9494] transition duration-300 relative group py-2"
+                  className="relative px-4 py-2 text-sm font-medium text-brand-text hover:text-brand-pink rounded-lg hover:bg-brand-cream/60 transition-all duration-300 group"
                 >
                   {item.name}
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#FF9494] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-[#FF9494] to-[#FFB4B4] rounded-full group-hover:w-5 transition-all duration-300" />
                 </Link>
               ))}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-1">
-              {/* <Button
-                variant="ghost"
-                className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
-                onClick={() => setSearchOpen(!searchOpen)}
-                aria-label="Search"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#4A4A4A] hover:text-[#FF9494] transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </Button> */}
+            <div className="w-px h-6 bg-gray-200 mx-1" />
+
+            <div className="flex items-center gap-1">
               <CartButton />
               {session && <WishlistButton />}
               <LocationButton />
 
-              {/* User Menu */}
               {session ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="p-0 hover:bg-[#FFF5E4] transition-colors duration-300 ml-1"
+                      className="p-0 ml-1 rounded-full hover:ring-2 hover:ring-brand-pink/20 transition-all duration-300"
                     >
-                      <Avatar className="h-8 w-8 border-2 border-[#FF9494] ring-2 ring-white">
+                      <Avatar className="h-9 w-9 border-2 border-brand-pink/30 ring-2 ring-white shadow-soft">
                         <AvatarImage src={session.user?.image || ""} />
-                        <AvatarFallback className="bg-[#FFF5E4] text-[#FF9494] font-medium">
+                        <AvatarFallback className="bg-gradient-to-br from-[#FFF5E4] to-[#FFD1D1] text-brand-pink font-semibold text-sm">
                           {session.user?.name?.[0].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 p-1 rounded-xl shadow-lg border border-[#FFD6EC] bg-white">
-                    <div className="px-4 py-2 border-b border-[#FFE5F1]">
-                      <p className="font-medium text-[#4A4A4A]">{session.user?.name}</p>
-                      <p className="text-sm text-gray-500 truncate">{session.user?.email}</p>
+                  <DropdownMenuContent align="end" className="w-56 p-2 rounded-2xl shadow-elevated border border-gray-100 bg-white/95 backdrop-blur-xl">
+                    <div className="px-3 py-2.5 mb-1">
+                      <p className="font-semibold text-sm text-brand-text">{session.user?.name}</p>
+                      <p className="text-xs text-brand-text-secondary truncate mt-0.5">{session.user?.email}</p>
                     </div>
 
+                    <DropdownMenuSeparator className="bg-gray-100" />
+
                     {session.user?.role === "admin" && (
-                      <DropdownMenuItem className="hover:bg-[#FFF5E4] rounded-lg my-1 cursor-pointer">
-                        <Link href="/admin" className="w-full flex items-center">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Admin Dashboard
+                      <DropdownMenuItem className="hover:bg-brand-cream rounded-xl my-0.5 cursor-pointer p-0">
+                        <Link href="/admin" className="w-full flex items-center px-3 py-2">
+                          <Settings className="w-4 h-4 mr-2.5 text-brand-text-secondary" />
+                          <span className="text-sm">Admin Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    
-                    <DropdownMenuItem className="hover:bg-[#FFF5E4] rounded-lg my-1 cursor-pointer">
-                      <Link href="/profile" className="w-full flex items-center">
-                        <User className="w-4 h-4 mr-2" />
-                        Profile
+
+                    <DropdownMenuItem className="hover:bg-brand-cream rounded-xl my-0.5 cursor-pointer p-0">
+                      <Link href="/profile" className="w-full flex items-center px-3 py-2">
+                        <User className="w-4 h-4 mr-2.5 text-brand-text-secondary" />
+                        <span className="text-sm">Profile</span>
                       </Link>
                     </DropdownMenuItem>
-                    
-                    <DropdownMenuItem className="hover:bg-[#FFF5E4] rounded-lg my-1 cursor-pointer">
-                      <Link href="/my-orders" className="w-full flex items-center">
-                        <ShoppingBag className="w-4 h-4 mr-2" />
-                        My Orders
+
+                    <DropdownMenuItem className="hover:bg-brand-cream rounded-xl my-0.5 cursor-pointer p-0">
+                      <Link href="/my-orders" className="w-full flex items-center px-3 py-2">
+                        <ShoppingBag className="w-4 h-4 mr-2.5 text-brand-text-secondary" />
+                        <span className="text-sm">My Orders</span>
                       </Link>
                     </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator className="bg-[#FFE5F1]" />
-                    
+
+                    <DropdownMenuSeparator className="bg-gray-100" />
+
                     <DropdownMenuItem
                       onSelect={handleSignOut}
-                      className="hover:bg-[#FFF5E4] text-[#FF5757] rounded-lg my-1 cursor-pointer"
+                      className="hover:bg-red-50 text-red-500 rounded-xl my-0.5 cursor-pointer px-3 py-2"
                     >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                      <LogOut className="w-4 h-4 mr-2.5" />
+                      <span className="text-sm">Sign Out</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2 ml-2">
                   <Link
                     href="/login"
-                    className="text-sm font-medium text-[#4A4A4A] hover:text-[#FF9494] transition duration-300 px-3 py-2"
+                    className="text-sm font-medium text-brand-text hover:text-brand-pink transition-colors duration-300 px-4 py-2 rounded-lg"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
-                    className="text-sm font-medium bg-[#FF9494] text-white hover:bg-[#FFB4B4] transition duration-300 px-4 py-2 rounded-full"
+                    className="text-sm font-semibold text-white px-5 py-2 rounded-full transition-all duration-300 hover:-translate-y-0.5"
+                    style={{
+                      background: 'linear-gradient(135deg, #FF9494 0%, #FFB4B4 100%)',
+                      boxShadow: '0 4px 15px rgba(255, 148, 148, 0.3)',
+                    }}
                   >
                     Sign Up
                   </Link>
@@ -305,51 +248,33 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile Header Options */}
-          <div className="lg:hidden flex items-center space-x-3">
-            {/* <Button
-              variant="ghost"
-              className="relative p-2 hover:bg-[#FFF5E4] transition-colors duration-300"
-              onClick={() => setSearchOpen(!searchOpen)}
-              aria-label="Search"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#4A4A4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </Button> */}
+          {/* Mobile Actions */}
+          <div className="lg:hidden flex items-center gap-1">
             <CartButton />
             <LocationButton />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md hover:bg-[#FFF5E4] transition-colors duration-300"
+              className="p-2 rounded-xl hover:bg-brand-cream transition-colors duration-300"
               aria-label="Toggle menu"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={isOpen ? "open" : "closed"}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1 }
-                  }}
+                  initial={{ opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 90 }}
                   transition={{ duration: 0.2 }}
-                  className="w-6 h-6 relative"
                 >
                   {isOpen ? (
-                    <X className="w-6 h-6 text-[#FF9494]" />
+                    <X className="w-5 h-5 text-brand-pink" />
                   ) : (
-                    <Menu className="w-6 h-6 text-[#4A4A4A]" />
+                    <Menu className="w-5 h-5 text-brand-text" />
                   )}
                 </motion.div>
               </AnimatePresence>
             </button>
           </div>
         </div>
-
-        {/* Search Bar */}
-        {/* <SearchBar /> */}
 
         {/* Mobile Menu */}
         <AnimatePresence>
@@ -359,82 +284,79 @@ export default function Header() {
               initial="closed"
               animate="open"
               exit="closed"
-              className="lg:hidden overflow-hidden"
+              className="lg:hidden overflow-hidden border-t border-gray-100"
             >
-              <div className="py-4 space-y-0">
+              <div className="py-4 space-y-1">
                 {navItems.map((item) => (
                   <motion.div key={item.name} variants={menuItemVariants}>
                     <Link
                       onClick={() => setIsOpen(false)}
                       href={item.path}
-                      className="flex items-center py-3 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                      className="flex items-center py-3 px-4 text-sm font-medium text-brand-text hover:bg-brand-cream hover:text-brand-pink transition-all duration-300 rounded-xl"
                     >
                       {item.icon}
                       {item.name}
                     </Link>
                   </motion.div>
                 ))}
-                
+
                 {session ? (
                   <>
                     <motion.div variants={menuItemVariants}>
                       <Link
                         onClick={() => setIsOpen(false)}
                         href="/wishlist"
-                        className="flex items-center py-3 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                        className="flex items-center py-3 px-4 text-sm font-medium text-brand-text hover:bg-brand-cream hover:text-brand-pink transition-all duration-300 rounded-xl"
                       >
                         <Heart className="w-4 h-4 mr-2" />
                         Wishlist
                       </Link>
                     </motion.div>
-                    
+
                     {session.user?.role === "admin" && (
                       <motion.div variants={menuItemVariants}>
                         <Link
                           onClick={() => setIsOpen(false)}
                           href="/admin"
-                          className="flex items-center py-3 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                          className="flex items-center py-3 px-4 text-sm font-medium text-brand-text hover:bg-brand-cream hover:text-brand-pink transition-all duration-300 rounded-xl"
                         >
                           <Settings className="w-4 h-4 mr-2" />
                           Admin Dashboard
                         </Link>
                       </motion.div>
                     )}
-                    
+
                     <motion.div variants={menuItemVariants}>
                       <Link
                         onClick={() => setIsOpen(false)}
                         href="/profile"
-                        className="flex items-center py-3 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                        className="flex items-center py-3 px-4 text-sm font-medium text-brand-text hover:bg-brand-cream hover:text-brand-pink transition-all duration-300 rounded-xl"
                       >
                         <User className="w-4 h-4 mr-2" />
                         Profile
                       </Link>
                     </motion.div>
-                    
+
                     <motion.div variants={menuItemVariants}>
                       <Link
                         onClick={() => setIsOpen(false)}
                         href="/my-orders"
-                        className="flex items-center py-3 px-4 text-[#4A4A4A] hover:bg-[#FFF5E4] hover:text-[#FF9494] transition duration-300 rounded-md"
+                        className="flex items-center py-3 px-4 text-sm font-medium text-brand-text hover:bg-brand-cream hover:text-brand-pink transition-all duration-300 rounded-xl"
                       >
                         <ShoppingBag className="w-4 h-4 mr-2" />
                         My Orders
                       </Link>
                     </motion.div>
-                    
+
                     <motion.div variants={menuItemVariants}>
-                      <hr className="border-[#FFE5F1] my-2" />
+                      <hr className="border-gray-100 my-2" />
                     </motion.div>
-                    
+
                     <motion.div variants={menuItemVariants}>
                       <Button
-                        onClick={() => {
-                          setIsOpen(false);
-                          handleSignOut();
-                        }}
+                        onClick={() => { setIsOpen(false); handleSignOut(); }}
                         variant="ghost"
-                        className="w-full text-left flex items-center py-3 px-4 text-[#FF5757] hover:bg-[#FFF5E4] transition duration-300 rounded-md"
+                        className="w-full text-left flex items-center py-3 px-4 text-sm font-medium text-red-500 hover:bg-red-50 transition-all duration-300 rounded-xl"
                       >
                         <LogOut className="w-4 h-4 mr-2" />
                         Sign Out
@@ -442,18 +364,19 @@ export default function Header() {
                     </motion.div>
                   </>
                 ) : (
-                  <motion.div variants={menuItemVariants} className="p-4 space-y-3">
+                  <motion.div variants={menuItemVariants} className="px-4 pt-4 pb-2 space-y-3">
                     <Link
                       onClick={() => setIsOpen(false)}
                       href="/login"
-                      className="block w-full py-2.5 text-center text-[#4A4A4A] border border-[#FFD6EC] rounded-md hover:text-[#FF9494] hover:border-[#FF9494] transition duration-300"
+                      className="block w-full py-2.5 text-center text-sm font-medium text-brand-text border border-gray-200 rounded-xl hover:border-brand-pink hover:text-brand-pink transition-all duration-300"
                     >
                       Login
                     </Link>
                     <Link
                       onClick={() => setIsOpen(false)}
                       href="/register"
-                      className="block w-full py-2.5 text-center bg-[#FF9494] text-white rounded-md hover:bg-[#FFB4B4] transition duration-300"
+                      className="block w-full py-2.5 text-center text-sm font-semibold text-white rounded-xl transition-all duration-300"
+                      style={{ background: 'linear-gradient(135deg, #FF9494 0%, #FFB4B4 100%)' }}
                     >
                       Sign Up
                     </Link>

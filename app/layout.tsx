@@ -1,6 +1,6 @@
 "use client";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { usePathname } from "next/navigation";
@@ -14,7 +14,8 @@ import Script from "next/script";
 import RotatingPromoBanner from "@/components/RotatingPromoBanner";
 import { LocationProvider } from "@/context/LocationContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export default function RootLayout({
   children,
@@ -36,7 +37,7 @@ export default function RootLayout({
   const isAdminPage = pathname.startsWith("/admin");
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${playfair.variable}`}>
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
           <NextAuthSessionProvider>
@@ -51,7 +52,7 @@ export default function RootLayout({
               </CartProvider>
             </SessionProvider>
           </NextAuthSessionProvider>
-        
+
           <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
           <Toaster />
         </QueryClientProvider>
